@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="PhotoLibraryPhotoCollectionViewCell" customModule="IQC" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="143" height="159"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="143" height="159"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="CYo-KT-Phb">
+                        <rect key="frame" x="0.0" y="0.0" width="143" height="159"/>
+                    </imageView>
+                    <view alpha="0.59999999999999998" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8dz-EN-4sY">
+                        <rect key="frame" x="0.0" y="0.0" width="143" height="159"/>
+                        <color key="backgroundColor" red="0.0" green="0.71372549019607845" blue="0.76862745098039209" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_sel_01@3x.png" translatesAutoresizingMaskIntoConstraints="NO" id="raU-Un-sZk">
+                        <rect key="frame" x="21" y="44" width="100" height="70"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="70" id="eSU-hf-AND"/>
+                            <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="fqi-Xo-jIQ"/>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="70" id="fzO-A6-tAk"/>
+                            <constraint firstAttribute="width" constant="100" id="olm-T0-c4H"/>
+                        </constraints>
+                    </imageView>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="CYo-KT-Phb" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Frb-8S-RNZ"/>
+                <constraint firstAttribute="trailing" secondItem="8dz-EN-4sY" secondAttribute="trailing" id="GDu-qQ-1fi"/>
+                <constraint firstAttribute="bottom" secondItem="8dz-EN-4sY" secondAttribute="bottom" id="GQO-eQ-UxF"/>
+                <constraint firstItem="CYo-KT-Phb" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="NDW-lE-4FV"/>
+                <constraint firstItem="raU-Un-sZk" firstAttribute="centerY" secondItem="8dz-EN-4sY" secondAttribute="centerY" id="Pbc-15-uIt"/>
+                <constraint firstItem="8dz-EN-4sY" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="TfO-W9-lMu"/>
+                <constraint firstItem="8dz-EN-4sY" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="ZEz-rL-P2Z"/>
+                <constraint firstAttribute="trailing" secondItem="CYo-KT-Phb" secondAttribute="trailing" id="gSZ-mU-3ed"/>
+                <constraint firstItem="raU-Un-sZk" firstAttribute="centerX" secondItem="8dz-EN-4sY" secondAttribute="centerX" id="ld1-mE-pvz"/>
+                <constraint firstAttribute="bottom" secondItem="CYo-KT-Phb" secondAttribute="bottom" id="mZe-u0-IgO"/>
+            </constraints>
+            <size key="customSize" width="143" height="159"/>
+            <connections>
+                <outlet property="photoImageView" destination="CYo-KT-Phb" id="shO-9X-iD7"/>
+                <outlet property="selectMark" destination="raU-Un-sZk" id="0fX-01-Toy"/>
+                <outlet property="selectedView" destination="8dz-EN-4sY" id="Dor-Ha-Coa"/>
+            </connections>
+            <point key="canvasLocation" x="34.5" y="108.5"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="icon_sel_01@3x.png" width="240" height="162"/>
+    </resources>
+</document>
