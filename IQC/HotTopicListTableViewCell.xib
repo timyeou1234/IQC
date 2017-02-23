@@ -26,20 +26,24 @@
                         <rect key="frame" x="15" y="114" width="290" height="124"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1O4-mh-xLk">
-                        <rect key="frame" x="30" y="139" width="0.0" height="0.0"/>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9r6-po-Ufl">
+                        <rect key="frame" x="20" y="127" width="50" height="26"/>
+                        <color key="backgroundColor" red="0.32366040350000003" green="0.70168870689999996" blue="0.77370780709999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="AAA" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1O4-mh-xLk">
+                        <rect key="frame" x="30" y="131" width="30" height="18"/>
                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                        <nil key="textColor"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k8P-YQ-D7R">
-                        <rect key="frame" x="30" y="149" width="260" height="0.0"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ZZZZZZZZZZZZZZZZZZZZZZZZZZZZ" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k8P-YQ-D7R">
+                        <rect key="frame" x="30" y="164" width="260" height="26.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="22"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X0u-Ry-rKU">
-                        <rect key="frame" x="30" y="155" width="260" height="0.0"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ASasaSasasaSA" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X0u-Ry-rKU">
+                        <rect key="frame" x="30" y="196.5" width="260" height="19.5"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" red="0.38823529411764707" green="0.38823529411764707" blue="0.38823529411764707" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
@@ -47,20 +51,24 @@
                 </subviews>
                 <constraints>
                     <constraint firstItem="k8P-YQ-D7R" firstAttribute="leading" secondItem="1O4-mh-xLk" secondAttribute="leading" id="6nj-11-Ehb"/>
+                    <constraint firstItem="9r6-po-Ufl" firstAttribute="leading" secondItem="1O4-mh-xLk" secondAttribute="leading" constant="-10" id="ACM-MR-eT1"/>
                     <constraint firstAttribute="trailing" secondItem="pgL-7z-ICA" secondAttribute="trailing" constant="15" id="Ffp-he-LeF"/>
+                    <constraint firstItem="9r6-po-Ufl" firstAttribute="top" secondItem="1O4-mh-xLk" secondAttribute="top" constant="-4" id="Kde-as-fyy"/>
                     <constraint firstItem="X0u-Ry-rKU" firstAttribute="trailing" secondItem="k8P-YQ-D7R" secondAttribute="trailing" id="Qxe-nB-X2c"/>
                     <constraint firstItem="X0u-Ry-rKU" firstAttribute="leading" secondItem="k8P-YQ-D7R" secondAttribute="leading" id="RSz-va-u1e"/>
+                    <constraint firstItem="9r6-po-Ufl" firstAttribute="trailing" secondItem="1O4-mh-xLk" secondAttribute="trailing" constant="10" id="UD8-Il-qcH"/>
                     <constraint firstItem="OsC-g2-pO2" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="VnZ-9C-fA3"/>
                     <constraint firstItem="pgL-7z-ICA" firstAttribute="height" secondItem="OsC-g2-pO2" secondAttribute="height" multiplier="48:100" id="XR8-A0-4aY"/>
                     <constraint firstAttribute="bottom" secondItem="pgL-7z-ICA" secondAttribute="bottom" constant="20" id="abS-38-wRn"/>
                     <constraint firstItem="OsC-g2-pO2" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="bBd-DQ-GRe"/>
                     <constraint firstAttribute="trailing" secondItem="OsC-g2-pO2" secondAttribute="trailing" id="gBL-n5-S7X"/>
                     <constraint firstItem="X0u-Ry-rKU" firstAttribute="top" secondItem="k8P-YQ-D7R" secondAttribute="bottom" constant="6" id="gsb-1t-zYs"/>
-                    <constraint firstItem="pgL-7z-ICA" firstAttribute="top" secondItem="1O4-mh-xLk" secondAttribute="bottom" constant="-25" id="jMb-A0-R0W"/>
+                    <constraint firstItem="pgL-7z-ICA" firstAttribute="top" secondItem="1O4-mh-xLk" secondAttribute="bottom" constant="-35" id="jMb-A0-R0W"/>
                     <constraint firstAttribute="bottom" secondItem="OsC-g2-pO2" secondAttribute="bottom" id="lHj-yI-9mZ"/>
-                    <constraint firstItem="k8P-YQ-D7R" firstAttribute="top" secondItem="1O4-mh-xLk" secondAttribute="bottom" constant="10.5" id="m2K-vy-Iiw"/>
+                    <constraint firstItem="k8P-YQ-D7R" firstAttribute="top" secondItem="1O4-mh-xLk" secondAttribute="bottom" constant="15" id="m2K-vy-Iiw"/>
                     <constraint firstAttribute="trailing" secondItem="k8P-YQ-D7R" secondAttribute="trailing" constant="30" id="mf3-qC-t9N"/>
                     <constraint firstItem="pgL-7z-ICA" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="pK7-Lh-nyz"/>
+                    <constraint firstItem="9r6-po-Ufl" firstAttribute="bottom" secondItem="1O4-mh-xLk" secondAttribute="bottom" constant="4" id="tX2-EB-DbO"/>
                     <constraint firstItem="1O4-mh-xLk" firstAttribute="leading" secondItem="pgL-7z-ICA" secondAttribute="leading" constant="15" id="u1d-Nu-qVi"/>
                 </constraints>
             </tableViewCellContentView>
@@ -68,6 +76,7 @@
                 <outlet property="backImageView" destination="OsC-g2-pO2" id="7cC-JS-rKX"/>
                 <outlet property="descriptionLable" destination="X0u-Ry-rKU" id="56A-Qy-P9r"/>
                 <outlet property="tittleLable" destination="k8P-YQ-D7R" id="CJD-fb-hxB"/>
+                <outlet property="topicBackView" destination="9r6-po-Ufl" id="knI-Va-lgf"/>
                 <outlet property="topicClass" destination="1O4-mh-xLk" id="tch-tY-04R"/>
             </connections>
             <point key="canvasLocation" x="34" y="183"/>

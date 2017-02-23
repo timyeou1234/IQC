@@ -14,6 +14,19 @@ extension UIView{
         let loadingView = LoadingView(frame: self.bounds)
         self.addSubview(loadingView)
     }
+    
+    func clipBackground(){
+        self.backgroundColor = UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1)
+        self.layer.cornerRadius = 15
+        self.layer.masksToBounds = true
+    }
+    
+    func addShadow(){
+        self.layer.shadowColor = UIColor.gray.cgColor
+        self.layer.shadowOpacity = 0.3
+        self.layer.shadowOffset = CGSize.zero
+        self.layer.shadowRadius = 3
+    }
 }
 
 extension String{
@@ -41,3 +54,16 @@ extension String{
         return UIColor(red: CGFloat(r) / 255.0, green: CGFloat(g) / 255.0, blue: CGFloat(b) / 255.0, alpha: CGFloat(1))
     }
 }
+
+extension UILabel{
+    
+    func addBackground(){
+        self.backgroundColor = UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1)
+        self.textColor = UIColor.white
+        self.layer.cornerRadius = self.bounds.width/4
+        self.layer.masksToBounds = true
+    }
+    
+}
+
+

@@ -120,6 +120,10 @@ class HelpReportViewController: UIViewController {
         setPhoto()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        self.tabBarController?.tabBar.isHidden = false
+    }
+    
     func setPhoto(){
         photoArray = [UIImage]()
         let imgManager = PHImageManager.default()

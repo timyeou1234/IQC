@@ -117,13 +117,19 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     }
     
     @IBAction func searchAction(_ sender: Any) {
-        if codeArray.count > 0{
+        if codeArray.count == 8 || codeArray.count == 13{
             loadingView.isHidden = false
             var code = ""
             for codeDigit in codeArray{
                 code += String(codeDigit)
             }
             sendRequest(code)
+        }else{
+            let alert = UIAlertController(title: "請輸入完整序號", message: nil, preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+            alert.addAction(cancelAction)
+            
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
