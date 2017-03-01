@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -16,7 +17,7 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="258"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="258"/>
+                <rect key="frame" x="0.0" y="0.0" width="320" height="257.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="OsC-g2-pO2">
@@ -68,6 +69,7 @@
                     <constraint firstItem="k8P-YQ-D7R" firstAttribute="top" secondItem="1O4-mh-xLk" secondAttribute="bottom" constant="15" id="m2K-vy-Iiw"/>
                     <constraint firstAttribute="trailing" secondItem="k8P-YQ-D7R" secondAttribute="trailing" constant="30" id="mf3-qC-t9N"/>
                     <constraint firstItem="pgL-7z-ICA" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="pK7-Lh-nyz"/>
+                    <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="1O4-mh-xLk" secondAttribute="trailing" constant="50" id="ppo-oR-wwv"/>
                     <constraint firstItem="9r6-po-Ufl" firstAttribute="bottom" secondItem="1O4-mh-xLk" secondAttribute="bottom" constant="4" id="tX2-EB-DbO"/>
                     <constraint firstItem="1O4-mh-xLk" firstAttribute="leading" secondItem="pgL-7z-ICA" secondAttribute="leading" constant="15" id="u1d-Nu-qVi"/>
                 </constraints>

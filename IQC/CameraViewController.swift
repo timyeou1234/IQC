@@ -178,6 +178,10 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         camraAction(self)
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        captureSession?.stopRunning()
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

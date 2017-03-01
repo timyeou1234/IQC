@@ -34,8 +34,6 @@ class HotTopicViewController: UIViewController {
         hotTopicTableView.isHidden = true
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        
-        
         Alamofire.request("https://iqctest.com/api/topic/list", headers: headers).responseJSON(completionHandler: {
             response in
             print(response)
@@ -45,6 +43,9 @@ class HotTopicViewController: UIViewController {
                 print(json)
                 for article in json["list"]{
                     let articleData = Article()
+                    if let id = article.1["id"].string{
+                        articleData.id = id
+                    }
                     if let modify = article.1["modify"].string{
                         articleData.modify = modify
                     }
@@ -72,6 +73,10 @@ class HotTopicViewController: UIViewController {
 
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        articleList = [Article]()
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -87,9 +92,11 @@ class HotTopicViewController: UIViewController {
         // Pass the selected object to the new view controller.
         
         if segue.identifier == "showDetail"{
-            let destinationController = segue.destination as! DetailArticleViewController
+            let destinationController = segue.destination as! HotTopicDetailViewController
             let article = sender as! Article
-            destinationController.articleId = Int(article.id!)!
+            if article.article != nil{
+                destinationController.articleId = article.article!
+            }
         }
     }
     
@@ -99,7 +106,7 @@ class HotTopicViewController: UIViewController {
 extension HotTopicViewController:UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        self.performSegue(withIdentifier: "showDetail", sender: articleList[indexPath.row])
+        self.performSegue(withIdentifier: "showDetail", sender: articleList[indexPath.row])
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -114,7 +121,7 @@ extension HotTopicViewController:UITableViewDelegate, UITableViewDataSource{
         cell.tittleLable.text = article.des
         cell.descriptionLable.text = article.content
         cell.topicClass.text = article.title
-        cell.topicBackView.clipBackground()
+        cell.topicBackView.clipBackground(color: UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1))
         
         return cell
     }

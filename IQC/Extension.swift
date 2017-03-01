@@ -10,13 +10,35 @@ import UIKit
 
 extension UIView{
     
+    func addDashedLine(color: UIColor = .lightGray, startPoint:CGPoint, endPoint:CGPoint) {
+//        layer.sublayers?.filter({ $0.name == "DashedTopLine" }).map({ $0.removeFromSuperlayer() })
+        backgroundColor = .clear
+        
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.name = "DashedTopLine"
+        shapeLayer.bounds = bounds
+        shapeLayer.position = CGPoint(x: frame.width / 2, y: frame.height / 2)
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.strokeColor = color.cgColor
+        shapeLayer.lineWidth = 1
+        shapeLayer.lineJoin = kCALineJoinRound
+        shapeLayer.lineDashPattern = [4, 4]
+        
+        let path = CGMutablePath()
+        path.move(to: startPoint)
+        path.addLine(to: endPoint)
+        shapeLayer.path = path
+        
+        layer.addSublayer(shapeLayer)
+    }
+    
     func startLoading(){
         let loadingView = LoadingView(frame: self.bounds)
         self.addSubview(loadingView)
     }
     
-    func clipBackground(){
-        self.backgroundColor = UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1)
+    func clipBackground(color:UIColor){
+        self.backgroundColor = color
         self.layer.cornerRadius = 15
         self.layer.masksToBounds = true
     }
@@ -57,12 +79,12 @@ extension String{
 
 extension UILabel{
     
-    func addBackground(){
-        self.backgroundColor = UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1)
-        self.textColor = UIColor.white
-        self.layer.cornerRadius = self.bounds.width/4
-        self.layer.masksToBounds = true
-    }
+//    func addBackground(){
+//        self.backgroundColor = UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1)
+//        self.textColor = UIColor.white
+//        self.layer.cornerRadius = self.bounds.width/4
+//        self.layer.masksToBounds = true
+//    }
     
 }
 

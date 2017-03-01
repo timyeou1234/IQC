@@ -17,5 +17,12 @@ class Article: NSObject {
     var article:String?
     var title:String?
     var des:String?
-
+//    延伸商品
+    var producrt:String?
+//    延伸閱讀
+    var reading:String?
+//    文章內頁主圖
+    var main_img:String?
+    var type:String?
+    var video:String?
 }

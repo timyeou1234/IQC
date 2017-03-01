@@ -194,15 +194,19 @@ class SafeViewController: UIViewController {
     }
     
     
-    /*
+    
      // MARK: - Navigation
      
      // In a storyboard-based application, you will often want to do a little preparation before navigation
      override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
+        if segue.identifier == "showDetail"{
+            let destinationController = segue.destination as! IQCProductDetailViewController
+            let product = sender as! Product
+            destinationController.productId = product.id!
+        }
+        
      }
-     */
+    
     
 }
 
@@ -247,6 +251,8 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
             selectedSubTittel = indexPath.item
             subTittleCollectionView.reloadData()
             searchProduct(productTypeList[selectedTittle].id!, subId: (productTypeList[selectedTittle].submenu?[selectedSubTittel].id!)!)
+        }else if collectionView == productCollectionView{
+            self.performSegue(withIdentifier: "showDetail", sender: self.productList[indexPath.item])
         }
     }
     

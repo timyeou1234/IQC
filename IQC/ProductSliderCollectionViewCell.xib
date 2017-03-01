@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="ProductSliderCollectionViewCell" customModule="IQC" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="268" height="218"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="268" height="218"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bY1-bK-0UI">
+                        <rect key="frame" x="0.0" y="0.0" width="268" height="218"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7jI-Bg-C6G">
+                                <rect key="frame" x="45" y="0.0" width="179" height="218"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="7jI-Bg-C6G" firstAttribute="centerY" secondItem="bY1-bK-0UI" secondAttribute="centerY" id="1Ex-Du-T6g"/>
+                            <constraint firstItem="7jI-Bg-C6G" firstAttribute="height" secondItem="bY1-bK-0UI" secondAttribute="height" id="2TM-x0-VOU"/>
+                            <constraint firstItem="7jI-Bg-C6G" firstAttribute="width" secondItem="bY1-bK-0UI" secondAttribute="width" multiplier="2:3" id="COI-Fw-xTN"/>
+                            <constraint firstItem="7jI-Bg-C6G" firstAttribute="centerX" secondItem="bY1-bK-0UI" secondAttribute="centerX" id="Zli-Rz-vIu"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstItem="bY1-bK-0UI" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="DxI-hb-pEH"/>
+                <constraint firstAttribute="bottom" secondItem="bY1-bK-0UI" secondAttribute="bottom" id="Qjs-gp-GJU"/>
+                <constraint firstAttribute="trailing" secondItem="bY1-bK-0UI" secondAttribute="trailing" id="RMP-Tw-AJ6"/>
+                <constraint firstItem="bY1-bK-0UI" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="jZT-r4-XjZ"/>
+            </constraints>
+            <size key="customSize" width="268" height="218"/>
+            <connections>
+                <outlet property="sliderImage" destination="7jI-Bg-C6G" id="ZNx-YY-F7G"/>
+            </connections>
+            <point key="canvasLocation" x="64" y="138"/>
+        </collectionViewCell>
+    </objects>
+</document>
