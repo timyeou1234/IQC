@@ -118,9 +118,9 @@ extension HotTopicViewController:UITableViewDelegate, UITableViewDataSource{
         
         let article = articleList[indexPath.row]
         cell.backImageView.sd_setImage(with: URL(string: article.img!))
-        cell.tittleLable.text = article.des
-        cell.descriptionLable.text = article.content
-        cell.topicClass.text = article.title
+        cell.tittleLable.text = article.title
+        cell.descriptionLable.text = article.des
+        cell.topicClass.text = "熱門專題"
         cell.topicBackView.clipBackground(color: UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1))
         
         return cell

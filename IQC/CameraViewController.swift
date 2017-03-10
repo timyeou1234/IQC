@@ -87,6 +87,15 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     
     @IBOutlet weak var searchBackgroungViewConstraint: NSLayoutConstraint!
     
+    @IBAction func endEditAction(_ sender: Any) {
+        if inputTextfield.isEditing{
+            inputTextfield.endEditing(true)
+            self.searchBackgroungViewConstraint.constant = 0
+        }else{
+            inputTextfield.becomeFirstResponder()
+        }
+    }
+    
     @IBAction func camraAction(_ sender: Any) {
         inputTextfield.endEditing(true)
         cameraButton.isSelected = true
@@ -166,6 +175,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        self.tabBarController?.tabBar.isHidden = false
         if self.view.bounds.width > 375{
             pointsStackView.spacing = 13
         }else if self.view.bounds.width < 375{
@@ -207,7 +217,6 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
                 loadingView.isHidden = false
                 captureSession?.stopRunning()
                 sendRequest(metadataObj.stringValue)
-                //                messageLabel.text = metadataObj.stringValue
             }
         }
     }
@@ -222,7 +231,9 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     }
     
     func moveSearchbutton(){
-        self.searchBackgroungViewConstraint.constant = -(self.keyboardHeight) + (self.tabBarController?.tabBar.bounds.height)!
+        if self.tabBarController != nil{
+            self.searchBackgroungViewConstraint.constant = -(self.keyboardHeight) + (self.tabBarController?.tabBar.bounds.height)!
+        }
     }
     
     func setupKeyboardView(){
@@ -286,10 +297,10 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
             blurEffectViewRight.autoresizingMask = [.flexibleWidth, .flexibleHeight]
             blurViewRight.addSubview(blurEffectViewRight)
             
-            cameraBackgroundView.bringSubview(toFront: blurViewTop)
-            cameraBackgroundView.bringSubview(toFront: blurViewLeft)
-            cameraBackgroundView.bringSubview(toFront: blurViewBottom)
-            cameraBackgroundView.bringSubview(toFront: blurViewRight)
+            //            cameraBackgroundView.bringSubview(toFront: blurViewTop)
+            //            cameraBackgroundView.bringSubview(toFront: blurViewLeft)
+            //            cameraBackgroundView.bringSubview(toFront: blurViewBottom)
+            //            cameraBackgroundView.bringSubview(toFront: blurViewRight)
             
             
             // Initialize QR Code Frame to highlight the QR code
@@ -310,10 +321,10 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         captureSession?.startRunning()
     }
     
+    
     func sendRequest(_ code:String){
         self.view.endEditing(true)
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
-        
         
         
         Alamofire.request("https://iqctest.com/api/search/product/\(code)", headers: headers).responseJSON(completionHandler: {
@@ -322,8 +333,35 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
             
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
+                var productList = [Product]()
                 if json["count"].intValue == 0{
                     self.performSegue(withIdentifier: "NoResult", sender: self)
+                }else if json["count"].intValue == 1{
+                    for jsonData in json["list"]{
+                        let product = Product()
+                        if let id = jsonData.1["id"].string{
+                            product.id = id
+                        }
+                        self.getProductDetail(product: product)
+                    }
+                }else if json["count"].int != nil{
+                    for jsonData in json["list"]{
+                        let product = Product()
+                        if let id = jsonData.1["id"].string{
+                            product.id = id
+                        }
+                        if let img = jsonData.1["img"].string{
+                            product.img = img
+                        }
+                        if let modify = jsonData.1["modify"].string{
+                            product.modify = modify
+                        }
+                        if let title = jsonData.1["title"].string{
+                            product.title = title
+                        }
+                        productList.append(product)
+                    }
+                    self.performSegue(withIdentifier: "showMultipleDetail", sender: productList)
                 }
             }
         })
@@ -331,6 +369,24 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     }
     
     
+    // MARK: - Navigation
+    
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        switch segue.identifier! {
+        case "showMultipleDetail":
+            let destinationController = segue.destination as! MultipleResultViewController
+            destinationController.productList = sender as! [Product]
+        case "showGovDetail":
+            let destinationController = segue.destination as! GovProductDetailViewController
+            destinationController.productId = (sender as! Product).id!
+        case "showDetail":
+            let destinationController = segue.destination as! IQCProductDetailViewController
+            destinationController.productId = (sender as! Product).id!
+        default:
+            break
+        }
+    }
 }
 
 extension CameraViewController:UITextFieldDelegate{
@@ -378,5 +434,26 @@ extension CameraViewController:UITextFieldDelegate{
         
         return true
     }
+    
+    func getProductDetail(product:Product){
+        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
+        
+        Alamofire.request("https://iqctest.com/api/product/detail/\(product.id!)", headers: headers).responseJSON(completionHandler: {
+            response in
+            if let JSONData = response.result.value{
+                let json = JSON(JSONData)
+                print(json)
+                for jsonData in json["list"]{
+                    if let _ = jsonData.1["gov"].string{
+                        self.performSegue(withIdentifier: "showGovDetail", sender: product)
+                    }else{
+                        self.performSegue(withIdentifier: "showDetail", sender: product)
+                    }
+                }
+            }
+        })
+        
+    }
+    
 }
 

@@ -21,6 +21,8 @@ class HotTopicDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationController?.navigationItem.backBarButtonItem?.title = ""
+        
         hotTopicTableView.delegate = self
         hotTopicTableView.dataSource = self
         
@@ -34,7 +36,8 @@ class HotTopicDetailViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
-        
+        articleList = [Article]()
+        hotTopicTableView.reloadData()
         for id in articleId.components(separatedBy: ","){
             
             Alamofire.request("https://iqctest.com/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
@@ -70,6 +73,9 @@ class HotTopicDetailViewController: UIViewController {
                         if let des = article.1["des"].string{
                             articleData.des = des
                         }
+                        if let tag = article.1["tag"].string{
+                            articleData.tag = tag
+                        }
                         if let producrt = article.1["producrt"].string{
                             articleData.producrt = producrt
                         }
@@ -88,6 +94,10 @@ class HotTopicDetailViewController: UIViewController {
                 }
             })
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -125,9 +135,10 @@ extension HotTopicDetailViewController:UITableViewDelegate, UITableViewDataSourc
         
         let article = articleList[indexPath.row]
         cell.backImageView.sd_setImage(with: URL(string: article.main_img!))
-        cell.tittleLable.text = article.des
-        cell.descriptionLable.text = article.content
-        cell.topicClass.text = article.title
+        cell.tittleLable.text = article.title
+        let contentText = article.content!.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil)
+        cell.descriptionLable.text = contentText
+        cell.topicClass.text = article.type
         cell.topicBackView.clipBackground(color: UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1))
         
         return cell

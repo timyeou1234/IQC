@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -19,7 +18,11 @@
                 <rect key="frame" x="0.0" y="0.0" width="257" height="317"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qtx-6t-PiZ">
+                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="gOQ-Qq-wSZ">
+                        <rect key="frame" x="118" y="148" width="20" height="20"/>
+                        <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </activityIndicatorView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qtx-6t-PiZ">
                         <rect key="frame" x="15" y="10" width="227" height="227"/>
                         <constraints>
                             <constraint firstAttribute="width" secondItem="qtx-6t-PiZ" secondAttribute="height" multiplier="1:1" id="SJ2-XA-oNA"/>
@@ -34,11 +37,14 @@
                 </subviews>
             </view>
             <constraints>
+                <constraint firstItem="gOQ-Qq-wSZ" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="DpC-tM-eCd"/>
+                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="iTh-pG-Pqw" secondAttribute="bottom" constant="8" id="I2g-X6-7vw"/>
                 <constraint firstItem="iTh-pG-Pqw" firstAttribute="width" secondItem="qtx-6t-PiZ" secondAttribute="width" id="Noc-tm-hRg"/>
                 <constraint firstItem="qtx-6t-PiZ" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="Q2s-Dl-qeg"/>
                 <constraint firstItem="iTh-pG-Pqw" firstAttribute="top" secondItem="qtx-6t-PiZ" secondAttribute="bottom" constant="13" id="WPS-gC-BGn"/>
                 <constraint firstAttribute="trailing" secondItem="qtx-6t-PiZ" secondAttribute="trailing" constant="15" id="YdZ-hN-u3D"/>
                 <constraint firstItem="iTh-pG-Pqw" firstAttribute="centerX" secondItem="qtx-6t-PiZ" secondAttribute="centerX" id="gCa-yi-aPu"/>
+                <constraint firstItem="gOQ-Qq-wSZ" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="qeq-ij-TIz"/>
                 <constraint firstItem="qtx-6t-PiZ" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="15" id="vVL-Bm-CP8"/>
             </constraints>
             <size key="customSize" width="257" height="317"/>

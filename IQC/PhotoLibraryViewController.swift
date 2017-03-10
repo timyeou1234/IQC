@@ -38,7 +38,6 @@ class PhotoLibraryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.tabBarController?.tabBar.isHidden = true
         doneButton.isEnabled = false
         
         self.photoCollectionView.register(UINib(nibName: "PhotoLibraryFirstCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "Cell1")
@@ -53,6 +52,14 @@ class PhotoLibraryViewController: UIViewController {
         photoCollectionView.collectionViewLayout = layout
         
         // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        self.tabBarController?.tabBar.isHidden = true
     }
     
     override func viewDidDisappear(_ animated: Bool) {

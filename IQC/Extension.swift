@@ -43,6 +43,12 @@ extension UIView{
         self.layer.masksToBounds = true
     }
     
+    func clipBackground(cornerRadious:CGFloat, color:UIColor){
+        self.backgroundColor = color
+        self.layer.cornerRadius = 15
+        self.layer.masksToBounds = true
+    }
+    
     func addShadow(){
         self.layer.shadowColor = UIColor.gray.cgColor
         self.layer.shadowOpacity = 0.3

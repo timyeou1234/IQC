@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -22,7 +21,11 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bY1-bK-0UI">
                         <rect key="frame" x="0.0" y="0.0" width="268" height="218"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7jI-Bg-C6G">
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="sYX-4t-G9T">
+                                <rect key="frame" x="124" y="99" width="20" height="20"/>
+                                <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            </activityIndicatorView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="7jI-Bg-C6G">
                                 <rect key="frame" x="45" y="0.0" width="179" height="218"/>
                             </imageView>
                         </subviews>
@@ -30,8 +33,10 @@
                         <constraints>
                             <constraint firstItem="7jI-Bg-C6G" firstAttribute="centerY" secondItem="bY1-bK-0UI" secondAttribute="centerY" id="1Ex-Du-T6g"/>
                             <constraint firstItem="7jI-Bg-C6G" firstAttribute="height" secondItem="bY1-bK-0UI" secondAttribute="height" id="2TM-x0-VOU"/>
+                            <constraint firstItem="sYX-4t-G9T" firstAttribute="centerX" secondItem="bY1-bK-0UI" secondAttribute="centerX" id="Byy-v8-fZ4"/>
                             <constraint firstItem="7jI-Bg-C6G" firstAttribute="width" secondItem="bY1-bK-0UI" secondAttribute="width" multiplier="2:3" id="COI-Fw-xTN"/>
                             <constraint firstItem="7jI-Bg-C6G" firstAttribute="centerX" secondItem="bY1-bK-0UI" secondAttribute="centerX" id="Zli-Rz-vIu"/>
+                            <constraint firstItem="sYX-4t-G9T" firstAttribute="centerY" secondItem="bY1-bK-0UI" secondAttribute="centerY" id="o7d-wM-QFa"/>
                         </constraints>
                     </view>
                 </subviews>

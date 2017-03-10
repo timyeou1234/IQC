@@ -14,7 +14,12 @@ class MallCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var mallImagView: UIImageView!
     @IBAction func gotoMall(_ sender: Any) {
         if URL(string: mallUrl) != nil{
-            UIApplication.shared.open(URL(string: mallUrl)!, options: [:], completionHandler: nil)
+            if #available(iOS 10.0, *) {
+                UIApplication.shared.open(URL(string: mallUrl)!, options: [:], completionHandler: nil)
+            } else {
+                UIApplication.shared.openURL(URL(string: mallUrl)!)
+                // Fallback on earlier versions
+            }
         }
     }
     

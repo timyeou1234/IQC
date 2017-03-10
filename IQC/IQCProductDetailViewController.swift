@@ -18,6 +18,8 @@ protocol CellHeightChangeDelegate {
 class IQCProductDetailViewController: UIViewController {
     
     var brandData = Brand()
+    var brandOwnedProduct = [Product]()
+    var simularProduct = [Product]()
     var brandConstraint = NSLayoutConstraint()
     var productConstraint = NSLayoutConstraint()
     var contraint:NSLayoutConstraint?
@@ -26,6 +28,9 @@ class IQCProductDetailViewController: UIViewController {
     var productId = ""
     var isLatest = true
     var cellHeight = [IndexPath:CGFloat]()
+    var productCellHeight = [IndexPath:CGFloat]()
+    var halfProductCellHeight = [IndexPath:CGFloat]()
+    var ingrediantCellHeight = [IndexPath:CGFloat]()
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var productSliderCollectionView: UICollectionView!
@@ -56,7 +61,7 @@ class IQCProductDetailViewController: UIViewController {
     @IBOutlet weak var productIngrediantTableView: UITableView!
     @IBOutlet weak var productIngrediantBottomConstraint: NSLayoutConstraint!
     
-//    看產品->品牌介紹
+    //    看產品->品牌介紹
     @IBOutlet weak var brandContainView: UIView!
     @IBOutlet weak var backGroundImageView: UIImageView!
     @IBOutlet weak var brandImageView: UIImageView!
@@ -66,14 +71,20 @@ class IQCProductDetailViewController: UIViewController {
     
     @IBOutlet weak var simularProductCollectionView: UICollectionView!
     @IBAction func webAction(_ sender: Any) {
+        if URL(string:brandData.website!) != nil{
+            if #available(iOS 10.0, *) {
+                UIApplication.shared.open(URL(string:brandData.website!)!, options: [:], completionHandler: nil)
+            } else {
+                UIApplication.shared.openURL(URL(string:brandData.website!)!)
+                // Fallback on earlier versions
+            }
+        }
     }
     
     @IBAction func productViewAllAction(_ sender: Any) {
     }
+    
     @IBOutlet weak var brandContainViewBottomConstraint: NSLayoutConstraint!
-    
-    
-    
     
     @IBOutlet weak var forDashLineView: UIView!
     @IBOutlet weak var underLineView: UIView!
@@ -85,10 +96,12 @@ class IQCProductDetailViewController: UIViewController {
         brandContainView.isHidden = true
         productIngrediantContainView.isHidden = true
         
-        brandContainViewBottomConstraint.isActive = false
-        productIngrediantBottomConstraint.isActive = false
-        
+        if brandContainViewBottomConstraint != nil{
+            brandContainViewBottomConstraint.isActive = false
+            productIngrediantBottomConstraint.isActive = false
+        }
         view.removeConstraint(productConstraint)
+        view.removeConstraint(brandConstraint)
         
         firstButton.setTitle("近期報告", for: .normal)
         firstButton.setTitle("近期報告", for: .selected)
@@ -208,6 +221,7 @@ class IQCProductDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         tittleBackView.addShadow()
+        self.navigationItem.backBarButtonItem?.title = ""
         
         firstButton.layer.borderWidth = 1
         firstButton.layer.masksToBounds = true
@@ -240,6 +254,9 @@ class IQCProductDetailViewController: UIViewController {
         simularProductCollectionView.dataSource = self
         brandOwnedProductCollectionView.delegate = self
         simularProductCollectionView.delegate = self
+        
+        brandOwnedProductCollectionView.register(UINib(nibName: "ProductCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
+        simularProductCollectionView.register(UINib(nibName: "ProductCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
         
         productIngrediantTableView.register(UINib(nibName: "IngrediantTableViewCell", bundle:nil), forCellReuseIdentifier: "Cell1")
         
@@ -310,9 +327,14 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
         
     }
     
+    
+    //MARK: Collection View Size
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
+        if collectionView == brandOwnedProductCollectionView || collectionView == simularProductCollectionView{
+            return CGSize(width: (brandOwnedProductCollectionView.bounds.width/2)-10, height: brandOwnedProductCollectionView.bounds.width/2 + 40)
+        }
         if collectionView == productSliderCollectionView{
             return CGSize(width: self.view.bounds.width, height: collectionView.bounds.height)
         }else if collectionView == cerCollectionView{
@@ -343,9 +365,16 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
         
     }
     
+    //MARK: Collection View Item Count
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if product.title == nil{
             return 0
+        }
+        if collectionView == brandOwnedProductCollectionView{
+            return brandOwnedProduct.count
+        }
+        if collectionView == simularProductCollectionView{
+            return simularProduct.count
         }
         if collectionView == productSliderCollectionView{
             if product.slider == nil{
@@ -371,7 +400,33 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
         return 0
     }
     
+    //MARK: Cell For Row CollectionView
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        //品牌擁有的產品
+        if collectionView == brandOwnedProductCollectionView{
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! ProductCollectionViewCell
+            
+            cell.productNameLable.text = brandOwnedProduct[indexPath.item].title
+            cell.productImageView.sd_setImage(with: URL(string: brandOwnedProduct[indexPath.item].img!))
+            
+            cell.productImageView.addShadow()
+            
+            return cell
+            
+        }
+        //相似的產品
+        if collectionView == simularProductCollectionView{
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! ProductCollectionViewCell
+            
+            cell.productNameLable.text = simularProduct[indexPath.item].title
+            cell.productImageView.sd_setImage(with: URL(string: simularProduct[indexPath.item].img!))
+            
+            cell.productImageView.addShadow()
+            
+            return cell
+        }
+        
         if collectionView == productSliderCollectionView{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell1", for: indexPath) as! ProductSliderCollectionViewCell
             
@@ -525,19 +580,37 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        //此為成分標示表格，由字數決定高度
         if tableView == productIngrediantTableView{
             return UITableViewAutomaticDimension
         }
-        if cellHeight[indexPath] != nil{
-            let cellHeightF = cellHeight[indexPath]
-            return cellHeightF!
+        
+        switch tableView {
+        case productTableView:
+            if productCellHeight[indexPath] != nil{
+                let cellHeightF = productCellHeight[indexPath]
+                return cellHeightF!
+            }
+        case halfProductTableView:
+            if halfProductCellHeight[indexPath] != nil{
+                let cellHeightF = halfProductCellHeight[indexPath]
+                return cellHeightF!
+            }
+        case ingrediantTableView:
+            if ingrediantCellHeight[indexPath] != nil{
+                let cellHeightF = ingrediantCellHeight[indexPath]
+                return cellHeightF!
+            }
+        default:
+            break
         }
+        
         return 40
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-//        產品標示
+        //        產品標示
         if tableView == productIngrediantTableView{
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell1", for: indexPath) as! IngrediantTableViewCell
             switch indexPath.row {
@@ -926,7 +999,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     return cell
                 }
             }
-
+            
         }
         
         
@@ -938,23 +1011,27 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
 
 extension IQCProductDetailViewController:CellHeightChangeDelegate{
     
+    
+    //    MARK: 計算展開後改變的高度
     func cellHeightChange(tableView:UITableView ,whichCell:IndexPath, height:CGFloat, howMuch: CGFloat) {
-        if tableView != productIngrediantTableView{
-            cellHeight = [whichCell:height]
-        }
+        
         switch tableView {
         case productTableView:
             productTableViewHeightConstant.constant += howMuch
             tableViewHeightList[0] = productTableViewHeightConstant.constant
+            productCellHeight[whichCell] = height
         case halfProductTableView:
             halfProductTableViewHightConstraint.constant += howMuch
             tableViewHeightList[1] = halfProductTableViewHightConstraint.constant
+            halfProductCellHeight[whichCell] = height
+        //此為成分標示表格，僅需畫虛線
         case productIngrediantTableView:
             productIngrediantHeightConstraint.constant += howMuch
             forDashLineView.addDashedLine(startPoint: CGPoint(x: self.view.bounds.width/2, y: 0), endPoint: CGPoint(x: self.view.bounds.width/2, y: productIngrediantTableView.bounds.height))
         default:
             ingrediantTableViewHightConstraint.constant += howMuch
             tableViewHeightList[2] = ingrediantTableViewHightConstraint.constant
+            ingrediantCellHeight[whichCell] = height
         }
         
         tableView.reloadRows(at: [whichCell], with: .none)
@@ -1099,6 +1176,7 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                 
                 if let similar = jsonData["similar"].string{
                     self.product.similar = similar
+                    self.getProductList(id: similar, type: "")
                 }
                 
                 if let origin = jsonData["origin"].string{
@@ -1113,42 +1191,49 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                     self.getBrand(id: brandid)
                 }
                 
-                for jsonCer in jsonData["cer"]{
-                    if self.product.cer == nil{
-                        self.product.cer = [jsonCer.1["img"].stringValue]
-                    }else{
-                        self.product.cer?.append(jsonCer.1["img"].stringValue)
+                if let _ = jsonData["cer"].array{
+                    for jsonCer in jsonData["cer"]{
+                        if self.product.cer == nil{
+                            self.product.cer = [jsonCer.1["img"].stringValue]
+                        }else{
+                            self.product.cer?.append(jsonCer.1["img"].stringValue)
+                        }
+                    }
+                }
+                if let _ = jsonData["veg"].array{
+                    for jsonVeg in jsonData["veg"]{
+                        if self.product.veg == nil{
+                            self.product.veg = [jsonVeg.1["title"].stringValue]
+                        }else{
+                            self.product.veg?.append(jsonVeg.1["title"].stringValue)
+                        }
                     }
                 }
                 
-                for jsonVeg in jsonData["veg"]{
-                    if self.product.veg == nil{
-                        self.product.veg = [jsonVeg.1["title"].stringValue]
-                    }else{
-                        self.product.veg?.append(jsonVeg.1["title"].stringValue)
+                if let _ = jsonData["allergy"].array{
+                    for jsonAllergy in jsonData["allergy"]{
+                        if self.product.allergy == nil{
+                            self.product.allergy = [jsonAllergy.1["title"].stringValue]
+                        }else{
+                            self.product.allergy?.append(jsonAllergy.1["title"].stringValue)
+                        }
                     }
                 }
                 
-                for jsonAllergy in jsonData["allergy"]{
-                    if self.product.allergy == nil{
-                        self.product.allergy = [jsonAllergy.1["title"].stringValue]
-                    }else{
-                        self.product.allergy?.append(jsonAllergy.1["title"].stringValue)
+                if let _ = jsonData["mall"].array{
+                    for jsonMall in jsonData["mall"]{
+                        let mall = Mall()
+                        if let url = jsonMall.1["url"].string{
+                            mall.url = url
+                        }
+                        if let img = jsonMall.1["img"].string{
+                            mall.img = img
+                        }
+                        if self.product.mall == nil{
+                            self.product.mall = [mall]
+                        }
+                        self.product.mall?.append(mall)
                     }
-                }
-                
-                for jsonMall in jsonData["mall"]{
-                    let mall = Mall()
-                    if let url = jsonMall.1["url"].string{
-                        mall.url = url
-                    }
-                    if let img = jsonMall.1["img"].string{
-                        mall.img = img
-                    }
-                    if self.product.mall == nil{
-                        self.product.mall = [mall]
-                    }
-                    self.product.mall?.append(mall)
                 }
                 
                 for jsonSlider in jsonData["slider"]{
@@ -1166,6 +1251,7 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                         }
                     }
                 }
+                
                 DispatchQueue.main.async {
                     self.refreshView()
                 }
@@ -1178,7 +1264,7 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
     func getBrand(id:String){
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        Alamofire.request("https://iqctest.com/api/brand/list/\(id)", headers: headers).responseJSON(completionHandler: {
+        Alamofire.request("https://iqctest.com/api/brand/detail/\(id)", headers: headers).responseJSON(completionHandler: {
             response in
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
@@ -1190,6 +1276,9 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                     
                     if let id = brand.1["id"].string{
                         self.brandData.id = id
+                    }
+                    if let product = brand.1["product"].string{
+                        self.brandData.product = product
                     }
                     if let intro = brand.1["intro"].string{
                         self.brandData.intro = intro
@@ -1225,6 +1314,9 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                         self.brandData.supplier = supplier
                     }
                 }
+                DispatchQueue.main.async {
+                    self.refreshBrandContent()
+                }
             }
         })
     }
@@ -1252,4 +1344,51 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         self.firstSubAction(self)
     }
     
+    //取得所屬品牌後刷新頁面
+    func refreshBrandContent(){
+        backGroundImageView.sd_setImage(with: URL(string: brandData.img!))
+        brandImageView.sd_setImage(with: URL(string: brandData.logo!))
+        brandIdLable.text = brandData.title
+        if brandData.product != nil{
+            getProductList(id: brandData.product!, type: "brand")
+        }
+        
+    }
+    
+    //    取得品牌擁有的產品與相似產品（資訊所需較少）
+    func getProductList(id:String, type:String){
+        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
+        for id in (id.components(separatedBy: ",")){
+            Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+                response in
+                if let JSONData = response.result.value{
+                    let json = JSON(JSONData)
+                    print(json)
+                    
+                    let product = Product()
+                    let jsonData = json["list"][0]
+                    
+                    if let id = jsonData["id"].string{
+                        product.id = id
+                    }
+                    
+                    if let title = jsonData["title"].string{
+                        product.title = title
+                    }
+                    
+                    if let img = jsonData["img"].string{
+                        product.img = img
+                    }
+                    if type == "brand"{
+                        self.brandOwnedProduct.append(product)
+                        self.brandOwnedProductCollectionView.reloadData()
+                    }else{
+                        self.simularProduct.append(product)
+                        self.simularProductCollectionView.reloadData()
+                    }
+                }
+            })
+        }
+        
+    }
 }

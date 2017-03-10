@@ -16,6 +16,7 @@ class Article: NSObject {
     var id:String?
     var article:String?
     var title:String?
+    var tag:String?
     var des:String?
 //    延伸商品
     var producrt:String?

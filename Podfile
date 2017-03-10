@@ -10,6 +10,7 @@ target 'IQC' do
   pod 'CarbonKit'
   pod 'Alamofire'
   pod 'SDWebImage', '~>3.8'
+  pod 'DropDown'
   
   post_install do |installer|
       installer.pods_project.targets.each do |target|

@@ -18,12 +18,15 @@ class SafeViewController: UIViewController {
     var brandList = [Brand]()
     var selectedTittle = 0
     var selectedSubTittel = -1
+    var loadingView = UIView()
     
-    
+    @IBOutlet weak var brandDetailContainerView: UIView!
     @IBOutlet weak var productButton: UIButton!
     @IBOutlet weak var brandButton: UIButton!
     @IBOutlet weak var underLineView: UIView!
     @IBOutlet weak var buttonBackView: UIView!
+    
+    @IBOutlet weak var menuBarItem: UIBarButtonItem!
     
     @IBOutlet weak var brandBackView: UIView!
     @IBOutlet weak var tittleCollectionView: UICollectionView!
@@ -32,7 +35,17 @@ class SafeViewController: UIViewController {
     @IBOutlet weak var productCollectionView: UICollectionView!
     @IBOutlet weak var brandCollectionView: UICollectionView!
     
+    @IBAction func menuAction(_ sender: Any) {
+        if menuBarItem.image == UIImage(named: "nav_menu_pre"){
+            
+        }else{
+            menuBarItem.image = UIImage(named: "nav_menu_pre")
+            brandDetailContainerView.isHidden = true
+        }
+    }
+    
     @IBAction func productAction(_ sender: Any) {
+        menuBarItem.image = UIImage(named: "nav_menu_pre")
         brandBackView.isHidden = true
         productButton.isSelected = true
         brandButton.isSelected = false
@@ -43,6 +56,9 @@ class SafeViewController: UIViewController {
     }
     
     @IBAction func brandAction(_ sender: Any) {
+        if !brandDetailContainerView.isHidden{
+            menuBarItem.image = #imageLiteral(resourceName: "nav_back_prs")
+        }
         brandBackView.isHidden = false
         productButton.isSelected = false
         brandButton.isSelected = true
@@ -55,7 +71,11 @@ class SafeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        buttonBackView.addShadow()
+        buttonBackView.layer.shadowColor = UIColor.darkGray.cgColor
+        buttonBackView.layer.shadowOpacity = 1
+        buttonBackView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        buttonBackView.layer.shadowRadius = 10
+        buttonBackView.layer.masksToBounds = true
         
         tittleCollectionView.delegate = self
         tittleCollectionView.dataSource = self
@@ -79,12 +99,19 @@ class SafeViewController: UIViewController {
         productCollectionView.register(UINib(nibName: "ProductCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
         brandCollectionView.register(UINib(nibName: "ProductCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
         // Do any additional setup after loading the view.
+        
+        //        設定讀取中圖示
+        loadingView.frame = self.view.frame
+        self.view.addSubview(loadingView)
+        loadingView.startLoading()
+        loadingView.isHidden = true
     }
     
     override func viewWillAppear(_ animated: Bool) {
         productAction(self)
+        brandDetailContainerView.isHidden = true
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
-        
+        loadingView.isHidden = false
         Alamofire.request("https://iqctest.com/api/website/menu", headers: headers).responseJSON(completionHandler: {
             response in
             print(response)
@@ -130,6 +157,7 @@ class SafeViewController: UIViewController {
             }
             self.tittleCollectionView.reloadData()
             self.subTittleCollectionView.reloadData()
+            self.loadingView.isHidden = true
         })
         
         Alamofire.request("https://iqctest.com/api/brand/list/all", headers: headers).responseJSON(completionHandler: {
@@ -180,6 +208,7 @@ class SafeViewController: UIViewController {
                     self.brandList.append(brandData)
                 }
                 self.brandCollectionView.reloadData()
+                self.loadingView.isHidden = true
             }
             
             
@@ -193,20 +222,20 @@ class SafeViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - Navigation
     
-    
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail"{
             let destinationController = segue.destination as! IQCProductDetailViewController
             let product = sender as! Product
             destinationController.productId = product.id!
+        }else if segue.identifier == "showGovDetail"{
+            let destinationController = segue.destination as! GovProductDetailViewController
+            let product = sender as! Product
+            destinationController.productId = product.id!
         }
-        
-     }
-    
+    }
     
 }
 
@@ -252,7 +281,12 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
             subTittleCollectionView.reloadData()
             searchProduct(productTypeList[selectedTittle].id!, subId: (productTypeList[selectedTittle].submenu?[selectedSubTittel].id!)!)
         }else if collectionView == productCollectionView{
-            self.performSegue(withIdentifier: "showDetail", sender: self.productList[indexPath.item])
+            getProductDetail(product: self.productList[indexPath.item])
+        }else if collectionView == brandCollectionView{
+            (self.childViewControllers[0] as! BrandDetailViewController).brandId = brandList[indexPath.item].id!
+            (self.childViewControllers[0] as! BrandDetailViewController).reload()
+            brandDetailContainerView.isHidden = false
+            menuBarItem.image = #imageLiteral(resourceName: "nav_back_prs")
         }
     }
     
@@ -378,8 +412,26 @@ extension SafeViewController{
                 self.productCollectionView.reloadData()
             }
         })
+    }
+    
+    //    判斷是否為政府檢驗
+    func getProductDetail(product:Product){
+        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        
+        Alamofire.request("https://iqctest.com/api/product/detail/\(product.id!)", headers: headers).responseJSON(completionHandler: {
+            response in
+            if let JSONData = response.result.value{
+                let json = JSON(JSONData)
+                print(json)
+                for jsonData in json["list"]{
+                    if let _ = jsonData.1["gov"].string{
+                        self.performSegue(withIdentifier: "showGovDetail", sender: product)
+                    }else{
+                        self.performSegue(withIdentifier: "showDetail", sender: product)
+                    }
+                }
+            }
+        })
         
     }
     

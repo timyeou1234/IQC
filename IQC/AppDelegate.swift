@@ -16,12 +16,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        UINavigationBar.appearance().backgroundColor = UIColor.white
+        UINavigationBar.appearance().barTintColor = UIColor.white
 //        UINavigationBar.appearance().addShadow()
         UINavigationBar.appearance().tintColor = UIColor(colorLiteralRed:155/255, green: 155/255, blue: 155/255, alpha: 1)
+        UINavigationBar.appearance().shadowImage = UIImage()
+        UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
         
         UITabBar.appearance().backgroundColor = UIColor.white
         UITabBar.appearance().tintColor = UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1)
+        UITabBar.appearance().barTintColor = UIColor.white
         return true
     }
 

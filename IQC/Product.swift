@@ -9,7 +9,8 @@
 import UIKit
 
 class Product: NSObject {
-
+    
+    var gov:String?
     var id:String?
     var img:String?
     var modify:String?
@@ -61,3 +62,26 @@ class ReportDetail: NSObject {
     var file:String?
     
 }
+
+class GovProduct:NSObject{
+    
+    var title:String?
+    var id:String?
+    var img:String?
+    var slider:[String]?
+    var gov:String?
+    var factory:String?
+    var address:String?
+    var supplier:String?
+    var supplieraddr:String?
+    var website:String?
+    var similar:String?
+    var modify:String?
+    
+}
+
+
+
+
+
+

@@ -18,7 +18,12 @@ class ProductDetailTestTableViewCell: UITableViewCell {
     @IBOutlet weak var testDateLable: UILabel!
     
     @IBAction func watchReportAction(_ sender: Any) {
-        UIApplication.shared.open(URL(string: fileUrl)!, options: [:], completionHandler: nil)
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(URL(string: fileUrl)!, options: [:], completionHandler: nil)
+        } else {
+            UIApplication.shared.openURL(URL(string: fileUrl)!)
+            // Fallback on earlier versions
+        }
     }
     
     override func awakeFromNib() {

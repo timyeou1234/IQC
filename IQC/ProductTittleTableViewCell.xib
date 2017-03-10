@@ -19,24 +19,24 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6b4-gI-ig7">
-                        <rect key="frame" x="0.0" y="0.0" width="114.5" height="43"/>
+                        <rect key="frame" x="0.0" y="0.0" width="111" height="43"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="檢體名稱" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="y7X-7v-SBe">
-                                <rect key="frame" x="25" y="11" width="69.5" height="21"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <rect key="frame" x="25" y="12" width="65.5" height="19.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <color key="textColor" red="0.041684292256832123" green="0.72114133834838867" blue="0.81419998407363892" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
                         <color key="backgroundColor" red="0.98028594260000002" green="0.9804533124" blue="0.98027533290000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="y7X-7v-SBe" secondAttribute="trailing" constant="20" id="8qu-qL-a0u"/>
+                            <constraint firstAttribute="trailing" secondItem="y7X-7v-SBe" secondAttribute="trailing" constant="20.5" id="I0c-ve-jSP"/>
                             <constraint firstItem="y7X-7v-SBe" firstAttribute="centerY" secondItem="6b4-gI-ig7" secondAttribute="centerY" id="UpI-9k-8FB"/>
                             <constraint firstItem="y7X-7v-SBe" firstAttribute="leading" secondItem="6b4-gI-ig7" secondAttribute="leading" constant="25" id="gPm-N8-f6D"/>
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D0O-gl-hi1">
-                        <rect key="frame" x="130.5" y="11" width="42" height="21"/>
+                        <rect key="frame" x="127" y="11" width="42" height="21"/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" red="0.44700729846954346" green="0.44708847999572754" blue="0.44700217247009277" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
