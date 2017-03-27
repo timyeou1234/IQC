@@ -97,13 +97,36 @@ class HotTopicViewController: UIViewController {
             if article.article != nil{
                 destinationController.articleId = article.article!
             }
+        }else if segue.identifier == "openMenu"{
+            let destinationController = segue.destination as! MenuViewController
+            destinationController.transitioningDelegate = self
+            destinationController.menuActionDelegate = self
         }
     }
     
 
 }
 
-extension HotTopicViewController:UITableViewDelegate, UITableViewDataSource{
+extension HotTopicViewController:UITableViewDelegate, UITableViewDataSource, UIViewControllerTransitioningDelegate, MenuActionDelegate{
+    
+    func openSegue(_ segueName: String, sender: AnyObject?) {
+        dismiss(animated: false){
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: segueName)
+            self.navigationController?.pushViewController(vc!, animated: false)
+        }
+    }
+    
+    func reopenMenu() {
+        
+    }
+    
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return PresentMenuAnimator()
+    }
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return DismissmenuAnimator()
+    }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.performSegue(withIdentifier: "showDetail", sender: articleList[indexPath.row])

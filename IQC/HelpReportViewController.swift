@@ -71,38 +71,21 @@ class HelpReportViewController: UIViewController {
     @IBOutlet weak var reportBackgroudView: UIView!
     
     @IBAction func addImageAction(_ sender: Any) {
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
-        let cameraAction = UIAlertAction(title: "拍照", style: .default, handler: {
-            success in
-            if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera) {
-                let imagePicker = UIImagePickerController()
-                imagePicker.delegate = self
-                imagePicker.sourceType = UIImagePickerControllerSourceType.camera
-                imagePicker.allowsEditing = false
-                self.present(imagePicker, animated: true, completion: nil)
-            }
-        })
-        
-        let albumAction = UIAlertAction(title: "從照片選擇", style: .default, handler: {
-            success in
-            self.performSegue(withIdentifier: "openLibary", sender: nil)
-            
-        })
-        
+        let action = YNActionSheet()
+        action.delegate = self
         if photoArray.count < 2{
-            actionSheet.addAction(cancelAction)
-            actionSheet.addAction(cameraAction)
-            actionSheet.addAction(albumAction)
-            self.present(actionSheet, animated: true, completion: nil)
+            action.addCancelButtonWithTitle(Title: "取消")
+            action.addButtonWithTitle(Title: "拍照")
+            action.addButtonWithTitle(Title: "從照片選擇")
         }else{
-            actionSheet.addAction(cancelAction)
-            actionSheet.addAction(albumAction)
-            self.present(actionSheet, animated: true, completion: nil)
+            action.addCancelButtonWithTitle(Title: "取消")
+            action.addButtonWithTitle(Title: "從照片選擇")
         }
+        self.present(action, animated: false, completion: nil)
         
     }
+    
     
     @IBAction func reportAction(_ sender: Any) {
         
@@ -119,7 +102,7 @@ class HelpReportViewController: UIViewController {
         let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
         alert.addAction(cancelAction)
         
-        self.present(alert, animated: true, completion: nil)
+        self.present(alert, animated: false, completion: nil)
         
     }
     
@@ -158,7 +141,7 @@ class HelpReportViewController: UIViewController {
         self.reportBackgroudView.layer.addSublayer(gradient)
         gradient.zPosition = 0
         gradient.isHidden = false
-
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -245,6 +228,7 @@ class HelpReportViewController: UIViewController {
             photoImageView.image = photoArray[0]
             photoImageView.frame = CGRect(x: 0, y: 0, width: self.photoContentView.bounds.width, height: self.photoContentView.bounds.height)
             photoImageView.contentMode = .scaleAspectFill
+            photoImageView.clipsToBounds = true
             self.photoContentView.addSubview(photoImageView)
             photoContentView.isHidden = false
         }else if photoArray.count == 2 {
@@ -252,9 +236,11 @@ class HelpReportViewController: UIViewController {
             photoImageView1.image = photoArray[0]
             photoImageView1.frame = CGRect(x: 0, y: 0, width: (self.photoContentView.bounds.width / 2) - 1, height: self.photoContentView.bounds.height)
             photoImageView1.contentMode = .scaleAspectFill
+            photoImageView1.clipsToBounds = true
             self.photoContentView.addSubview(photoImageView1)
             
             let photoImageView2 = UIImageView()
+            photoImageView2.clipsToBounds = true
             photoImageView2.image = photoArray[1]
             photoImageView2.frame = CGRect(x: (self.photoContentView.bounds.width / 2) + 1, y: 0, width: (self.photoContentView.bounds.width / 2) - 1, height: self.photoContentView.bounds.height)
             photoImageView2.contentMode = .scaleAspectFill
@@ -368,7 +354,25 @@ UINavigationControllerDelegate, UITextFieldDelegate {
     }
 }
 
-extension HelpReportViewController: PhotoPassingDelegate{
+extension HelpReportViewController: PhotoPassingDelegate, YNActionSheetDelegate{
+    
+    func buttonClick(index: Int) {
+        print(index)
+        if index == 0{
+            if photoArray.count == 2{
+                self.performSegue(withIdentifier: "openLibary", sender: nil)
+                return
+            }else if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera) {
+                let imagePicker = UIImagePickerController()
+                imagePicker.delegate = self
+                imagePicker.sourceType = UIImagePickerControllerSourceType.camera
+                imagePicker.allowsEditing = false
+                self.present(imagePicker, animated: true, completion: nil)
+            }
+        }else{
+            self.performSegue(withIdentifier: "openLibary", sender: nil)
+        }
+    }
     
     func postRequest(){
         var isComplete = [Bool]()
@@ -478,5 +482,5 @@ extension HelpReportViewController: PhotoPassingDelegate{
         
         return newImage!
     }
-
+    
 }

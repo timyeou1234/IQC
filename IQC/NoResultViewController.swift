@@ -10,6 +10,7 @@ import UIKit
 
 class NoResultViewController: UIViewController {
 
+    var fromSearch = false
     let gradient = CAGradientLayer()
     
     @IBOutlet weak var reportButton: UIButton!
@@ -27,6 +28,16 @@ class NoResultViewController: UIViewController {
         self.reportButton.layer.addSublayer(gradient)
         gradient.zPosition = 0
         // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if fromSearch{
+            reportButton.isHidden = true
+            reportView.isHidden = true
+        }else{
+            reportView.isHidden = false
+            reportView.isHidden = false
+        }
     }
 
     override func didReceiveMemoryWarning() {

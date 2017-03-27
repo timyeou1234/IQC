@@ -32,6 +32,7 @@ class IQCProductDetailViewController: UIViewController {
     var halfProductCellHeight = [IndexPath:CGFloat]()
     var ingrediantCellHeight = [IndexPath:CGFloat]()
     
+    @IBOutlet weak var sliderContainView: UIView!
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var productSliderCollectionView: UICollectionView!
     @IBOutlet weak var tittleBackView: UIView!
@@ -220,6 +221,7 @@ class IQCProductDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        sliderContainView.addShadow()
         tittleBackView.addShadow()
         self.navigationItem.backBarButtonItem?.title = ""
         

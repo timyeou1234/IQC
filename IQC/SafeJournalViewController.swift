@@ -85,11 +85,11 @@ class SafeJournalViewController: UIViewController {
         loadingView.startLoading()
         loadingView.isHidden = true
         
-        
+        interViewAction(self)
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        interViewAction(self)
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -137,6 +137,9 @@ class SafeJournalViewController: UIViewController {
                     if let type = article.1["type"].string{
                         articleData.type = type
                     }
+                    if let video = article.1["video"].string{
+                        articleData.video = video
+                    }
                     self.articleList.append(articleData)
                 }
                 self.articleTableView.isHidden = false
@@ -147,7 +150,6 @@ class SafeJournalViewController: UIViewController {
     }
     
     func getArticleDetail(id:String){
-        loadingView.isHidden = false
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
         Alamofire.request("https://iqctest.com/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
@@ -219,13 +221,36 @@ class SafeJournalViewController: UIViewController {
             if segue.identifier == "showDetail"{
                 let destinationController = segue.destination as! DetailArticleViewController
                 destinationController.article = sender as! Article
+            }else if segue.identifier == "openMenu"{
+                let destinationController = segue.destination as! MenuViewController
+                destinationController.transitioningDelegate = self
+                destinationController.menuActionDelegate = self
             }
         }
         
         
     }
     
-    extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource{
+    extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource, UIViewControllerTransitioningDelegate, MenuActionDelegate{
+        
+        func openSegue(_ segueName: String, sender: AnyObject?) {
+            dismiss(animated: false){
+                let vc = self.storyboard?.instantiateViewController(withIdentifier: segueName)
+                self.navigationController?.pushViewController(vc!, animated: false)
+            }
+        }
+        
+        func reopenMenu() {
+            
+        }
+        
+        func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+            return PresentMenuAnimator()
+        }
+        
+        func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+            return DismissmenuAnimator()
+        }
         
         func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             getArticleDetail(id: articleList[indexPath.item].id!)
@@ -241,9 +266,11 @@ class SafeJournalViewController: UIViewController {
             let article = articleList[indexPath.row]
             cell.backImageView.sd_setImage(with: URL(string: article.img!))
             cell.tittleLable.text = article.title
-            cell.descriptionLable.text = article.content
+            let contentText = article.content!.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil)
+            cell.descriptionLable.text = contentText
             cell.topicClass.text = article.type
             cell.topicBackView.clipBackground(color: UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1))
+            cell.playButtonImage.isHidden = article.video == nil
             
             return cell
         }

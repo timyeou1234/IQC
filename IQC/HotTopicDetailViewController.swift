@@ -134,7 +134,9 @@ extension HotTopicDetailViewController:UITableViewDelegate, UITableViewDataSourc
         let cell = hotTopicTableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! HotTopicListTableViewCell
         
         let article = articleList[indexPath.row]
-        cell.backImageView.sd_setImage(with: URL(string: article.main_img!))
+        if article.main_img != nil{
+            cell.backImageView.sd_setImage(with: URL(string: article.main_img!))
+        }
         cell.tittleLable.text = article.title
         let contentText = article.content!.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil)
         cell.descriptionLable.text = contentText

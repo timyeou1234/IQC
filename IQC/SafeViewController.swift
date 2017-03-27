@@ -37,7 +37,7 @@ class SafeViewController: UIViewController {
     
     @IBAction func menuAction(_ sender: Any) {
         if menuBarItem.image == UIImage(named: "nav_menu_pre"){
-            
+            performSegue(withIdentifier: "openMenu", sender: nil)
         }else{
             menuBarItem.image = UIImage(named: "nav_menu_pre")
             brandDetailContainerView.isHidden = true
@@ -71,11 +71,10 @@ class SafeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        buttonBackView.layer.shadowColor = UIColor.darkGray.cgColor
-        buttonBackView.layer.shadowOpacity = 1
-        buttonBackView.layer.shadowOffset = CGSize(width: 0, height: 2)
-        buttonBackView.layer.shadowRadius = 10
-        buttonBackView.layer.masksToBounds = true
+        buttonBackView.layer.shadowColor = UIColor.gray.cgColor
+        buttonBackView.layer.shadowOpacity = 0.3
+        buttonBackView.layer.shadowOffset = CGSize(width: 0, height: 4)
+        buttonBackView.layer.shadowRadius = 3
         
         tittleCollectionView.delegate = self
         tittleCollectionView.dataSource = self
@@ -108,10 +107,17 @@ class SafeViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        productTypeList = [ProductType]()
+        productList = [Product]()
+        brandList = [Brand]()
         productAction(self)
         brandDetailContainerView.isHidden = true
-        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         loadingView.isHidden = false
+        self.selectedTittle = 0
+        self.selectedSubTittel = -1
+        self.brandList = [Brand]()
+        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
+        
         Alamofire.request("https://iqctest.com/api/website/menu", headers: headers).responseJSON(completionHandler: {
             response in
             print(response)
@@ -121,43 +127,48 @@ class SafeViewController: UIViewController {
                 print(json)
                 for productType in json["list"]{
                     
+                    
+                    
                     let productData = ProductType()
-                    if let title = productType.1["title"].string{
-                        productData.title = title
-                    }
+                    
                     if let id = productType.1["id"].string{
-                        productData.id = id
+                        if id != "59"{
+                            productData.id = id
+                            
+                            if let title = productType.1["title"].string{
+                                productData.title = title
+                            }
+                            
+                            var subProductList = [ProductSubMenu]()
+                            
+                            for subProductType in productType.1["submenu"]{
+                                
+                                let subProductTypeData = ProductSubMenu()
+                                if let id = subProductType.1["id"].string{
+                                    subProductTypeData.id = id
+                                }
+                                if let title = subProductType.1["title"].string{
+                                    subProductTypeData.title = title
+                                }
+                                if let modify = subProductType.1["modify"].string{
+                                    subProductTypeData.modify = modify
+                                }
+                                subProductList.append(subProductTypeData)
+                            }
+                            productData.submenu = subProductList
+                            
+                            self.productTypeList.append(productData)
+                        }
                     }
-                    
-                    var subProductList = [ProductSubMenu]()
-                    
-                    for subProductType in productType.1["submenu"]{
-                        
-                        let subProductTypeData = ProductSubMenu()
-                        if let id = subProductType.1["id"].string{
-                            subProductTypeData.id = id
-                        }
-                        if let title = subProductType.1["title"].string{
-                            subProductTypeData.title = title
-                        }
-                        if let modify = subProductType.1["modify"].string{
-                            subProductTypeData.modify = modify
-                        }
-                        subProductList.append(subProductTypeData)
-                    }
-                    productData.submenu = subProductList
-                    
-                    self.productTypeList.append(productData)
-                    
                 }
                 
             }
+            self.tittleCollectionView.reloadData()
             if self.productTypeList.count > 0{
                 self.searchProduct(self.productTypeList[0].id!, subId: "")
             }
-            self.tittleCollectionView.reloadData()
             self.subTittleCollectionView.reloadData()
-            self.loadingView.isHidden = true
+            
         })
         
         Alamofire.request("https://iqctest.com/api/brand/list/all", headers: headers).responseJSON(completionHandler: {
@@ -208,11 +219,8 @@ class SafeViewController: UIViewController {
                     self.brandList.append(brandData)
                 }
                 self.brandCollectionView.reloadData()
-                self.loadingView.isHidden = true
+                
             }
-            
-            
-            
         })
         
     }
@@ -234,12 +242,35 @@ class SafeViewController: UIViewController {
             let destinationController = segue.destination as! GovProductDetailViewController
             let product = sender as! Product
             destinationController.productId = product.id!
+        }else if segue.identifier == "openMenu"{
+            let destinationController = segue.destination as! MenuViewController
+            destinationController.transitioningDelegate = self
+            destinationController.menuActionDelegate = self
         }
     }
     
 }
 
-extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
+extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UIViewControllerTransitioningDelegate, MenuActionDelegate{
+    
+    func openSegue(_ segueName: String, sender: AnyObject?) {
+        dismiss(animated: false){
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: segueName)
+            self.navigationController?.pushViewController(vc!, animated: false)
+        }
+    }
+    
+    func reopenMenu() {
+        
+    }
+    
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return PresentMenuAnimator()
+    }
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return DismissmenuAnimator()
+    }
     
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
@@ -247,7 +278,7 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
         if collectionView == tittleCollectionView || collectionView == subTittleCollectionView{
             return CGSize(width: CGFloat(productTypeList[indexPath.item].title!.characters.count * 16 + 32), height: self.tittleCollectionView.bounds.height)
         }else if collectionView == productCollectionView || collectionView == brandCollectionView{
-            return CGSize(width: (productCollectionView.bounds.width/2)-10, height: productCollectionView.bounds.width/2 + 40)
+            return CGSize(width: (productCollectionView.bounds.width/2 - 10), height: productCollectionView.bounds.width/2 + 40)
         }
         return CGSize()
     }
@@ -347,6 +378,7 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
                 cell.tittleLable.textColor = UIColor(colorLiteralRed: 215/255, green: 215/255, blue: 215/255, alpha: 1)
                 
             }
+            cell.backView.layer.cornerRadius = 2
             cell.backView.layer.borderWidth = 1
             cell.backView.layer.masksToBounds = true
             cell.tittleLable.text = productTypeList[indexPath.item].title
@@ -355,6 +387,8 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
         }else if collectionView == subTittleCollectionView{
             cell.tittleLable.textColor = UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 192/255, alpha: 1)
             cell.tittleLable.text = productTypeList[selectedTittle].submenu?[indexPath.item].title
+            cell.backView.layer.cornerRadius = 2
+            cell.backView.layer.masksToBounds = true
             if selectedSubTittel == indexPath.item{
                 cell.backView.backgroundColor = UIColor(colorLiteralRed: 238/255, green: 249/255, blue: 251/255, alpha: 1)
             }else{
@@ -374,7 +408,7 @@ extension SafeViewController{
     func searchProduct(_ tittleId:String, subId:String){
         
         productList = [Product]()
-        
+        loadingView.isHidden = false
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         var subIdString = "all"
         if subId != "" {
@@ -390,6 +424,7 @@ extension SafeViewController{
                 
                 if json["count"].intValue == 0{
                     self.productCollectionView.reloadData()
+                    self.loadingView.isHidden = true
                     return
                 }
                 
@@ -410,6 +445,7 @@ extension SafeViewController{
                     self.productList.append(productData)
                 }
                 self.productCollectionView.reloadData()
+                self.loadingView.isHidden = true
             }
         })
     }

@@ -200,6 +200,10 @@ class BrandDetailViewController: UIViewController {
 
 extension BrandDetailViewController:UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        getProductDetailGo(id: brandOwnedProduct[indexPath.item].id!)
+    }
+    
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -221,4 +225,37 @@ extension BrandDetailViewController:UICollectionViewDelegate, UICollectionViewDa
         
         return cell
     }
+    
+    func getProductDetailGo(id:String){
+        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
+        
+        Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+            response in
+            if let JSONData = response.result.value{
+                let json = JSON(JSONData)
+                print(json)
+                for jsonData in json["list"]{
+                    if let _ = jsonData.1["gov"].string{
+                        let vc = self.storyboard?.instantiateViewController(withIdentifier: "GovProductDetail") as! GovProductDetailViewController
+                        vc.productId = id
+                        let backItem = UIBarButtonItem()
+                        backItem.title = ""
+                        self.navigationItem.backBarButtonItem = backItem
+                        self.loadingView.isHidden = true
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }else{
+                        let vc = self.storyboard?.instantiateViewController(withIdentifier: "IQCProductDetail") as! IQCProductDetailViewController
+                        let backItem = UIBarButtonItem()
+                        backItem.title = ""
+                        self.navigationItem.backBarButtonItem = backItem
+                        vc.productId = id
+                        self.loadingView.isHidden = true
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                }
+            }
+        })
+        
+    }
+
 }

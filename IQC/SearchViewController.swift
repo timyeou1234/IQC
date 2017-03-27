@@ -15,6 +15,7 @@ import DropDown
 class SearchViewController: UIViewController {
     
     let dropDown = DropDown()
+    var searchedWord = ""
     var isLoaded = [false, false]
     var productList = [Product]()
     var articleList = [Article]()
@@ -52,6 +53,17 @@ class SearchViewController: UIViewController {
             {
                 self.underLineView.frame = CGRect(x: 0, y: self.underLineView.frame.minY, width: self.underLineView.bounds.width, height: self.underLineView.bounds.height)
         })
+        
+        var text = ""
+        
+        text = "<font size=\"5\"  color=\"#636363\">共有\"</font><font size=\"5\"   color=\"#00B6C4\">\(self.productList.count)</font><font color=\"#636363\">\"筆關於\"</font><font color=\"#00B6C4\">\(searchedWord)</font><font size=\"5\"  color=\"#636363\">\"的商品搜尋結果</font>"
+        
+        let attrStr = try! NSAttributedString(
+            data: text.data(using: String.Encoding.unicode, allowLossyConversion: true)!,
+            options: [ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
+            documentAttributes: nil)
+        self.desLable.attributedText = attrStr
+        
     }
     
     @IBAction func articleAction(_ sender: Any) {
@@ -62,6 +74,16 @@ class SearchViewController: UIViewController {
             {
                 self.underLineView.frame = CGRect(x: self.view.frame.midX, y: self.underLineView.frame.minY, width: self.underLineView.bounds.width, height: self.underLineView.bounds.height)
         })
+        
+        var text = ""
+        
+        text = "<font size=\"5\" color=\"#636363\">共有\"</font><font size=\"5\"   color=\"#00B6C4\">\(self.articleList.count)</font><font size=\"5\"   color=\"#636363\">\"筆關於\"</font><font size=\"5\" color=\"#00B6C4\">\(searchedWord)</font><font size=\"5\" color=\"#636363\">\"的文章搜尋結果</font>"
+        
+        let attrStr = try! NSAttributedString(
+            data: text.data(using: String.Encoding.unicode, allowLossyConversion: true)!,
+            options: [ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
+            documentAttributes: nil)
+        self.desLable.attributedText = attrStr
     }
     
     @IBAction func classAction(_ sender: Any) {
@@ -74,7 +96,8 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-//        searchBarView.addShadow()
+        //        searchBarView.addShadow()
+        self.navigationController?.navigationItem.backBarButtonItem?.title = ""
         buttonView.addShadow()
         outComeView.isHidden = true
         
@@ -133,6 +156,8 @@ class SearchViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = true
+        tag = [String]()
         getKeyword()
         self.navigationController?.navigationBar.isHidden = true
         searchTextField.becomeFirstResponder()
@@ -168,15 +193,18 @@ class SearchViewController: UIViewController {
     }
     
     
-    /*
+    
      // MARK: - Navigation
      
      // In a storyboard-based application, you will often want to do a little preparation before navigation
      override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
      // Get the new view controller using segue.destinationViewController.
      // Pass the selected object to the new view controller.
+        if let destinationController = segue.destination as? NoResultViewController{
+            destinationController.fromSearch = true
+        }
      }
-     */
+    
     
 }
 
@@ -218,10 +246,17 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if collectionView == productCollectionView{
+            getProductDetail(id: productList[indexPath.item].id!)
+            return
+        }
         if collectionView == usedCollectionView{
             searchTextField.text = usedTag[indexPath.item]
         }else if collectionView == tagCollectionView{
             searchTextField.text = tag[indexPath.item]
+        }
+        if searchTextField.text != ""{
+            getOutcome(keyWord: searchTextField.text!)
         }
     }
     
@@ -264,7 +299,7 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.performSegue(withIdentifier: "showDetail", sender: articleList[indexPath.row])
+        getArticleDetailGo(id: articleList[indexPath.row].id!)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -276,9 +311,10 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
         
         let article = articleList[indexPath.row]
         cell.backImageView.sd_setImage(with: URL(string: article.img!))
-        cell.tittleLable.text = article.des
-        cell.descriptionLable.text = article.content
-        cell.topicClass.text = article.title
+        cell.tittleLable.text = article.title
+        let contentText = article.content!.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil)
+        cell.descriptionLable.text = contentText
+        cell.topicClass.text = article.type
         cell.topicBackView.clipBackground(color: UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1))
         
         return cell
@@ -290,6 +326,10 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
 extension SearchViewController{
     
     func getOutcome(keyWord:String){
+        searchedWord = keyWord
+        loadingView.isHidden = false
+        articleList = [Article]()
+        productList = [Product]()
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         let keyWoedUTF = keyWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         Alamofire.request(URL(string: "https://iqctest.com/api/search/product/\(keyWoedUTF!)")!, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: headers).responseJSON(completionHandler: {
@@ -324,6 +364,20 @@ extension SearchViewController{
                     self.productCollectionView.reloadData()
                 }
                 if self.isLoaded[0] && self.isLoaded[1]{
+                    if self.articleList.count == 0 && self.productList.count == 0{
+                        self.performSegue(withIdentifier: "noResult", sender: nil)
+                    }
+                    var text = ""
+                    if self.articleButton.isSelected{
+                        text = "<font size=\"5\"  color=\"#636363\">共有\"</font><font font size=\"5\"   color=\"#00B6C4\">\(self.articleList.count)</font><font size=\"5\"  color=\"#636363\">\"筆關於\"</font><font size=\"5\"  color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"的文章搜尋結果</font>"
+                    }else{
+                        text = "<font size=\"5\"   color=\"#636363\">共有\"</font><font size=\"5\"  color=\"#00B6C4\">\(self.productList.count)</font><font size=\"5\"  color=\"#636363\">\"筆關於\"</font><font size=\"5\"  color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"的商品搜尋結果</font>"
+                    }
+                    let attrStr = try! NSAttributedString(
+                        data: text.data(using: String.Encoding.unicode, allowLossyConversion: true)!,
+                        options: [ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
+                        documentAttributes: nil)
+                    self.desLable.attributedText = attrStr
                     self.outComeView.isHidden = false
                     self.loadingView.isHidden = true
                 }
@@ -360,6 +414,9 @@ extension SearchViewController{
                         if let title = article.1["title"].string{
                             articleData.title = title
                         }
+                        if let type = article.1["type"].string{
+                            articleData.type = type
+                        }
                         if let des = article.1["des"].string{
                             articleData.des = des
                         }
@@ -371,6 +428,21 @@ extension SearchViewController{
                     self.articleTableView.reloadData()
                 }
                 if self.isLoaded[0] && self.isLoaded[1]{
+                    if self.articleList.count == 0 && self.productList.count == 0{
+                        self.performSegue(withIdentifier: "noResult", sender: nil)
+                    }
+                    var text = ""
+                    if self.articleButton.isSelected{
+                        self.articleTableView.isHidden = false
+                        text = "font size=\"5\"   color=\"#636363\">共有\"</font><font size=\"5\" color=\"#00B6C4\">\(self.articleList.count)</font><font size=\"5\"  color=\"#636363\">\"筆關於\"</font><font size=\"5\" color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"的文章搜尋結果</font>"
+                    }else{
+                        text = "<font size=\"5\"   color=\"#636363\">共有\"</font><font size=\"5\"   color=\"#00B6C4\">\(self.productList.count)</font><font size=\"5\"  color=\"#636363\">\"筆關於\"</font><font size=\"5\"  color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"的商品搜尋結果</font>"
+                    }
+                    let attrStr = try! NSAttributedString(
+                        data: text.data(using: String.Encoding.unicode, allowLossyConversion: true)!,
+                        options: [ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
+                        documentAttributes: nil)
+                    self.desLable.attributedText = attrStr
                     self.outComeView.isHidden = false
                     self.loadingView.isHidden = true
                 }
@@ -390,7 +462,7 @@ extension SearchViewController{
                     
                 }else{
                     for jsonData in json["list"]{
-                        if let tag = jsonData.1["tltle"].string{
+                        if let tag = jsonData.1["title"].string{
                             self.tag.append(tag)
                         }
                     }
@@ -414,6 +486,102 @@ extension SearchViewController{
         })
         
     }
+    
+    func getArticleDetailGo(id:String){
+        
+        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
+        Alamofire.request("https://iqctest.com/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+            response in
+            print(response)
+            
+            if let JSONData = response.result.value{
+                let json = JSON(JSONData)
+                print(json)
+                if json["list"].array == nil{
+                    return
+                }
+                for article in json["list"]{
+                    let articleData = Article()
+                    if let id = article.1["id"].string{
+                        articleData.id = id
+                    }
+                    if let modify = article.1["modify"].string{
+                        articleData.modify = modify
+                    }
+                    if let content = article.1["content"].string{
+                        articleData.content = content
+                    }
+                    if let main_img = article.1["main_img"].string{
+                        articleData.main_img = main_img
+                    }
+                    if let article = article.1["article"].string{
+                        articleData.article = article
+                    }
+                    if let title = article.1["title"].string{
+                        articleData.title = title
+                    }
+                    if let des = article.1["des"].string{
+                        articleData.des = des
+                    }
+                    if let tag = article.1["tag"].string{
+                        articleData.tag = tag
+                    }
+                    if let producrt = article.1["producrt"].string{
+                        articleData.producrt = producrt
+                    }
+                    if let reading = article.1["reading"].string{
+                        articleData.reading = reading
+                    }
+                    if let type = article.1["type"].string{
+                        articleData.type = type
+                    }
+                    if let video = article.1["video"].string{
+                        articleData.video = video
+                    }
+                    let vc = self.storyboard?.instantiateViewController(withIdentifier: "DetailArticle") as! DetailArticleViewController
+                    self.navigationItem.backBarButtonItem?.title = ""
+                    vc.article = articleData
+                    self.loadingView.isHidden = true
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            }
+        })
+        
+    }
+    
+    func getProductDetail(id:String){
+        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
+        
+        Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+            response in
+            if let JSONData = response.result.value{
+                let json = JSON(JSONData)
+                print(json)
+                for jsonData in json["list"]{
+                    if let _ = jsonData.1["gov"].string{
+                        let vc = self.storyboard?.instantiateViewController(withIdentifier: "GovProductDetail") as! GovProductDetailViewController
+                        vc.productId = id
+                        let backItem = UIBarButtonItem()
+                        backItem.title = ""
+                        self.navigationItem.backBarButtonItem = backItem
+                        self.loadingView.isHidden = true
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }else{
+                        let vc = self.storyboard?.instantiateViewController(withIdentifier: "IQCProductDetail") as! IQCProductDetailViewController
+                        let backItem = UIBarButtonItem()
+                        backItem.title = ""
+                        self.navigationItem.backBarButtonItem = backItem
+                        vc.productId = id
+                        self.loadingView.isHidden = true
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                }
+            }
+        })
+        
+    }
+    
 }
+
 
 

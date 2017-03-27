@@ -175,6 +175,9 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        if captureSession?.isRunning == false{
+            captureSession?.startRunning()
+        }
         self.tabBarController?.tabBar.isHidden = false
         if self.view.bounds.width > 375{
             pointsStackView.spacing = 13
@@ -189,7 +192,9 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        captureSession?.stopRunning()
+        
+        
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -374,22 +379,50 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         switch segue.identifier! {
+        case "openMenu":
+            inputTextfield.endEditing(true)
+            self.searchBackgroungViewConstraint.constant = 0
+            let destinationController = segue.destination as! MenuViewController
+            destinationController.transitioningDelegate = self
+            destinationController.menuActionDelegate = self
         case "showMultipleDetail":
             let destinationController = segue.destination as! MultipleResultViewController
             destinationController.productList = sender as! [Product]
+            captureSession?.stopRunning()
         case "showGovDetail":
             let destinationController = segue.destination as! GovProductDetailViewController
             destinationController.productId = (sender as! Product).id!
+            captureSession?.stopRunning()
         case "showDetail":
             let destinationController = segue.destination as! IQCProductDetailViewController
             destinationController.productId = (sender as! Product).id!
+            captureSession?.stopRunning()
         default:
             break
         }
     }
 }
 
-extension CameraViewController:UITextFieldDelegate{
+extension CameraViewController:UITextFieldDelegate, UIViewControllerTransitioningDelegate, MenuActionDelegate{
+    
+    func openSegue(_ segueName: String, sender: AnyObject?) {
+        dismiss(animated: false){
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: segueName)
+            self.navigationController?.pushViewController(vc!, animated: false)
+        }
+    }
+    
+    func reopenMenu() {
+        
+    }
+    
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return PresentMenuAnimator()
+    }
+    
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        return DismissmenuAnimator()
+    }
     
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         

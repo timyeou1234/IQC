@@ -5,6 +5,7 @@
     </device>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -52,16 +53,25 @@
                         <color key="textColor" red="0.38823529411764707" green="0.38823529411764707" blue="0.38823529411764707" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="btn_play_01" translatesAutoresizingMaskIntoConstraints="NO" id="pW1-dU-sOv">
+                        <rect key="frame" x="104.5" y="8" width="112" height="112"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="pW1-dU-sOv" secondAttribute="height" multiplier="1:1" id="wDj-To-3x2"/>
+                        </constraints>
+                    </imageView>
                 </subviews>
                 <constraints>
                     <constraint firstItem="k8P-YQ-D7R" firstAttribute="leading" secondItem="1O4-mh-xLk" secondAttribute="leading" id="6nj-11-Ehb"/>
                     <constraint firstItem="9r6-po-Ufl" firstAttribute="leading" secondItem="1O4-mh-xLk" secondAttribute="leading" constant="-10" id="ACM-MR-eT1"/>
                     <constraint firstItem="9hd-bE-PPo" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" constant="-50" id="BmP-ob-95k"/>
+                    <constraint firstItem="pW1-dU-sOv" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="Bxy-yJ-OCm"/>
                     <constraint firstAttribute="trailing" secondItem="pgL-7z-ICA" secondAttribute="trailing" constant="15" id="Ffp-he-LeF"/>
                     <constraint firstItem="9r6-po-Ufl" firstAttribute="top" secondItem="1O4-mh-xLk" secondAttribute="top" constant="-4" id="Kde-as-fyy"/>
+                    <constraint firstItem="pW1-dU-sOv" firstAttribute="width" secondItem="OsC-g2-pO2" secondAttribute="width" multiplier="35:100" id="LOS-V6-fgV"/>
                     <constraint firstItem="X0u-Ry-rKU" firstAttribute="trailing" secondItem="k8P-YQ-D7R" secondAttribute="trailing" id="Qxe-nB-X2c"/>
                     <constraint firstItem="X0u-Ry-rKU" firstAttribute="leading" secondItem="k8P-YQ-D7R" secondAttribute="leading" id="RSz-va-u1e"/>
                     <constraint firstItem="9r6-po-Ufl" firstAttribute="trailing" secondItem="1O4-mh-xLk" secondAttribute="trailing" constant="10" id="UD8-Il-qcH"/>
+                    <constraint firstItem="pW1-dU-sOv" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" id="Ufh-Xk-RqH"/>
                     <constraint firstItem="OsC-g2-pO2" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="VnZ-9C-fA3"/>
                     <constraint firstItem="pgL-7z-ICA" firstAttribute="height" secondItem="OsC-g2-pO2" secondAttribute="height" multiplier="48:100" id="XR8-A0-4aY"/>
                     <constraint firstAttribute="bottom" secondItem="pgL-7z-ICA" secondAttribute="bottom" constant="20" id="abS-38-wRn"/>
@@ -83,6 +93,7 @@
             <connections>
                 <outlet property="backImageView" destination="OsC-g2-pO2" id="7cC-JS-rKX"/>
                 <outlet property="descriptionLable" destination="X0u-Ry-rKU" id="56A-Qy-P9r"/>
+                <outlet property="playButtonImage" destination="pW1-dU-sOv" id="kdG-Um-clh"/>
                 <outlet property="tittleLable" destination="k8P-YQ-D7R" id="CJD-fb-hxB"/>
                 <outlet property="topicBackView" destination="9r6-po-Ufl" id="knI-Va-lgf"/>
                 <outlet property="topicClass" destination="1O4-mh-xLk" id="tch-tY-04R"/>
@@ -90,4 +101,7 @@
             <point key="canvasLocation" x="34" y="183"/>
         </tableViewCell>
     </objects>
+    <resources>
+        <image name="btn_play_01" width="105" height="105"/>
+    </resources>
 </document>

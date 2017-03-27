@@ -20,7 +20,8 @@ class TagCollectionViewCell: UICollectionViewCell {
     }
     
     func drawBorder(){
-        backView.clipBackground(cornerRadious: (backView.bounds.width - tagLable.bounds.width) / 2, color: .clear)
+        backView.clipBackground(cornerRadious:
+            backView.bounds.height / 2, color: .clear)
         backView.layer.borderColor = UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1).cgColor
         backView.layer.borderWidth = 1
         backView.layer.masksToBounds = true

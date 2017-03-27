@@ -59,7 +59,7 @@ class GovProductDetailViewController: UIViewController {
         detailTableView.dataSource = self
         
         detailTableView.rowHeight = UITableViewAutomaticDimension
-        detailTableView.estimatedRowHeight = 40
+        detailTableView.estimatedRowHeight = 50
         
         detailTableView.register(UINib(nibName: "GovDetailTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell")
         
@@ -157,16 +157,32 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
         switch indexPath.row {
         case 0:
             cell.tittleLable.text = "抽驗廠商"
-            cell.tittleNameLable.text = product.factory
+            if product.factory == ""{
+                cell.tittleNameLable.text = " "
+            }else{
+                cell.tittleNameLable.text = product.factory
+            }
         case 1:
             cell.tittleLable.text = "抽檢地點"
-            cell.tittleNameLable.text = product.address
+            if product.address == ""{
+                cell.tittleNameLable.text = " "
+            }else{
+                cell.tittleNameLable.text = product.address
+            }
         case 2:
             cell.tittleLable.text = "供應廠商"
-            cell.tittleNameLable.text = product.supplier
+            if product.supplier == ""{
+                cell.tittleNameLable.text = " "
+            }else{
+                cell.tittleNameLable.text = product.supplier
+            }
         case 3:
             cell.tittleLable.text = "供應廠商地址"
-            cell.tittleNameLable.text = product.supplieraddr
+            if product.supplieraddr == ""{
+                cell.tittleNameLable.text = " "
+            }else{
+                cell.tittleNameLable.text = product.supplieraddr
+            }
         default:
             break
         }
@@ -217,14 +233,20 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                 
                 if let supplieraddr = jsonData["supplieraddr"].string{
                     product.supplieraddr = supplieraddr
+                }else{
+                    product.supplieraddr = "  "
                 }
                 
                 if let factory = jsonData["factory"].string{
                     product.factory = factory
+                }else{
+                    product.factory = "  "
                 }
                 
                 if let address = jsonData["address"].string{
                     product.address = address
+                }else{
+                    product.factory = "  "
                 }
                 
                 if let similar = jsonData["similar"].string{
@@ -245,8 +267,10 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                 
                 if let supplier = jsonData["supplier"].string{
                     product.supplier = supplier
+                }else{
+                    product.supplier = "  "
                 }
-                
+                if jsonData["slider"].array != nil{
                 for img in jsonData["slider"]{
                     if product.slider == nil{
                         if let imgData = img.1["img"].string{
@@ -256,6 +280,7 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                         if let imgData = img.1["img"].string{
                             product.slider?.append(imgData)
                         }
+                    }
                     }
                 }
                 self.product = product
@@ -276,12 +301,7 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
         detailTableView.reloadData()
         productSliderCollectionView.reloadData()
         detailTableView.reloadData()
-        
-        
-        
-        
-        
-        
+    
     }
     
 }

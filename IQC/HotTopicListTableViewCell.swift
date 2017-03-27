@@ -10,6 +10,7 @@ import UIKit
 
 class HotTopicListTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var playButtonImage: UIImageView!
     @IBOutlet weak var topicBackView: UIView!
     @IBOutlet weak var backImageView: UIImageView!
     @IBOutlet weak var topicClass: UILabel!

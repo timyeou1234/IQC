@@ -32,11 +32,11 @@ class GovDetailTableViewCell: UITableViewCell {
     }
     
     func drawDash(){
-        self.tittleBackView.addDashedLine(startPoint: CGPoint(x: tittleBackView.frame.width, y: 0), endPoint: CGPoint(x: tittleBackView.frame.width, y: frame.height))
+//        self.tittleBackView.addDashedLine(startPoint: CGPoint(x: tittleBackView.frame.width, y: 0), endPoint: CGPoint(x: tittleBackView.frame.width, y: frame.height))
         if tittleLable.text != "供應廠商地址"{
             dashLineBottomView.addDashedLine(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: dashLineBottomView.frame.width, y: 0))
         }else{
-            cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: self.bounds.height - 40)}
+            cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: self.bounds.height - 46)}
         
     }
     

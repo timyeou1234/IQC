@@ -49,6 +49,8 @@ class DetailArticleViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        classBackView.clipBackground(color: UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1))
+        
         productCollectionView.dataSource = self
         productCollectionView.delegate = self
         
@@ -71,6 +73,8 @@ class DetailArticleViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        relatedeArticle = [Article]()
+        productList = [Product]()
         self.navigationController?.navigationItem.backBarButtonItem?.title = ""
         if article.video == nil{
             playButton.isHidden = true
@@ -154,12 +158,18 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        if collectionView == readingCollectionView{
+            return 20
+        }
         return 4.0
     }
     
     func collectionView(_ collectionView: UICollectionView, layout
         collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        if collectionView == readingCollectionView{
+            return 20
+        }
         return 4.0
     }
     
@@ -169,13 +179,18 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
         if collectionView == productCollectionView{
             return CGSize(width: (productCollectionView.bounds.width/2)-10, height: productCollectionView.bounds.height)
         }else if collectionView == readingCollectionView{
-            return CGSize(width: 260, height: 240)
+            return CGSize(width: readingCollectionView.bounds.height-20, height: readingCollectionView.bounds.height-30)
         }
         return CGSize(width: ((article.tag?.components(separatedBy: ",")[indexPath.item].characters.count)! * 17) + 20, height: 40)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        if collectionView == readingCollectionView{
+            getArticleDetailGo(id: relatedeArticle[indexPath.item].id!)
+        }
+        if collectionView == productCollectionView{
+            getProductDetailGo(id: productList[indexPath.item].id!)
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -198,7 +213,11 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! TagCollectionViewCell
             
             cell.tagLable.text = article.tag?.components(separatedBy: ",")[indexPath.item]
-            cell.drawBorder()
+            cell.tagLable.font = cell.tagLable.font.withSize(13)
+            cell.backView.clipBackground(cornerRadious: 12, color: .clear)
+            cell.backView.layer.borderColor = UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1).cgColor
+            cell.backView.layer.borderWidth = 1
+            cell.backView.layer.masksToBounds = true
             
             return cell
         }else if collectionView == readingCollectionView{
@@ -219,6 +238,7 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! ProductCollectionViewCell
         
+        cell.productNameLable.font = cell.productNameLable.font.withSize(15)
         cell.productNameLable.text = productList[indexPath.item].title
         cell.productImageView.sd_setImage(with: URL(string: productList[indexPath.item].img!))
         
@@ -261,6 +281,7 @@ extension DetailArticleViewController{
                     
                     self.productList.append(product)
                     self.productCollectionView.reloadData()
+                    self.loadingView.isHidden = true
                 }
                 
             })
@@ -332,5 +353,99 @@ extension DetailArticleViewController{
             
         }
     }
+    
+    func getArticleDetailGo(id:String){
+        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
+        Alamofire.request("https://iqctest.com/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+            response in
+            print(response)
+            
+            if let JSONData = response.result.value{
+                let json = JSON(JSONData)
+                print(json)
+                if json["list"].array == nil{
+                    return
+                }
+                for article in json["list"]{
+                    let articleData = Article()
+                    if let id = article.1["id"].string{
+                        articleData.id = id
+                    }
+                    if let modify = article.1["modify"].string{
+                        articleData.modify = modify
+                    }
+                    if let content = article.1["content"].string{
+                        articleData.content = content
+                    }
+                    if let main_img = article.1["main_img"].string{
+                        articleData.main_img = main_img
+                    }
+                    if let article = article.1["article"].string{
+                        articleData.article = article
+                    }
+                    if let title = article.1["title"].string{
+                        articleData.title = title
+                    }
+                    if let des = article.1["des"].string{
+                        articleData.des = des
+                    }
+                    if let tag = article.1["tag"].string{
+                        articleData.tag = tag
+                    }
+                    if let producrt = article.1["producrt"].string{
+                        articleData.producrt = producrt
+                    }
+                    if let reading = article.1["reading"].string{
+                        articleData.reading = reading
+                    }
+                    if let type = article.1["type"].string{
+                        articleData.type = type
+                    }
+                    if let video = article.1["video"].string{
+                        articleData.video = video
+                    }
+                    let vc = self.storyboard?.instantiateViewController(withIdentifier: "DetailArticle") as! DetailArticleViewController
+                    self.navigationItem.backBarButtonItem?.title = ""
+                    vc.article = articleData
+                    self.loadingView.isHidden = true
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+            }
+        })
+        
+    }
+    
+    func getProductDetailGo(id:String){
+        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
+        
+        Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+            response in
+            if let JSONData = response.result.value{
+                let json = JSON(JSONData)
+                print(json)
+                for jsonData in json["list"]{
+                    if let _ = jsonData.1["gov"].string{
+                        let vc = self.storyboard?.instantiateViewController(withIdentifier: "GovProductDetail") as! GovProductDetailViewController
+                        vc.productId = id
+                        let backItem = UIBarButtonItem()
+                        backItem.title = ""
+                        self.navigationItem.backBarButtonItem = backItem
+                        self.loadingView.isHidden = true
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }else{
+                        let vc = self.storyboard?.instantiateViewController(withIdentifier: "IQCProductDetail") as! IQCProductDetailViewController
+                        let backItem = UIBarButtonItem()
+                        backItem.title = ""
+                        self.navigationItem.backBarButtonItem = backItem
+                        vc.productId = id
+                        self.loadingView.isHidden = true
+                        self.navigationController?.pushViewController(vc, animated: true)
+                    }
+                }
+            }
+        })
+        
+    }
+
     
 }

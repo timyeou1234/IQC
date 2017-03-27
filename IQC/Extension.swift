@@ -39,13 +39,13 @@ extension UIView{
     
     func clipBackground(color:UIColor){
         self.backgroundColor = color
-        self.layer.cornerRadius = 15
+        self.layer.cornerRadius = 13
         self.layer.masksToBounds = true
     }
     
     func clipBackground(cornerRadious:CGFloat, color:UIColor){
         self.backgroundColor = color
-        self.layer.cornerRadius = 15
+        self.layer.cornerRadius = cornerRadious
         self.layer.masksToBounds = true
     }
     

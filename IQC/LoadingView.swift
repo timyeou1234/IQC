@@ -42,7 +42,7 @@ class LoadingView: UIView {
     }
     
     func rotate(){
-        UIView.animate(withDuration: 3, delay: 0, options: .curveLinear, animations: {
+        UIView.animate(withDuration: 1, delay: 0, options: .curveLinear, animations: {
             self.spaningView.transform = self.spaningView.transform.rotated(by: CGFloat(M_PI/2))
         }, completion: {
             success in
