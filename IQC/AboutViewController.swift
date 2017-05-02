@@ -10,21 +10,27 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class AboutViewController: UIViewController {
+class AboutViewController: UIViewController, UIWebViewDelegate {
 
     var content = ""
-    var loadingView = UIView()
+    var loadingView = LoadingView()
     var gotoRoot:GotoRootDelegate?
     
     @IBAction func dismissAction(_ sender: Any) {
         _ = self.navigationController?.popToRootViewController(animated: false)
     }
+    @IBOutlet weak var shadowView: UIView!
     @IBOutlet weak var navigationBar: UINavigationBar!
-    @IBOutlet weak var contentLable: UILabel!
+    @IBOutlet weak var contentWebView: UIWebView!
+    @IBOutlet weak var webviewHightConstant: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationBar.addShadow()
+        contentWebView.delegate = self
+        shadowView.addShadow()
+        shadowView.layer.shadowRadius = 2
+        shadowView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        shadowView.layer.masksToBounds = false
         self.navigationController?.navigationBar.isHidden = true
         self.tabBarController?.tabBar.isHidden = true
         // Do any additional setup after loading the view.
@@ -32,8 +38,8 @@ class AboutViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         loadingView.frame = self.view.frame
+        loadingView.startRotate()
         self.view.addSubview(loadingView)
-        loadingView.startLoading()
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
         
@@ -54,6 +60,7 @@ class AboutViewController: UIViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        loadingView.stopRotate()
         self.navigationController?.navigationBar.isHidden = false
         self.tabBarController?.tabBar.isHidden = false
     }
@@ -66,12 +73,15 @@ class AboutViewController: UIViewController {
     func refreshView(){
         DispatchQueue.main.async {
             self.loadingView.isHidden = true
-            let attrStr = try! NSAttributedString(
-                data: self.content.data(using: String.Encoding.unicode, allowLossyConversion: true)!,
-                options: [ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
-                documentAttributes: nil)
-            self.contentLable.attributedText = attrStr
+            self.contentWebView.loadHTMLString(self.content, baseURL: nil)
         }
+    }
+    
+    func webViewDidFinishLoad(_ webView: UIWebView) {
+        webView.frame.size.height = 1
+        
+        webView.frame.size = webView.sizeThatFits(CGSize.zero)
+        webviewHightConstant.constant = webView.frame.height
     }
 
     

@@ -77,6 +77,7 @@ class GovProduct:NSObject{
     var website:String?
     var similar:String?
     var modify:String?
+    var latestreport:[Report]?
     
 }
 

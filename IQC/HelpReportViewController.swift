@@ -13,7 +13,8 @@ import SwiftyJSON
 
 class HelpReportViewController: UIViewController {
     
-    var loadingView = UIView()
+    var code = ""
+    var loadingView = LoadingView()
     var keyboardHeight:CGFloat = 0
     var photoArray = [UIImage]()
     var codeArray:[Int] = []
@@ -22,6 +23,7 @@ class HelpReportViewController: UIViewController {
     var selectedIndex = [Int]()
     let gradient = CAGradientLayer()
     
+    @IBOutlet weak var successLable: UILabel!
     @IBOutlet weak var productNameTextField: UITextField!
     @IBOutlet weak var photoContentView: UIView!
     
@@ -83,7 +85,7 @@ class HelpReportViewController: UIViewController {
             action.addButtonWithTitle(Title: "從照片選擇")
         }
         self.present(action, animated: false, completion: nil)
-        
+
     }
     
     
@@ -102,7 +104,10 @@ class HelpReportViewController: UIViewController {
         let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
         alert.addAction(cancelAction)
         
-        self.present(alert, animated: false, completion: nil)
+        self.present(alert, animated: false, completion: {
+            success in
+            self.tabBarController?.tabBar.isHidden = true
+        })
         
     }
     
@@ -118,30 +123,13 @@ class HelpReportViewController: UIViewController {
         changePasswordButton.layer.masksToBounds = true
         // Do any additional setup after loading the view.
         
-        //        設定鍵盤輸入
-        setupKeyboardView()
         //        設定Input
         inputTextfield.delegate = self
-        //        監聽鍵盤事件
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
-        
         
         //        設定讀取中圖示
         loadingView.frame = self.view.frame
+        loadingView.startRotate()
         self.view.addSubview(loadingView)
-        loadingView.startLoading()
-        
-        
-        gradient.frame = reportBackgroudView.bounds
-        gradient.colors = ["".colorWithHexString("#2CCAA8").cgColor, "".colorWithHexString("#18B7CD").cgColor]
-        gradient.startPoint = CGPoint(x: 0.0, y: 0.5)
-        gradient.endPoint = CGPoint(x: 1.0, y: 0.5)
-        gradient.locations = [0, 1]
-        
-        self.reportBackgroudView.layer.addSublayer(gradient)
-        gradient.zPosition = 0
-        gradient.isHidden = false
-        
     }
     
     override func didReceiveMemoryWarning() {
@@ -150,8 +138,12 @@ class HelpReportViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        self.tabBarController?.tabBar.isHidden = true
-        if self.view.bounds.width > 375{
+        //        監聽鍵盤事件
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
+        
+        if self.view.bounds.width < 350{
+            pointsStackView.spacing = 5
+        }else if self.view.bounds.width > 375{
             pointsStackView.spacing = 13
         }else if self.view.bounds.width < 375{
             pointsStackView.spacing = 9
@@ -165,10 +157,28 @@ class HelpReportViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        //        設定鍵盤輸入
+        setupKeyboardView()
+        if gradient.frame != self.reportBackgroudView.bounds{
+            //設定漸層效果
+            gradient.frame = self.reportBackgroudView.bounds
+            gradient.colors = ["".colorWithHexString("#2CCAA8").cgColor, "".colorWithHexString("#18B7CD").cgColor]
+            gradient.startPoint = CGPoint(x: 0.0, y: 0.5)
+            gradient.endPoint = CGPoint(x: 1.0, y: 0.5)
+            gradient.locations = [0, 1]
+            self.reportBackgroudView.layer.addSublayer(gradient)
+            gradient.zPosition = 0
+        }
         navigationItem.setHidesBackButton(true, animated: false)
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        loadingView.stopRotate()
     }
     
     override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
         self.tabBarController?.tabBar.isHidden = false
     }
     
@@ -185,12 +195,45 @@ class HelpReportViewController: UIViewController {
     }
     
     func setupKeyboardView(){
+        if self.view.bounds.width < 350{
+            pointsStackView.spacing = 5
+        }else if self.view.bounds.width > 375 && self.view.bounds.width < 400{
+            pointsStackView.spacing = 13
+        }else if self.view.bounds.width < 375{
+            pointsStackView.spacing = 9
+        }else if self.view.bounds.width > 400 && self.view.bounds.width < 900{
+            pointsStackView.spacing = 43
+        }else if self.view.bounds.width > 900{
+            pointsStackView.spacing = 63
+        }else{
+            pointsStackView.spacing = 10
+        }
         codeImageArray = [codeImage1, codeImage2, codeImage3, codeImage4, codeImage5, codeImage6, codeImage7, codeImage8, codeImage9, codeImage10, codeImage11, codeImage12, codeImage13]
         codeLableArray = [codeLable1, codeLable2, codeLable3, codeLable4, codeLable5, codeLable6, codeLable7, codeLable8, codeLable9, codeLable10, codeLable11, codeLable12, codeLable13]
         for lable in codeLableArray{
             lable.text = ""
         }
-        
+        for imageView in codeImageArray{
+            imageView.image = #imageLiteral(resourceName: "icon_barcode_11")
+            imageView.contentMode = .scaleAspectFit
+        }
+        if code != ""{
+            if code.characters.count < 14{
+                rememberCode(code: code)
+            }
+        }
+    }
+    
+    func rememberCode(code:String){
+        inputTextfield.text = code
+        let codeArrayHere = code.characters.flatMap{Int(String($0))}
+        self.codeArray = codeArrayHere
+        for lable in codeLableArray{
+            if codeArray.count > codeLableArray.index(of: lable)!{
+                lable.text = String(codeArray[codeLableArray.index(of: lable)!])
+                codeImageArray[codeLableArray.index(of: lable)!].isHidden = true
+            }
+        }
     }
     
     func setPhoto(){
@@ -283,6 +326,16 @@ UINavigationControllerDelegate, UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         if textField != inputTextfield{
             return true
+        }
+        
+        if let _ = Int(string){
+            
+        }else{
+            if string != ""{
+                let allowedCharacters = CharacterSet.decimalDigits
+                let characterSet = CharacterSet(charactersIn: string)
+                return allowedCharacters.isSuperset(of: characterSet)
+            }
         }
         
         if (textField.text?.characters.count)! >= codeImageArray.count && string == ""{
@@ -379,46 +432,39 @@ extension HelpReportViewController: PhotoPassingDelegate, YNActionSheetDelegate{
         for _ in 0...photoArray.count - 1{
             isComplete.append(false)
         }
-        let headers:HTTPHeaders = ["Content-Type": "application/json" ,"charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq", "content-type": "multipart/form-data; boundary=---011000010111000001101001",]
+        let headers:HTTPHeaders = ["Content-Type": "application/json" ,"charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
+        let url = try! URLRequest(url: URL(string: "https://iqctest.com/api/data/payback")!, method: .post, headers: headers)
         
-        
-        for photo in photoArray{
-            let url = try! URLRequest(url: URL(string: "https://iqctest.com/api/data/payback")!, method: .post, headers: headers)
-            
-            var code = ""
-            for codeDigit in codeArray{
-                code += String(codeDigit)
-            }
-            Alamofire.upload(multipartFormData: {
-                (multipartFormData) in
-                multipartFormData.append("{ \"content\":[ { \"title\":\"\(self.productNameTextField.text!)\", \"barcode\": \"\(code)\" }]}".data(using: .utf8)!, withName: "info")
-                multipartFormData.append(UIImageJPEGRepresentation(photo, 0.2)!, withName: "file", fileName: "content\(self.photoArray.index(of: photo)).jpg", mimeType: "image/jpeg")
-            }, with: url, encodingCompletion: {
-                (result) in
-                switch result {
-                case .success(let upload, _, _):
-                    upload.responseString { response in
-                        debugPrint(response)
-                    }
-                case .failure(let encodingError):
-                    print(encodingError)
-                }
-                DispatchQueue.main.async {
-                    isComplete[self.photoArray.index(of: photo)!] = true
-                    if isComplete.count == 1{
-                        self.isComplete()
-                    }else{
-                        if isComplete[0] == true && isComplete[1] == true{
-                            self.isComplete()
-                        }
-                    }
-                }
-            })
-            
-            
+        var code = ""
+        for codeDigit in codeArray{
+            code += String(codeDigit)
         }
-        
+        Alamofire.upload(multipartFormData: {
+            (multipartFormData) in
+            var count = 0
+            
+            multipartFormData.append("{ \"content\":[ { \"title\":\"\(self.productNameTextField.text!)\", \"barcode\": \"\(code)\" }]}".data(using: .utf8)!, withName: "info")
+            for photo in self.photoArray{
+                multipartFormData.append(UIImageJPEGRepresentation(photo, 0.2)!, withName: "file[\(count)]", fileName: "content.jpg", mimeType: "image/jpeg")
+                count += 1
+//                \(String(describing: self.photoArray.index(of: photo)) + String(count))
+            }
+        }, with: url, encodingCompletion: {
+            (result) in
+            switch result {
+            case .success(let upload, _, _):
+                upload.responseString { response in
+                    debugPrint(response)
+                }
+            case .failure(let encodingError):
+                print(encodingError)
+            }
+            DispatchQueue.main.async {
+                self.isComplete()
+            }
+        })
+    
     }
     
     func openCamera(selectedIndex: [Int]) {
@@ -446,6 +492,7 @@ extension HelpReportViewController: PhotoPassingDelegate, YNActionSheetDelegate{
     }
     
     func isComplete(){
+        successLable.text = "感謝您的協助\n資料將於IQC審查後公開顯示                                "
         reportBackgroudView.isHidden = true
         self.loadingView.isHidden = true
         completeImage.isHidden = false

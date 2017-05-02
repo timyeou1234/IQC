@@ -14,17 +14,25 @@ import DropDown
 
 class SearchViewController: UIViewController {
     
+    var isGo = false
+    var isRelative = false
+    var fromTagWord = ""
     let dropDown = DropDown()
     var searchedWord = ""
+    var selectedIndex = 0
     var isLoaded = [false, false]
     var productList = [Product]()
     var articleList = [Article]()
+    var text = ""
     
     var tag = [String]()
     var usedTag = [String]()
     
-    var loadingView = UIView()
+    var loadingView = LoadingView()
     
+    @IBOutlet weak var relativeHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var relativeView: UIView!
+    @IBOutlet weak var relativeLable: UILabel!
     @IBOutlet weak var buttonView: UIView!
     @IBOutlet weak var searchBarView: UIView!
     @IBOutlet weak var outComeView: UIView!
@@ -48,15 +56,16 @@ class SearchViewController: UIViewController {
     @IBAction func productAction(_ sender: Any) {
         productCollectionView.isHidden = false
         articleTableView.isHidden = true
+        if isRelative{
+            relativeHeightConstraint.constant = 80
+        }
         
         UIView.animate(withDuration: 0.1, animations:
             {
                 self.underLineView.frame = CGRect(x: 0, y: self.underLineView.frame.minY, width: self.underLineView.bounds.width, height: self.underLineView.bounds.height)
         })
         
-        var text = ""
-        
-        text = "<font size=\"5\"  color=\"#636363\">共有\"</font><font size=\"5\"   color=\"#00B6C4\">\(self.productList.count)</font><font color=\"#636363\">\"筆關於\"</font><font color=\"#00B6C4\">\(searchedWord)</font><font size=\"5\"  color=\"#636363\">\"的商品搜尋結果</font>"
+        text = "<font size=\"5\"  color=\"#636363\">共有\"</font><font font size=\"5\"   color=\"#00B6C4\">\(self.productList.count)</font><font size=\"5\"  color=\"#636363\">\"筆關於\"</font><font size=\"5\"  color=\"#00B6C4\">\(searchedWord)</font><font size=\"5\"  color=\"#636363\">\"的商品搜尋結果</font>"
         
         let attrStr = try! NSAttributedString(
             data: text.data(using: String.Encoding.unicode, allowLossyConversion: true)!,
@@ -69,13 +78,12 @@ class SearchViewController: UIViewController {
     @IBAction func articleAction(_ sender: Any) {
         productCollectionView.isHidden = true
         articleTableView.isHidden = false
+        relativeHeightConstraint.constant = 0
         
         UIView.animate(withDuration: 0.1, animations:
             {
                 self.underLineView.frame = CGRect(x: self.view.frame.midX, y: self.underLineView.frame.minY, width: self.underLineView.bounds.width, height: self.underLineView.bounds.height)
         })
-        
-        var text = ""
         
         text = "<font size=\"5\" color=\"#636363\">共有\"</font><font size=\"5\"   color=\"#00B6C4\">\(self.articleList.count)</font><font size=\"5\"   color=\"#636363\">\"筆關於\"</font><font size=\"5\" color=\"#00B6C4\">\(searchedWord)</font><font size=\"5\" color=\"#636363\">\"的文章搜尋結果</font>"
         
@@ -96,6 +104,7 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        relativeHeightConstraint.constant = 0
         //        searchBarView.addShadow()
         self.navigationController?.navigationItem.backBarButtonItem?.title = ""
         buttonView.addShadow()
@@ -114,6 +123,15 @@ class SearchViewController: UIViewController {
         dropDown.selectionAction = {
             (index: Int, item: String) in
             self.classLable.text = item
+            if index == 0{
+                self.productButton.isSelected = true
+                self.articleButton.isSelected = false
+                self.productAction(self)
+            }else{
+                self.productButton.isSelected = false
+                self.articleButton.isSelected = true
+                self.articleAction(self)
+            }
         }
         
         articleButton.setTitleColor((UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1)), for: .selected)
@@ -146,8 +164,9 @@ class SearchViewController: UIViewController {
         
         //        設定讀取中圖示
         loadingView.frame = self.view.frame
+        loadingView.startRotate()
         self.view.addSubview(loadingView)
-        loadingView.startLoading()
+        
         // Do any additional setup after loading the view.
     }
     
@@ -156,6 +175,11 @@ class SearchViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        //        設定讀取中圖示
+        loadingView.frame = self.view.frame
+        loadingView.startRotate()
+        self.view.addSubview(loadingView)
+        isGo = false
         self.navigationController?.navigationBar.isHidden = true
         tag = [String]()
         getKeyword()
@@ -179,9 +203,13 @@ class SearchViewController: UIViewController {
         }
         articleTableView.isHidden = true
         loadingView.isHidden = true
+        if fromTagWord != ""{
+            searchTextField.text = fromTagWord
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        loadingView.stopRotate()
         self.navigationController?.navigationBar.isHidden = false
         searchTextField.text = ""
         self.outComeView.isHidden = true
@@ -192,18 +220,16 @@ class SearchViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - Navigation
     
-    
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
         if let destinationController = segue.destination as? NoResultViewController{
             destinationController.fromSearch = true
         }
-     }
+    }
     
     
 }
@@ -211,6 +237,12 @@ class SearchViewController: UIViewController {
 extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField.text == ""{
+            let alert = UIAlertController(title: "請輸入關鍵字", message: nil, preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+            alert.addAction(cancelAction)
+            return true
+        }
         getOutcome(keyWord: textField.text!)
         if !usedTag.contains(textField.text!){
             usedTag.append(textField.text!)
@@ -247,7 +279,10 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == productCollectionView{
-            getProductDetail(id: productList[indexPath.item].id!)
+            if !isGo{
+                isGo = true
+                getProductDetail(id: productList[indexPath.item].id!)
+            }
             return
         }
         if collectionView == usedCollectionView{
@@ -269,7 +304,6 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
         return usedTag.count
     }
     
-    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         if collectionView == tagCollectionView{
@@ -283,6 +317,9 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! TagCollectionViewCell
             
             cell.tagLable.text = usedTag[indexPath.item]
+            if cell.tagLable.text?.characters.count == 1{
+                cell.backView.bounds = CGRect(x: 0, y: 0, width: 90, height: cell.backView.bounds.height)
+            }
             cell.drawBorder()
             
             return cell
@@ -299,7 +336,13 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        getArticleDetailGo(id: articleList[indexPath.row].id!)
+        if !isGo{
+            isGo = true
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: "DetailArticle") as! DetailArticleViewController
+            self.navigationItem.backBarButtonItem?.title = ""
+            vc.articleId = articleList[indexPath.row].id!
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -362,6 +405,21 @@ extension SearchViewController{
                     self.productButton.setTitle("商品(\(self.productList.count))", for: .normal)
                     self.isLoaded[0] = true
                     self.productCollectionView.reloadData()
+                    if let result = json["result"].string{
+                        if result == "2"{
+                            self.relativeHeightConstraint.constant = 80
+                            let relativeText = "<font size=\"5\"  color=\"#636363\">查無\"</font><font font size=\"5\"   color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"相關文章根據上述商品類型，為你推薦有檢驗報告的相似商品</font>"
+                            let attrStrRe = try! NSAttributedString(
+                                data: relativeText.data(using: String.Encoding.unicode, allowLossyConversion: true)!,
+                                options: [ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
+                                documentAttributes: nil)
+                            self.relativeLable.attributedText = attrStrRe
+                            self.isRelative = true
+                        }else{
+                            self.relativeHeightConstraint.constant = 0
+                            self.isRelative = false
+                        }
+                    }
                 }
                 if self.isLoaded[0] && self.isLoaded[1]{
                     if self.articleList.count == 0 && self.productList.count == 0{
@@ -371,7 +429,7 @@ extension SearchViewController{
                     if self.articleButton.isSelected{
                         text = "<font size=\"5\"  color=\"#636363\">共有\"</font><font font size=\"5\"   color=\"#00B6C4\">\(self.articleList.count)</font><font size=\"5\"  color=\"#636363\">\"筆關於\"</font><font size=\"5\"  color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"的文章搜尋結果</font>"
                     }else{
-                        text = "<font size=\"5\"   color=\"#636363\">共有\"</font><font size=\"5\"  color=\"#00B6C4\">\(self.productList.count)</font><font size=\"5\"  color=\"#636363\">\"筆關於\"</font><font size=\"5\"  color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"的商品搜尋結果</font>"
+                        text = "<font size=\"5\"  color=\"#636363\">共有\"</font><font font size=\"5\"   color=\"#00B6C4\">\(self.productList.count)</font><font size=\"5\"  color=\"#636363\">\"筆關於\"</font><font size=\"5\"  color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"的商品搜尋結果</font>"
                     }
                     let attrStr = try! NSAttributedString(
                         data: text.data(using: String.Encoding.unicode, allowLossyConversion: true)!,
@@ -434,7 +492,7 @@ extension SearchViewController{
                     var text = ""
                     if self.articleButton.isSelected{
                         self.articleTableView.isHidden = false
-                        text = "font size=\"5\"   color=\"#636363\">共有\"</font><font size=\"5\" color=\"#00B6C4\">\(self.articleList.count)</font><font size=\"5\"  color=\"#636363\">\"筆關於\"</font><font size=\"5\" color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"的文章搜尋結果</font>"
+                        text = "<font size=\"5\"   color=\"#636363\">共有\"</font><font size=\"5\" color=\"#00B6C4\">\(self.articleList.count)</font><font size=\"5\"  color=\"#636363\">\"筆關於\"</font><font size=\"5\" color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"的文章搜尋結果</font>"
                     }else{
                         text = "<font size=\"5\"   color=\"#636363\">共有\"</font><font size=\"5\"   color=\"#00B6C4\">\(self.productList.count)</font><font size=\"5\"  color=\"#636363\">\"筆關於\"</font><font size=\"5\"  color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"的商品搜尋結果</font>"
                     }
@@ -481,68 +539,6 @@ extension SearchViewController{
                         self.tagCollectionView.reloadData()
                     }
                     
-                }
-            }
-        })
-        
-    }
-    
-    func getArticleDetailGo(id:String){
-        
-        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
-        Alamofire.request("https://iqctest.com/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
-            response in
-            print(response)
-            
-            if let JSONData = response.result.value{
-                let json = JSON(JSONData)
-                print(json)
-                if json["list"].array == nil{
-                    return
-                }
-                for article in json["list"]{
-                    let articleData = Article()
-                    if let id = article.1["id"].string{
-                        articleData.id = id
-                    }
-                    if let modify = article.1["modify"].string{
-                        articleData.modify = modify
-                    }
-                    if let content = article.1["content"].string{
-                        articleData.content = content
-                    }
-                    if let main_img = article.1["main_img"].string{
-                        articleData.main_img = main_img
-                    }
-                    if let article = article.1["article"].string{
-                        articleData.article = article
-                    }
-                    if let title = article.1["title"].string{
-                        articleData.title = title
-                    }
-                    if let des = article.1["des"].string{
-                        articleData.des = des
-                    }
-                    if let tag = article.1["tag"].string{
-                        articleData.tag = tag
-                    }
-                    if let producrt = article.1["producrt"].string{
-                        articleData.producrt = producrt
-                    }
-                    if let reading = article.1["reading"].string{
-                        articleData.reading = reading
-                    }
-                    if let type = article.1["type"].string{
-                        articleData.type = type
-                    }
-                    if let video = article.1["video"].string{
-                        articleData.video = video
-                    }
-                    let vc = self.storyboard?.instantiateViewController(withIdentifier: "DetailArticle") as! DetailArticleViewController
-                    self.navigationItem.backBarButtonItem?.title = ""
-                    vc.article = articleData
-                    self.loadingView.isHidden = true
-                    self.navigationController?.pushViewController(vc, animated: true)
                 }
             }
         })

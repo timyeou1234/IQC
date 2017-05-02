@@ -10,12 +10,17 @@ import UIKit
 
 class ProductCollectionViewCell: UICollectionViewCell {
 
+    @IBOutlet weak var shadowView: UIView!
     @IBOutlet weak var productNameLable: UILabel!
     @IBOutlet weak var productImageView: UIImageView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        shadowView.addShadow()
+        productImageView.clipBackground(cornerRadious: 5, color: UIColor.clear)
+        productNameLable.layer.drawsAsynchronously = true
+        productNameLable.layer.shadowOpacity = 0
     }
 
 }

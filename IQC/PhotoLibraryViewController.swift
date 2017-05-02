@@ -38,8 +38,6 @@ class PhotoLibraryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        doneButton.isEnabled = false
-        
         self.photoCollectionView.register(UINib(nibName: "PhotoLibraryFirstCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "Cell1")
         self.photoCollectionView.register(UINib(nibName: "PhotoLibraryPhotoCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
         
@@ -55,6 +53,14 @@ class PhotoLibraryViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        
+        if selectedImageIndex.count > 0{
+            doneButton.isEnabled = true
+            doneButton.tintColor = UIColor.blue
+        }else{
+            doneButton.isEnabled = false
+            doneButton.tintColor = UIColor.lightGray
+        }
         self.tabBarController?.tabBar.isHidden = true
     }
     

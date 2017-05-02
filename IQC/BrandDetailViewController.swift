@@ -16,7 +16,7 @@ class BrandDetailViewController: UIViewController {
     var brandId = ""
     var brandData = Brand()
     var brandOwnedProduct = [Product]()
-    var loadingView = UIView()
+    var loadingView = LoadingView()
     
     @IBOutlet weak var backImageView: UIImageView!
     @IBOutlet weak var logoImageView: UIImageView!
@@ -49,13 +49,16 @@ class BrandDetailViewController: UIViewController {
         //        設定讀取中圖示
         loadingView.frame = self.view.bounds
         self.view.addSubview(loadingView)
-        loadingView.startLoading()
         loadingView.isHidden = true
         // Do any additional setup after loading the view.
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        loadingView.remove()
     }
     
     override func didReceiveMemoryWarning() {
@@ -220,8 +223,6 @@ extension BrandDetailViewController:UICollectionViewDelegate, UICollectionViewDa
         
         cell.productNameLable.text = brandOwnedProduct[indexPath.item].title
         cell.productImageView.sd_setImage(with: URL(string: brandOwnedProduct[indexPath.item].img!))
-        
-        cell.productImageView.addShadow()
         
         return cell
     }

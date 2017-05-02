@@ -22,8 +22,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     var codeArray:[Int] = []
     var codeImageArray:[UIImageView] = []
     var codeLableArray:[UILabel] = []
-    var loadingView = UIView()
-    
+    var loadingView = LoadingView()
     
     let supportedCodeTypes = [AVMetadataObjectTypeUPCECode,
                               AVMetadataObjectTypeCode39Code,
@@ -108,6 +107,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         // Start video capture.
         captureSession?.startRunning()
         searchBackgroundView.isHidden = true
+        searchButton.isHidden = true
         keyboardBackView.isHidden = true
     }
     
@@ -122,6 +122,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         
         captureSession?.stopRunning()
         searchBackgroundView.isHidden = false
+        searchButton.isHidden = false
         keyboardBackView.isHidden = false
     }
     
@@ -144,14 +145,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //設定漸層效果
-        gradient.frame = self.searchBackgroundView.bounds
-        gradient.colors = ["".colorWithHexString("#2CCAA8").cgColor, "".colorWithHexString("#18B7CD").cgColor]
-        gradient.startPoint = CGPoint(x: 0.0, y: 0.5)
-        gradient.endPoint = CGPoint(x: 1.0, y: 0.5)
-        gradient.locations = [0, 1]
-        self.searchButton.layer.addSublayer(gradient)
-        gradient.zPosition = 0
+        
         
         //設定按鈕圖示
         cameraButton.setImage(#imageLiteral(resourceName: "icon_cam_01_prs"), for: .selected)
@@ -161,40 +155,54 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         
         //        設定Input
         inputTextfield.delegate = self
-        //        監聽鍵盤事件
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
-        //        設定掃描
-        setupCameraView()
         //        設定鍵盤輸入
         setupKeyboardView()
         
-        //        設定讀取中圖示
-        loadingView.frame = self.view.frame
-        self.view.addSubview(loadingView)
-        loadingView.startLoading()
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        if codeArray.count != 0{
+            var code = ""
+            for i in codeArray{
+                code += String(i)
+            }
+            inputTextfield.text = code
+        }
+        //        設定讀取中圖示
+        loadingView.frame = self.view.frame
+        loadingView.startRotate()
+        self.view.addSubview(loadingView)
+        
+        //        監聽鍵盤事件
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
         if captureSession?.isRunning == false{
             captureSession?.startRunning()
         }
         self.tabBarController?.tabBar.isHidden = false
-        if self.view.bounds.width > 375{
-            pointsStackView.spacing = 13
-        }else if self.view.bounds.width < 375{
-            pointsStackView.spacing = 9
-        }else{
-            pointsStackView.spacing = 10
-        }
-        
         loadingView.isHidden = true
         camraAction(self)
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        //        設定掃描
+        setupCameraView()
+        codeImage1.frame = codeImage2.frame
+        if gradient.frame != self.searchBackgroundView.layer.bounds{
+            //設定漸層效果
+            gradient.frame = self.searchBackgroundView.layer.bounds
+            gradient.colors = ["".colorWithHexString("#2CCAA8").cgColor, "".colorWithHexString("#18B7CD").cgColor]
+            gradient.startPoint = CGPoint(x: 0.0, y: 0.5)
+            gradient.endPoint = CGPoint(x: 1.0, y: 0.5)
+            gradient.locations = [0, 1]
+            self.searchBackgroundView.layer.addSublayer(gradient)
+            gradient.zPosition = 0
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        
-        
-        
+        loadingView.stopRotate()
+        NotificationCenter.default.removeObserver(self)
     }
     
     override func didReceiveMemoryWarning() {
@@ -242,11 +250,29 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     }
     
     func setupKeyboardView(){
+        if self.view.bounds.width < 350{
+            pointsStackView.spacing = 5
+        }else if self.view.bounds.width > 375 && self.view.bounds.width < 415{
+            pointsStackView.spacing = 13
+        }else if self.view.bounds.width < 375{
+            pointsStackView.spacing = 9
+        }else if self.view.bounds.width > 414 && self.view.bounds.width < 900{
+            pointsStackView.spacing = 43
+        }else if self.view.bounds.width > 900{
+            pointsStackView.spacing = 63
+        }else{
+            pointsStackView.spacing = 10
+        }
+
         codeImageArray = [codeImage1, codeImage2, codeImage3, codeImage4, codeImage5, codeImage6, codeImage7, codeImage8, codeImage9, codeImage10, codeImage11, codeImage12, codeImage13]
         codeLableArray = [codeLable1, codeLable2, codeLable3, codeLable4, codeLable5, codeLable6, codeLable7, codeLable8, codeLable9, codeLable10, codeLable11, codeLable12, codeLable13]
+        for imageView in codeImageArray{
+            imageView.contentMode = .scaleAspectFit
+        }
         for lable in codeLableArray{
             lable.text = ""
         }
+        
         
     }
     
@@ -273,40 +299,15 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
             
             // Initialize the video preview layer and add it as a sublayer to the viewPreview view's layer.
             videoPreviewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+            
             videoPreviewLayer?.videoGravity = AVLayerVideoGravityResizeAspectFill
-            videoPreviewLayer?.frame = cameraBackgroundView.bounds
+            
+            // Start video capture.
+            captureSession?.startRunning()
+            
+            videoPreviewLayer?.frame = cameraBackgroundView.layer.bounds
+            
             cameraBackgroundView.layer.addSublayer(videoPreviewLayer!)
-            //            videoPreviewLayer?.zPosition = 0
-            
-            let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.dark)
-            
-            let blurEffectViewTop = UIVisualEffectView(effect: blurEffect)
-            blurEffectViewTop.frame = blurViewTop.bounds
-            blurEffectViewTop.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            blurViewTop.addSubview(blurEffectViewTop)
-            
-            let blurEffectViewBottom = UIVisualEffectView(effect: blurEffect)
-            blurEffectViewBottom.frame = blurViewBottom.bounds
-            blurEffectViewBottom.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            blurViewBottom.addSubview(blurEffectViewBottom)
-            blurViewBottom.bringSubview(toFront: hintLable)
-            hintLable.layer.zPosition = 0
-            
-            let blurEffectViewLeft = UIVisualEffectView(effect: blurEffect)
-            blurEffectViewLeft.frame = blurViewLeft.bounds
-            blurEffectViewLeft.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            blurViewLeft.addSubview(blurEffectViewLeft)
-            
-            let blurEffectViewRight = UIVisualEffectView(effect: blurEffect)
-            blurEffectViewRight.frame = blurViewRight.bounds
-            blurEffectViewRight.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            blurViewRight.addSubview(blurEffectViewRight)
-            
-            //            cameraBackgroundView.bringSubview(toFront: blurViewTop)
-            //            cameraBackgroundView.bringSubview(toFront: blurViewLeft)
-            //            cameraBackgroundView.bringSubview(toFront: blurViewBottom)
-            //            cameraBackgroundView.bringSubview(toFront: blurViewRight)
-            
             
             // Initialize QR Code Frame to highlight the QR code
             qrCodeFrameView = UIView()
@@ -322,12 +323,12 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
             print(error)
             return
         }
-        // Start video capture.
-        captureSession?.startRunning()
+        
     }
     
     
     func sendRequest(_ code:String){
+        print("detect the code: \(code)")
         self.view.endEditing(true)
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
@@ -340,7 +341,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
                 let json = JSON(JSONData)
                 var productList = [Product]()
                 if json["count"].intValue == 0{
-                    self.performSegue(withIdentifier: "NoResult", sender: self)
+                    self.performSegue(withIdentifier: "NoResult", sender: code)
                 }else if json["count"].intValue == 1{
                     for jsonData in json["list"]{
                         let product = Product()
@@ -389,16 +390,28 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
             let destinationController = segue.destination as! MultipleResultViewController
             destinationController.productList = sender as! [Product]
             captureSession?.stopRunning()
+            self.videoPreviewLayer?.removeFromSuperlayer()
+            videoPreviewLayer = nil
         case "showGovDetail":
             let destinationController = segue.destination as! GovProductDetailViewController
             destinationController.productId = (sender as! Product).id!
             captureSession?.stopRunning()
+            self.videoPreviewLayer?.removeFromSuperlayer()
+            videoPreviewLayer = nil
         case "showDetail":
             let destinationController = segue.destination as! IQCProductDetailViewController
             destinationController.productId = (sender as! Product).id!
             captureSession?.stopRunning()
+            self.videoPreviewLayer?.removeFromSuperlayer()
+            videoPreviewLayer = nil
         default:
-            break
+            captureSession?.stopRunning()
+            self.videoPreviewLayer?.removeFromSuperlayer()
+            videoPreviewLayer = nil
+        }
+        
+        if let destinationController = segue.destination as? NoResultViewController{
+            destinationController.code = sender as! String
         }
     }
 }
@@ -435,6 +448,15 @@ extension CameraViewController:UITextFieldDelegate, UIViewControllerTransitionin
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         
+        if let _ = Int(string){
+            
+        }else{
+            if string != ""{
+            let allowedCharacters = CharacterSet.decimalDigits
+            let characterSet = CharacterSet(charactersIn: string)
+                return allowedCharacters.isSuperset(of: characterSet)
+            }
+        }
         if (textField.text?.characters.count)! >= codeImageArray.count && string == ""{
             
             codeArray.removeLast()
@@ -473,6 +495,7 @@ extension CameraViewController:UITextFieldDelegate, UIViewControllerTransitionin
         
         Alamofire.request("https://iqctest.com/api/product/detail/\(product.id!)", headers: headers).responseJSON(completionHandler: {
             response in
+            self.loadingView.isHidden = true
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)
@@ -483,6 +506,12 @@ extension CameraViewController:UITextFieldDelegate, UIViewControllerTransitionin
                         self.performSegue(withIdentifier: "showDetail", sender: product)
                     }
                 }
+            }else{
+                let alert = UIAlertController(title: "查無產品資料", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
             }
         })
         

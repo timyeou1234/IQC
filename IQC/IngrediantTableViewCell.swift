@@ -35,8 +35,14 @@ class IngrediantTableViewCell: UITableViewCell {
     func drawDash(){
         if tittleItemLable.text != "警語"{
             dashLineBottomView.addDashedLine(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: dashLineBottomView.frame.width, y: 0))
+            if tittleBackView.bounds.height > 40{
+                cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: tittleBackView.bounds.height - 40)
+            }
         }else{
-            cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: self.bounds.height - 46)}
+            if tittleBackView.bounds.height > 40{
+                cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: tittleBackView.bounds.height - 40)
+            }
+        }
         
     }
     

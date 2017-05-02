@@ -13,13 +13,40 @@ import SDWebImage
 
 class SafeViewController: UIViewController {
     
+    var gotoBrandId = ""
+    var isLoaded = false
     var productTypeList = [ProductType]()
     var productList = [Product]()
     var brandList = [Brand]()
     var selectedTittle = 0
     var selectedSubTittel = -1
-    var loadingView = UIView()
+    var loadingView = LoadingView()
+    var productDict = [ProductType: [Product]]()
     
+    @IBAction func leftSwipe(_ sender: Any) {
+        if selectedTittle + 1 >= productTypeList.count{
+            selectedTittle = 0
+        }
+        selectedTittle += 1
+        selectedSubTittel = -1
+        tittleCollectionView.reloadData()
+        subTittleCollectionView.reloadData()
+        searchProduct(productTypeList[selectedTittle].id!, subId: "", productType: productTypeList[selectedTittle])
+    }
+    
+    @IBAction func swipeAction(_ sender: Any) {
+        if selectedTittle == 0{
+            selectedTittle = productTypeList.count - 1
+        }else{
+            selectedTittle -= 1
+        }
+        selectedSubTittel = -1
+        tittleCollectionView.reloadData()
+        subTittleCollectionView.reloadData()
+        searchProduct(productTypeList[selectedTittle].id!, subId: "", productType: productTypeList[selectedTittle])
+    }
+    
+    @IBOutlet weak var productCollectionViewHeight: NSLayoutConstraint!
     @IBOutlet weak var brandDetailContainerView: UIView!
     @IBOutlet weak var productButton: UIButton!
     @IBOutlet weak var brandButton: UIButton!
@@ -99,14 +126,17 @@ class SafeViewController: UIViewController {
         brandCollectionView.register(UINib(nibName: "ProductCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
         // Do any additional setup after loading the view.
         
-        //        設定讀取中圖示
-        loadingView.frame = self.view.frame
-        self.view.addSubview(loadingView)
-        loadingView.startLoading()
-        loadingView.isHidden = true
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        //        設定讀取中圖示
+        loadingView.frame = self.view.frame
+        loadingView.startRotate()
+        self.view.addSubview(loadingView)
+        loadingView.isHidden = true
+        
+        isLoaded = false
         productTypeList = [ProductType]()
         productList = [Product]()
         brandList = [Brand]()
@@ -165,7 +195,7 @@ class SafeViewController: UIViewController {
             }
             self.tittleCollectionView.reloadData()
             if self.productTypeList.count > 0{
-                self.searchProduct(self.productTypeList[0].id!, subId: "")
+                self.searchProduct(self.productTypeList[0].id!, subId: "", productType: self.productTypeList[0])
             }
             self.subTittleCollectionView.reloadData()
             
@@ -223,6 +253,21 @@ class SafeViewController: UIViewController {
             }
         })
         
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if gotoBrandId != ""{
+            (self.childViewControllers[0] as! BrandDetailViewController).brandId = gotoBrandId
+            (self.childViewControllers[0] as! BrandDetailViewController).reload()
+            brandDetailContainerView.isHidden = false
+            menuBarItem.image = #imageLiteral(resourceName: "nav_back_prs")
+            brandAction(self)
+            gotoBrandId = ""
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        loadingView.stopRotate()
     }
     
     override func didReceiveMemoryWarning() {
@@ -296,23 +341,29 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        if collectionView == brandCollectionView{
+            return UIEdgeInsetsMake(0, 10, 0, 10)
+        }
         return UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 0)
     }
     
-    //    delegate
+    //    MARK: CollectionView delegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == tittleCollectionView{
             selectedTittle = indexPath.item
             selectedSubTittel = -1
             tittleCollectionView.reloadData()
             subTittleCollectionView.reloadData()
-            searchProduct(productTypeList[indexPath.item].id!, subId: "")
+            searchProduct(productTypeList[indexPath.item].id!, subId: "", productType: self.productTypeList[0])
         }else if collectionView == subTittleCollectionView{
             selectedSubTittel = indexPath.item
             subTittleCollectionView.reloadData()
-            searchProduct(productTypeList[selectedTittle].id!, subId: (productTypeList[selectedTittle].submenu?[selectedSubTittel].id!)!)
+            searchProduct(productTypeList[selectedTittle].id!, subId: (productTypeList[selectedTittle].submenu?[selectedSubTittel].id!)!, productType: productTypeList[selectedTittle])
         }else if collectionView == productCollectionView{
-            getProductDetail(product: self.productList[indexPath.item])
+            if !isLoaded{
+                isLoaded = true
+                getProductDetail(product: self.productList[indexPath.item])
+            }
         }else if collectionView == brandCollectionView{
             (self.childViewControllers[0] as! BrandDetailViewController).brandId = brandList[indexPath.item].id!
             (self.childViewControllers[0] as! BrandDetailViewController).reload()
@@ -336,6 +387,11 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
                 return (productTypeList[selectedTittle].submenu?.count)!
             }
         }else if collectionView == productCollectionView{
+            if productList.count % 2 == 0{
+                productCollectionViewHeight.constant = (CGFloat(productList.count) / 2 * (productCollectionView.bounds.width/2 + 40)) + (CGFloat(productList.count) * 8)
+            }else{
+                productCollectionViewHeight.constant = ((CGFloat(productList.count) / 2) + 0.5) * (productCollectionView.bounds.width/2 + 40) + (CGFloat(productList.count) * 8)
+            }
             return productList.count
         }else if collectionView == brandCollectionView{
             return brandList.count
@@ -350,7 +406,6 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
             
             cell.productImageView.sd_setImage(with: URL(string: brandList[indexPath.item].logo!))
             cell.productNameLable.text = brandList[indexPath.item].name
-            cell.productImageView.addShadow()
             
             return cell
         }
@@ -360,7 +415,6 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
             cell.productNameLable.text = productList[indexPath.item].title
             cell.productImageView.sd_setImage(with: URL(string: productList[indexPath.item].img!))
             
-            cell.productImageView.addShadow()
             
             return cell
         }
@@ -405,7 +459,7 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
 
 extension SafeViewController{
     
-    func searchProduct(_ tittleId:String, subId:String){
+    func searchProduct(_ tittleId:String, subId:String, productType:ProductType){
         
         productList = [Product]()
         loadingView.isHidden = false
@@ -427,7 +481,7 @@ extension SafeViewController{
                     self.loadingView.isHidden = true
                     return
                 }
-                
+                var productList = [Product]()
                 for product in json["list"]{
                     let productData = Product()
                     if let id = product.1["id"].string{
@@ -442,12 +496,19 @@ extension SafeViewController{
                     if let title = product.1["title"].string{
                         productData.title = title
                     }
-                    self.productList.append(productData)
+                    productList.append(productData)
+                    //                    self.productList.append(productData)
                 }
+                self.productDict[productType] = productList
+                self.productList = self.productDict[productType]!
                 self.productCollectionView.reloadData()
                 self.loadingView.isHidden = true
             }
         })
+    }
+    
+    func filterSubTitle(productList:[Product], subId:String, productType:ProductType){
+        
     }
     
     //    判斷是否為政府檢驗
@@ -460,14 +521,17 @@ extension SafeViewController{
                 let json = JSON(JSONData)
                 print(json)
                 for jsonData in json["list"]{
+                    
                     if let _ = jsonData.1["gov"].string{
                         self.performSegue(withIdentifier: "showGovDetail", sender: product)
                     }else{
                         self.performSegue(withIdentifier: "showDetail", sender: product)
                     }
+                    
                 }
             }
         })
+        
         
     }
     

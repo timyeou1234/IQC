@@ -59,8 +59,8 @@ class YNActionSheet: UIViewController {
     func addCancelButtonWithTitle(Title:String){
         if(layview == nil){
             layview = UIView(frame: CGRect(x: width*0.05, y: height - ( (CGFloat)(btnArray.count) * self.buttonHeight + self.buttonHeight + 10), width: width*0.9, height: (CGFloat)(btnArray.count)*self.buttonHeight+self.buttonHeight + 20))
-            layview.layer.cornerRadius = 5
-            layview.layer.masksToBounds = true
+//            layview.layer.cornerRadius = 5
+//            layview.layer.masksToBounds = true
             layview.alpha = 1
             self.view.addSubview(layview)
         }else{
@@ -87,19 +87,21 @@ class YNActionSheet: UIViewController {
     func addButtonWithTitle(Title:String){
         if(layview == nil){
             layview = UIView(frame: CGRect(x:width*0.1, y:height - (self.buttonHeight + 10), width: width*0.9, height: self.buttonHeight + 20))
-            layview.layer.cornerRadius = 5
-            layview.layer.masksToBounds = true
-            layview.alpha = 1
+//            layview.layer.cornerRadius = 5
+//            layview.layer.masksToBounds = true
+//            layview.alpha = 1
             self.view.addSubview(layview)
         }else{
             var nowHeight = self.layview.bounds.size.height
             nowHeight += buttonHeight
             layview.frame = CGRect(x:width * 0.05, y:height - nowHeight, width:width*0.9, height:nowHeight)
-            layview.layer.cornerRadius = 5
-            layview.layer.masksToBounds = true
-            layview.alpha = 1
+//            layview.layer.cornerRadius = 5
+//            layview.layer.masksToBounds = true
+//            layview.alpha = 1
         }
-        let btn = UIButton(frame: CGRect(x:0, y:(CGFloat)(btnArray.count)*buttonHeight, width:width * 0.9, height:buttonHeight - 1))
+        let lineView = UIView(frame: CGRect(x: 0, y: (CGFloat)(btnArray.count)*buttonHeight - 1, width: width * 0.9, height: 1))
+        lineView.backgroundColor = UIColor.lightGray
+        let btn = UIButton(frame: CGRect(x:0, y:(CGFloat)(btnArray.count)*buttonHeight, width:width * 0.9, height:buttonHeight))
         btn.tag = btnArray.count
 //        btn.layer.cornerRadius = 5
 //        btn.layer.masksToBounds = true
@@ -108,8 +110,31 @@ class YNActionSheet: UIViewController {
         btn.setTitleColor("".colorWithHexString("0076FF"), for: .normal)
         btn.backgroundColor = UIColor.white
         
-        layview.addSubview(btn)
+        
+        
         btnArray.append(btn)
+        if btnArray.count == 2{
+            let cornerView = UIView(frame: CGRect(x:0, y:0, width:width * 0.9, height:120))
+            cornerView.layer.cornerRadius = 5
+            cornerView.layer.masksToBounds = true
+            cornerView.backgroundColor = UIColor.white
+            layview.addSubview(cornerView)
+            for btns in btnArray{
+                cornerView.addSubview(btns)
+            }
+            cornerView.addSubview(lineView)
+            
+        }else if btnArray.count == 1{
+            let cornerView = UIView(frame: CGRect(x:0, y:0, width:width * 0.9, height:60))
+            cornerView.layer.cornerRadius = 5
+            cornerView.layer.masksToBounds = true
+            cornerView.backgroundColor = UIColor.white
+            layview.addSubview(cornerView)
+            for btns in btnArray{
+                cornerView.addSubview(btns)
+            }
+            cornerView.addSubview(lineView)
+        }
         
         if(CancelButton != nil){
             let CancelY = CancelButton.frame.origin.y

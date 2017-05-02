@@ -8,7 +8,12 @@
 
 import UIKit
 
+var isLoadingCircle = true
 class LoadingView: UIView {
+    
+    var count = 0
+    var isLoading = true
+    
     @IBOutlet private var contentView:UIView?
     @IBOutlet weak var imageView: UIView!
     @IBOutlet weak var spaningView: UIImageView!
@@ -22,7 +27,12 @@ class LoadingView: UIView {
         super.init(coder:aDecoder)
     }
     
+    deinit{
+        self.layer.removeAllAnimations()
+    }
+    
     func setup(){
+        isLoadingCircle = true
         Bundle.main.loadNibNamed("LoaadingView", owner: self, options: nil)
         guard let content = contentView else { return }
         content.frame = self.bounds
@@ -32,23 +42,42 @@ class LoadingView: UIView {
         let blurEffect = UIBlurEffect(style: UIBlurEffectStyle.light)
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = self.bounds
-        self.addSubview(blurEffectView)
-        self.sendSubview(toBack: blurEffectView)
-        self.bringSubview(toFront: imageView)
+        self.imageView.addSubview(blurEffectView)
+        self.imageView.sendSubview(toBack: blurEffectView)
         imageView.layer.zPosition = 0
         
-        rotate()
         
     }
     
+    func startRotate(){
+        setup()
+        isLoading = true
+        rotate()
+    }
+    
+    func stopRotate(){
+        isLoading = false
+        spaningView.layer.removeAllAnimations()
+    }
+    
     func rotate(){
-        UIView.animate(withDuration: 1, delay: 0, options: .curveLinear, animations: {
+        UIView.animate(withDuration: 1, delay: 0, options: [.curveLinear], animations: {
             self.spaningView.transform = self.spaningView.transform.rotated(by: CGFloat(M_PI/2))
         }, completion: {
             success in
-            self.rotate()
+            if self.isLoading{
+                self.rotate()
+            }
         })
     }
+    
+    func remove(){
+        isLoadingCircle = false
+        isLoading = false
+        self.spaningView.layer.removeAllAnimations()
+        self.layoutIfNeeded()
+    }
+    
     
     /*
     // Only override draw() if you perform custom drawing.

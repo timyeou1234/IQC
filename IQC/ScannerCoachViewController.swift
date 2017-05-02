@@ -65,6 +65,17 @@ class ScannerCoachViewController: UIViewController {
         buttonSecond.setImage(#imageLiteral(resourceName: "btn_coach_nor"), for: .normal)
         buttonSecond.setImage(#imageLiteral(resourceName: "btn_coach_prs"), for: .selected)
         
+        
+        
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.changeImage), userInfo: nil, repeats: true)
+        
+        // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         //設定漸層效果
         gradient.frame = self.buttonView.bounds
         gradient.colors = ["".colorWithHexString("#2CCAA8").cgColor, "".colorWithHexString("#18B7CD").cgColor]
@@ -76,16 +87,8 @@ class ScannerCoachViewController: UIViewController {
         barcodeImageView.isHidden = true
         handImageView.isHidden = true
         
-        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.changeImage), userInfo: nil, repeats: true)
-        
-        // Do any additional setup after loading the view.
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
         presentFirst()
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -94,6 +97,10 @@ class ScannerCoachViewController: UIViewController {
     }
     
     func presentFirst(){
+        if count == 2{
+            count = 0
+            return
+        }
         
         buttonFirst.isSelected = true
         buttonSecond.isSelected = false
@@ -103,21 +110,17 @@ class ScannerCoachViewController: UIViewController {
         phoneImageView.isHidden = false
         barcodeImageView.isHidden = true
         handImageView.isHidden = true
-        if count == 2{
-            count = 0
-            return
-        }
         
-        UIView.animate(withDuration: 2.0, animations: {
+        UIView.animate(withDuration: 1.0, animations: {
             self.phoneImageView.frame = CGRect(x: self.bottleImageView.frame.maxX - self.phoneImageView.frame.width, y: self.phoneImageView.frame.minY, width: self.phoneImageView.frame.width, height: self.phoneImageView.frame.height)
             self.phoneImageView.frame = CGRect(x: self.bottleImageView.frame.maxX - self.phoneImageView.bounds.width + 50, y: self.phoneImageView.frame.minY, width: self.phoneImageView.frame.width, height: self.phoneImageView.frame.height)
         }, completion: {
             success in
-            UIView.animate(withDuration: 2.0, animations: {
+            UIView.animate(withDuration: 1.0, animations: {
                 self.phoneImageView.frame = CGRect(x: self.phoneImageView.frame.minX - 100, y: self.phoneImageView.frame.minY, width: self.phoneImageView.frame.width, height: self.phoneImageView.frame.height)
             }, completion: {
                 success in
-                UIView.animate(withDuration: 2.0, animations: {
+                UIView.animate(withDuration: 1.0, animations: {
                     self.phoneImageView.frame = CGRect(x: self.phoneImageView.frame.minX + 50, y: self.phoneImageView.frame.minY, width: self.phoneImageView.frame.width, height: self.phoneImageView.frame.height)
                 }, completion: {
                     success in

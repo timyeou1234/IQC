@@ -15,6 +15,7 @@ class HotTopicDetailViewController: UIViewController {
     
     var articleId = ""
     var articleList = [Article]()
+    var loadingView = LoadingView()
     
     @IBOutlet weak var hotTopicTableView: UITableView!
     
@@ -31,10 +32,17 @@ class HotTopicDetailViewController: UIViewController {
         hotTopicTableView.rowHeight = self.view.bounds.height / 2
         hotTopicTableView.estimatedRowHeight = self.view.bounds.height / 2
         
+        
         // Do any additional setup after loading the view.
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        //        設定讀取中圖示
+        loadingView.frame = self.view.frame
+        loadingView.startRotate()
+        self.view.addSubview(loadingView)
+        loadingView.isHidden = false
+        
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         articleList = [Article]()
         hotTopicTableView.reloadData()
@@ -90,6 +98,7 @@ class HotTopicDetailViewController: UIViewController {
                         }
                         self.articleList.append(articleData)
                         self.hotTopicTableView.reloadData()
+                        self.loadingView.isHidden = true
                     }
                 }
             })
@@ -97,7 +106,7 @@ class HotTopicDetailViewController: UIViewController {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        
+        loadingView.stopRotate()
     }
     
     override func didReceiveMemoryWarning() {
@@ -113,7 +122,7 @@ class HotTopicDetailViewController: UIViewController {
      override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail"{
             let destinationController = segue.destination as! DetailArticleViewController
-            destinationController.article = sender as! Article
+            destinationController.articleId = sender as! String
         }
     }
     
@@ -123,7 +132,7 @@ class HotTopicDetailViewController: UIViewController {
 extension HotTopicDetailViewController:UITableViewDelegate, UITableViewDataSource{
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.performSegue(withIdentifier: "showDetail", sender: articleList[indexPath.row])
+        self.performSegue(withIdentifier: "showDetail", sender: articleList[indexPath.row].id)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -132,6 +141,7 @@ extension HotTopicDetailViewController:UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = hotTopicTableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! HotTopicListTableViewCell
+        cell.selectionStyle = .none
         
         let article = articleList[indexPath.row]
         if article.main_img != nil{

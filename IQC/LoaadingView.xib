@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -26,17 +25,17 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Ok-ow-Uam">
                     <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                     <subviews>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_search_logo_03@3x.png" translatesAutoresizingMaskIntoConstraints="NO" id="Krq-Gm-VQ4">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_search_logo_03" translatesAutoresizingMaskIntoConstraints="NO" id="Krq-Gm-VQ4">
                             <rect key="frame" x="122" y="268" width="131" height="131"/>
                             <constraints>
                                 <constraint firstAttribute="width" secondItem="Krq-Gm-VQ4" secondAttribute="height" id="jKt-5W-7Jz"/>
                             </constraints>
                         </imageView>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_search_logo_02@3x.png" translatesAutoresizingMaskIntoConstraints="NO" id="EbI-3n-Rz4">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_search_logo_02" translatesAutoresizingMaskIntoConstraints="NO" id="EbI-3n-Rz4">
                             <rect key="frame" x="132" y="270" width="111" height="111"/>
                         </imageView>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_search_logo_01@3x.png" translatesAutoresizingMaskIntoConstraints="NO" id="5pt-uI-WWm">
-                            <rect key="frame" x="137.5" y="275.5" width="100" height="100"/>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icon_search_logo_01" translatesAutoresizingMaskIntoConstraints="NO" id="5pt-uI-WWm">
+                            <rect key="frame" x="138" y="276" width="100" height="100"/>
                         </imageView>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -64,8 +63,8 @@
         </view>
     </objects>
     <resources>
-        <image name="icon_search_logo_01@3x.png" width="282" height="282"/>
-        <image name="icon_search_logo_02@3x.png" width="318" height="318"/>
-        <image name="icon_search_logo_03@3x.png" width="369" height="369"/>
+        <image name="icon_search_logo_01" width="94" height="94"/>
+        <image name="icon_search_logo_02" width="106" height="106"/>
+        <image name="icon_search_logo_03" width="123" height="123"/>
     </resources>
 </document>

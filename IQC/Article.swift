@@ -24,6 +24,11 @@ class Article: NSObject {
     var reading:String?
 //    文章內頁主圖
     var main_img:String?
+//    iQC小知識
+    var note:String?
     var type:String?
     var video:String?
+    var og_des:String?
+    var og_img:String?
+    var og_title:String?
 }

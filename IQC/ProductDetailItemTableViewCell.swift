@@ -10,6 +10,7 @@ import UIKit
 
 class ProductDetailItemTableViewCell: UITableViewCell, UITableViewDelegate, UITableViewDataSource {
     
+    var productId:String?
     var tableView:UITableView?
     var indexPath:IndexPath?
     var reportDetail = [ReportDetail]()
@@ -59,6 +60,10 @@ class ProductDetailItemTableViewCell: UITableViewCell, UITableViewDelegate, UITa
         
         if detail.file != nil{
             cell.fileUrl = detail.file!
+            cell.fileId = detail.id!
+            if productId != nil{
+                cell.productId = productId!
+            }
         }
         cell.testDateLable.text = detail.reportdate
         cell.testSource.text = detail.source

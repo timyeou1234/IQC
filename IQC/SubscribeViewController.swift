@@ -34,7 +34,16 @@ class SubscribeViewController: UIViewController {
         }
         
         if nameTextField.text != "" && emailTextField.text != "" && moreView.isHidden == false && companyTextField.text != "" && titleTextField.text != ""{
-            postRequest(name: nameTextField.text!, gender: gender, mail: emailTextField.text!, company: companyTextField.text!, job: titleTextField.text!, subscribe: "1")
+            if isValidEmail(testStr: emailTextField.text!){
+                postRequest(name: nameTextField.text!, gender: gender, mail: emailTextField.text!, company: companyTextField.text!, job: titleTextField.text!, subscribe: "1")
+            }else{
+                let alert = UIAlertController(title: "請輸入正確信箱", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+            }
+            
         }else if nameTextField.text != "" && emailTextField.text != "" && moreView.isHidden{
             postRequest(name: nameTextField.text!, gender: gender, mail: emailTextField.text!, company: "", job: "", subscribe: "0")
         }else{
@@ -84,22 +93,10 @@ class SubscribeViewController: UIViewController {
         self.navigationController?.navigationBar.isHidden = true
         self.tabBarController?.tabBar.isHidden = true
         
-        //        監聽鍵盤事件
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
-        
         nameTextField.delegate = self
         emailTextField.delegate = self
         titleTextField.delegate = self
         companyTextField.delegate = self
-        
-        //設定漸層效果
-        gradient.frame = self.buttonView.bounds
-        gradient.colors = ["".colorWithHexString("#2CCAA8").cgColor, "".colorWithHexString("#18B7CD").cgColor]
-        gradient.startPoint = CGPoint(x: 0.0, y: 0.5)
-        gradient.endPoint = CGPoint(x: 1.0, y: 0.5)
-        gradient.locations = [0, 1]
-        self.buttonView.layer.addSublayer(gradient)
-        gradient.zPosition = 0
         
         maleButton.layer.borderColor = UIColor.gray.cgColor
         maleButton.layer.borderWidth = 1
@@ -136,10 +133,26 @@ class SubscribeViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        //        監聽鍵盤事件
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
         maleAction(self)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        //設定漸層效果
+        if gradient.frame != self.buttonView.bounds{
+            gradient.frame = self.buttonView.bounds
+            gradient.colors = ["".colorWithHexString("#2CCAA8").cgColor, "".colorWithHexString("#18B7CD").cgColor]
+            gradient.startPoint = CGPoint(x: 0.0, y: 0.5)
+            gradient.endPoint = CGPoint(x: 1.0, y: 0.5)
+            gradient.locations = [0, 1]
+            self.buttonView.layer.addSublayer(gradient)
+            gradient.zPosition = 0
+        }
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
         self.navigationController?.navigationBar.isHidden = false
         self.tabBarController?.tabBar.isHidden = false
     }
@@ -155,15 +168,28 @@ class SubscribeViewController: UIViewController {
         
         let param:Parameters = [ "content":[[ "name": name, "gender": gender, "mail": mail, "company": company, "job":job, "subscribe":subscribe
             ]
-        ]]
+            ]]
         
         _ = Alamofire.request(URL(string: "https://iqctest.com/api/data/subscribe")!, method: .post, parameters: param, encoding: JSONEncoding.default, headers: headers).responseString(completionHandler: {
             response in
             debugPrint(response)
-            self.dissmissAction(self)
+            let alert = UIAlertController(title: "感謝您的訂閱", message: nil, preferredStyle: .alert)
+            let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: {
+                success in
+                self.dissmissAction(self)
+            })
+            alert.addAction(cancelAction)
         })
         
-//        dissmissAction(self)
+        //        dissmissAction(self)
+    }
+    
+    func isValidEmail(testStr:String) -> Bool {
+        // print("validate calendar: \(testStr)")
+        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+        
+        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+        return emailTest.evaluate(with: testStr)
     }
     
     /*

@@ -23,6 +23,14 @@ class JournalCoachViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        // Do any additional setup after loading the view.
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        moveHand()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         //設定漸層效果
         gradient.frame = self.buttonView.bounds
         gradient.colors = ["".colorWithHexString("#2CCAA8").cgColor, "".colorWithHexString("#18B7CD").cgColor]
@@ -31,12 +39,6 @@ class JournalCoachViewController: UIViewController {
         gradient.locations = [0, 1]
         self.buttonView.layer.addSublayer(gradient)
         gradient.zPosition = 0
-
-        // Do any additional setup after loading the view.
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        moveHand()
     }
 
     override func didReceiveMemoryWarning() {

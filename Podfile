@@ -11,6 +11,10 @@ target 'IQC' do
   pod 'Alamofire'
   pod 'SDWebImage', '~>3.8'
   pod 'DropDown'
+  pod 'FacebookCore'
+  pod 'FacebookLogin'
+  pod 'FacebookShare'
+  pod 'GodEye'
   
   post_install do |installer|
       installer.pods_project.targets.each do |target|

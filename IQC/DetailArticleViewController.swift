@@ -10,23 +10,38 @@ import UIKit
 import Alamofire
 import SDWebImage
 import SwiftyJSON
+import Social
+import FacebookShare
+import FBSDKShareKit
 
-class DetailArticleViewController: UIViewController {
+var MyObservationContext = 0
+
+class DetailArticleViewController: UIViewController, UIWebViewDelegate {
     
+    var observing = false
     var navFrame:CGRect?
+    var articleId = ""
+    var isFirstLoad = true
     var article = Article()
     var productList = [Product]()
     var relatedeArticle = [Article]()
     var tagRow = 1
-    var loadingView = UIView()
+    var loadingView = LoadingView()
+    var facebookActive = false
     
+    @IBOutlet weak var facebookWebviewHeightConstant: NSLayoutConstraint!
+    @IBOutlet weak var noteView: UIView!
+    @IBOutlet weak var noteTextLable: UILabel!
+    @IBOutlet weak var facebookWebview: UIWebView!
+    @IBOutlet weak var webViewHeightConstant: NSLayoutConstraint!
+    @IBOutlet weak var contentWebView: UIWebView!
     @IBOutlet weak var scrollContainView: UIScrollView!
     @IBOutlet weak var backImageView: UIImageView!
     @IBOutlet weak var classBackView: UIView!
     @IBOutlet weak var classTittle: UILabel!
     @IBOutlet weak var modifyDate: UILabel!
     @IBOutlet weak var titteLable: UILabel!
-    @IBOutlet weak var contentLable: UILabel!
+    //    @IBOutlet weak var contentLable: UILabel!
     @IBOutlet weak var tagCollectionView: UICollectionView!
     @IBOutlet weak var tagCollectionViewHeight: NSLayoutConstraint!
     
@@ -43,12 +58,32 @@ class DetailArticleViewController: UIViewController {
             youtubeWebView.isHidden = false
             playButton.isHidden = true
             youtubeWebView.loadRequest(URLRequest(url: URL(string: article.video!)!))
+            
         }
+    }
+    
+    @IBOutlet weak var shareButton: UIBarButtonItem!
+    @IBAction func shareAction(_ sender: Any) {
+        facebookActive = true
+        let myWebsite = NSURL(string: "https://iqctest.com/article/\(articleId)")
+        
+        guard let url = myWebsite else {
+            print("nothing found")
+            return
+        }
+        
+        let shareItems:Array = [url]
+        let activityViewController:UIActivityViewController = UIActivityViewController(activityItems: shareItems, applicationActivities: nil)
+        activityViewController.excludedActivityTypes = [UIActivityType.print, UIActivityType.postToWeibo, UIActivityType.copyToPasteboard, UIActivityType.addToReadingList, UIActivityType.postToVimeo]
+        self.present(activityViewController, animated: true, completion: nil)
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        facebookWebview.delegate = self
+        contentWebView.delegate = self
+        AppUtility.lockOrientation(.portrait)
         classBackView.clipBackground(color: UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1))
         
         productCollectionView.dataSource = self
@@ -66,13 +101,34 @@ class DetailArticleViewController: UIViewController {
         
         tagCollectionView.register(UINib(nibName: "TagCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
         
-        loadingView.frame = self.view.frame
-        self.view.addSubview(loadingView)
-        loadingView.startLoading()
         // Do any additional setup after loading the view.
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        loadingView.frame = self.view.frame
+        loadingView.startRotate()
+        self.view.addSubview(loadingView)
+        
+        self.tabBarController?.tabBar.isHidden = true
+        if article.id == nil{
+            getArticleDetail(id: articleId)
+        }else{
+            loadingView.isHidden = true
+        }
+        NotificationCenter.default.addObserver(self, selector: #selector(playended), name: .UIWindowDidBecomeHidden, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(playStarted), name: .UIWindowDidBecomeVisible, object: nil)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        let facebookUrl = "<!DOCTYPE html><html> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> </head><body> <div id=\"fb-root\"></div><script>(function(d, s, id){var js, fjs=d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js=d.createElement(s); js.id=id; js.src=\"//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8&appId=700015816832989\"; fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script> <div class=\"fb-comments\" data-href=\"https://iqctest.com/article/\(articleId)\" data-numposts=\"5\"></div></body></html>"
+        if isFirstLoad{
+            facebookWebview.loadHTMLString(facebookUrl, baseURL: URL(string: "https://www.facebook.com/iqc.com.tw"))
+            facebookWebview.reload()
+            isFirstLoad = false
+        }
+    }
+    
+    func setupView(){
         relatedeArticle = [Article]()
         productList = [Product]()
         self.navigationController?.navigationItem.backBarButtonItem?.title = ""
@@ -91,11 +147,7 @@ class DetailArticleViewController: UIViewController {
         self.titteLable.text = article.title
         let date = article.modify?.components(separatedBy: "-")
         self.modifyDate.text = "\((date?[0])!)年\((date?[1])!)月\((date?[2].components(separatedBy: " ")[0])!)日"
-        let attrStr = try! NSAttributedString(
-            data: article.content!.data(using: String.Encoding.unicode, allowLossyConversion: true)!,
-            options: [ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
-            documentAttributes: nil)
-        self.contentLable.attributedText = attrStr
+        contentWebView.loadHTMLString(article.content!, baseURL: nil)
         if article.producrt != nil{
             if article.producrt != ""{
                 loadingView.isHidden = false
@@ -120,19 +172,80 @@ class DetailArticleViewController: UIViewController {
                     width -= (tag.characters.count * 17) + 20
                 }
             }
+            tagCollectionView.reloadData()
             tagCollectionViewHeight.constant = CGFloat(40 * tagRow)
         }
-        navFrame = self.navigationController?.navigationBar.frame
-        NotificationCenter.default.addObserver(self, selector: #selector(playended), name: .UIWindowDidBecomeHidden, object: nil)
         
+        if article.note != nil{
+            noteView.isHidden = false
+            noteTextLable.text = article.note
+        }else{
+            noteView.isHidden = true
+        }
+        
+        navFrame = self.navigationController?.navigationBar.frame
+    }
+    
+    func webViewDidFinishLoad(_ webView: UIWebView) {
+        webView.frame.size.height = 1
+        
+        webView.frame.size = webView.sizeThatFits(CGSize.zero)
+        if webView == contentWebView{
+            webViewHeightConstant.constant = webView.frame.size.height
+        }else if webView == facebookWebview{
+            facebookWebviewHeightConstant.constant = webView.scrollView.contentSize.height
+            if (!observing) {
+                startObservingHeight()
+            }
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        loadingView.stopRotate()
+        self.tabBarController?.tabBar.isHidden = false
+        NotificationCenter.default.removeObserver(self)
+        AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
+    }
+    
+    deinit{
+        stopObservingHeight()
+    }
+    
+    func startObservingHeight() {
+        let options = NSKeyValueObservingOptions([.new])
+        facebookWebview.scrollView.addObserver(self, forKeyPath: "contentSize", options: options, context: &MyObservationContext)
+        observing = true;
+    }
+    
+    func stopObservingHeight() {
+        facebookWebview.scrollView.removeObserver(self, forKeyPath: "contentSize", context: &MyObservationContext)
+        observing = false
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        guard let keyPath = keyPath else {
+            super.observeValue(forKeyPath: nil, of: object, change: change, context: context)
+            return
+        }
+        switch keyPath {
+        case "contentSize":
+            facebookWebviewHeightConstant.constant = facebookWebview.scrollView.contentSize.height
+        default:
+            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        }
+
+    }
+    
+    func playStarted(){
+        if !facebookActive && youtubeWebView.isFirstResponder{
+            AppUtility.lockOrientation(.landscape)
+        }
     }
     
     func playended(){
         scrollContainView.frame.origin.y = (self.navigationController?.navigationBar.frame.maxY)!
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-//        NotificationCenter.default.removeObserver(self)
+        AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
+        facebookActive = false
     }
     
     override func didReceiveMemoryWarning() {
@@ -140,16 +253,17 @@ class DetailArticleViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // MARK: - Navigation
     
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+        if let destinationController = segue.destination as? SearchViewController{
+            destinationController.fromTagWord = sender as! String
+        }
+    }
+    
     
 }
 
@@ -177,6 +291,9 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == productCollectionView{
+            if productCollectionView.bounds.width/2 - 10 >= productCollectionView.bounds.height{
+                return CGSize(width: productCollectionView.bounds.height - 40, height: productCollectionView.bounds.height)
+            }
             return CGSize(width: (productCollectionView.bounds.width/2)-10, height: productCollectionView.bounds.height)
         }else if collectionView == readingCollectionView{
             return CGSize(width: readingCollectionView.bounds.height-20, height: readingCollectionView.bounds.height-30)
@@ -186,10 +303,15 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == readingCollectionView{
-            getArticleDetailGo(id: relatedeArticle[indexPath.item].id!)
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: "DetailArticle") as! DetailArticleViewController
+            vc.articleId = relatedeArticle[indexPath.item].id!
+            self.navigationController?.pushViewController(vc, animated: true)
         }
         if collectionView == productCollectionView{
             getProductDetailGo(id: productList[indexPath.item].id!)
+        }
+        if collectionView == tagCollectionView{
+            performSegue(withIdentifier: "search", sender: article.tag?.components(separatedBy: ",")[indexPath.item])
         }
     }
     
@@ -201,6 +323,9 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
             return (article.tag?.components(separatedBy: ",").count)!
         }
         if collectionView == readingCollectionView{
+            if relatedeArticle.count == 0{
+                return 3
+            }
             return relatedeArticle.count
         }
         return 0
@@ -223,6 +348,10 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
         }else if collectionView == readingCollectionView{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! RelatedArticleCollectionViewCell
             
+            if relatedeArticle.count == 0{
+                return cell
+            }
+            
             let article = relatedeArticle[indexPath.row]
             if article.main_img != nil{
                 if URL(string: article.main_img!) != nil{
@@ -232,6 +361,7 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
             cell.tittleLable.text = article.title
             cell.typeBackView.clipBackground(color: UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1))
             cell.playButtonImage.isHidden = article.video == nil
+            cell.backImageView.clipBackground(cornerRadious: 5, color: .clear)
             
             return cell
         }
@@ -252,8 +382,74 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
 
 extension DetailArticleViewController{
     
-    func getProductDetail(productId:String){
+    func getArticleDetail(id:String){
+        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
+        Alamofire.request("https://iqctest.com/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+            response in
+            print(response)
+            
+            if let JSONData = response.result.value{
+                let json = JSON(JSONData)
+                print(json)
+                let articleData = Article()
+                
+                if json["list"].array == nil{
+                    self.loadingView.isHidden = true
+                    return
+                }
+                
+                for article in json["list"]{
+                    
+                    if let id = article.1["id"].string{
+                        articleData.id = id
+                    }
+                    if let modify = article.1["modify"].string{
+                        articleData.modify = modify
+                    }
+                    if let content = article.1["content"].string{
+                        articleData.content = content
+                    }
+                    if let main_img = article.1["main_img"].string{
+                        articleData.main_img = main_img
+                    }
+                    if let article = article.1["article"].string{
+                        articleData.article = article
+                    }
+                    if let title = article.1["title"].string{
+                        articleData.title = title
+                    }
+                    if let des = article.1["des"].string{
+                        articleData.des = des
+                    }
+                    if let tag = article.1["tag"].string{
+                        articleData.tag = tag
+                    }
+                    if let producrt = article.1["producrt"].string{
+                        articleData.producrt = producrt
+                    }
+                    if let reading = article.1["reading"].string{
+                        articleData.reading = reading
+                    }
+                    if let type = article.1["type"].string{
+                        articleData.type = type
+                    }
+                    if let video = article.1["video"].string{
+                        articleData.video = video
+                    }
+                    if let note = article.1["note"].string{
+                        articleData.note = note
+                    }
+                    self.article = articleData
+                }
+                self.setupView()
+            }
+        })
+        
+    }
+    
+    
+    func getProductDetail(productId:String){
         
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
@@ -354,67 +550,6 @@ extension DetailArticleViewController{
         }
     }
     
-    func getArticleDetailGo(id:String){
-        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
-        Alamofire.request("https://iqctest.com/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
-            response in
-            print(response)
-            
-            if let JSONData = response.result.value{
-                let json = JSON(JSONData)
-                print(json)
-                if json["list"].array == nil{
-                    return
-                }
-                for article in json["list"]{
-                    let articleData = Article()
-                    if let id = article.1["id"].string{
-                        articleData.id = id
-                    }
-                    if let modify = article.1["modify"].string{
-                        articleData.modify = modify
-                    }
-                    if let content = article.1["content"].string{
-                        articleData.content = content
-                    }
-                    if let main_img = article.1["main_img"].string{
-                        articleData.main_img = main_img
-                    }
-                    if let article = article.1["article"].string{
-                        articleData.article = article
-                    }
-                    if let title = article.1["title"].string{
-                        articleData.title = title
-                    }
-                    if let des = article.1["des"].string{
-                        articleData.des = des
-                    }
-                    if let tag = article.1["tag"].string{
-                        articleData.tag = tag
-                    }
-                    if let producrt = article.1["producrt"].string{
-                        articleData.producrt = producrt
-                    }
-                    if let reading = article.1["reading"].string{
-                        articleData.reading = reading
-                    }
-                    if let type = article.1["type"].string{
-                        articleData.type = type
-                    }
-                    if let video = article.1["video"].string{
-                        articleData.video = video
-                    }
-                    let vc = self.storyboard?.instantiateViewController(withIdentifier: "DetailArticle") as! DetailArticleViewController
-                    self.navigationItem.backBarButtonItem?.title = ""
-                    vc.article = articleData
-                    self.loadingView.isHidden = true
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-            }
-        })
-        
-    }
-    
     func getProductDetailGo(id:String){
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
@@ -446,6 +581,6 @@ extension DetailArticleViewController{
         })
         
     }
-
+    
     
 }

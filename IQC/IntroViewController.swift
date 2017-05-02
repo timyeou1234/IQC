@@ -62,6 +62,16 @@ class IntroViewController: UIViewController {
         buttonSecond.setImage(#imageLiteral(resourceName: "btn_coach_nor"), for: .normal)
         buttonSecond.setImage(#imageLiteral(resourceName: "btn_coach_prs"), for: .selected)
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        secondImageHand.isHidden = true
+        secondImageBubble.isHidden = true
+        buttonFirst.isSelected = true
+        presentFirst()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         //設定漸層效果
         gradient.frame = self.buttonView.bounds
         gradient.colors = ["".colorWithHexString("#2CCAA8").cgColor, "".colorWithHexString("#18B7CD").cgColor]
@@ -70,14 +80,6 @@ class IntroViewController: UIViewController {
         gradient.locations = [0, 1]
         self.buttonView.layer.addSublayer(gradient)
         gradient.zPosition = 0
-        
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        secondImageHand.isHidden = true
-        secondImageBubble.isHidden = true
-        buttonFirst.isSelected = true
-        presentFirst()
     }
 
     override func didReceiveMemoryWarning() {
