@@ -178,7 +178,6 @@ class HelpReportViewController: UIViewController {
     }
     
     override func viewDidDisappear(_ animated: Bool) {
-        NotificationCenter.default.removeObserver(self)
         self.tabBarController?.tabBar.isHidden = false
     }
     
@@ -197,11 +196,11 @@ class HelpReportViewController: UIViewController {
     func setupKeyboardView(){
         if self.view.bounds.width < 350{
             pointsStackView.spacing = 5
-        }else if self.view.bounds.width > 375 && self.view.bounds.width < 400{
+        }else if self.view.bounds.width > 375 && self.view.bounds.width < 415{
             pointsStackView.spacing = 13
         }else if self.view.bounds.width < 375{
             pointsStackView.spacing = 9
-        }else if self.view.bounds.width > 400 && self.view.bounds.width < 900{
+        }else if self.view.bounds.width > 414 && self.view.bounds.width < 900{
             pointsStackView.spacing = 43
         }else if self.view.bounds.width > 900{
             pointsStackView.spacing = 63
@@ -415,12 +414,48 @@ extension HelpReportViewController: PhotoPassingDelegate, YNActionSheetDelegate{
             if photoArray.count == 2{
                 self.performSegue(withIdentifier: "openLibary", sender: nil)
                 return
-            }else if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera) {
-                let imagePicker = UIImagePickerController()
-                imagePicker.delegate = self
-                imagePicker.sourceType = UIImagePickerControllerSourceType.camera
-                imagePicker.allowsEditing = false
-                self.present(imagePicker, animated: true, completion: nil)
+            }else{
+                let cameraMediaType = AVMediaTypeVideo
+                let cameraAuthorizationStatus = AVCaptureDevice.authorizationStatus(forMediaType: cameraMediaType)
+                switch cameraAuthorizationStatus {
+                case .authorized:
+                    let imagePicker = UIImagePickerController()
+                    imagePicker.delegate = self
+                    imagePicker.sourceType = UIImagePickerControllerSourceType.camera
+                    imagePicker.allowsEditing = false
+                    self.present(imagePicker, animated: true, completion: nil)
+                    
+                default:
+                    // Prompting user for the permission to use the camera.
+                    AVCaptureDevice.requestAccess(forMediaType: cameraMediaType) { granted in
+                        if granted {
+                            print("Granted access to \(cameraMediaType)")
+                            let imagePicker = UIImagePickerController()
+                            imagePicker.delegate = self
+                            imagePicker.sourceType = UIImagePickerControllerSourceType.camera
+                            imagePicker.allowsEditing = false
+                            self.present(imagePicker, animated: true, completion: nil)
+                        } else {
+                            print("Denied access to \(cameraMediaType)")
+                            let alert:UIAlertController = UIAlertController(title: "Camera Unavailable", message: "Unable to find a camera on this device", preferredStyle: UIAlertControllerStyle.alert)
+                            let cancelAction = UIAlertAction(title:"確定", style: .cancel, handler: nil)
+                            alert.addAction(cancelAction)
+                            self.present(alert, animated: true, completion: nil)
+                        }
+                    }
+                }
+//                if cameraAuthorizationStatus == .authorized{
+//                    let imagePicker = UIImagePickerController()
+//                    imagePicker.delegate = self
+//                    imagePicker.sourceType = UIImagePickerControllerSourceType.camera
+//                    imagePicker.allowsEditing = false
+//                    self.present(imagePicker, animated: true, completion: nil)
+//                }else{
+//                    let alert:UIAlertController = UIAlertController(title: "Camera Unavailable", message: "Unable to find a camera on this device", preferredStyle: UIAlertControllerStyle.alert)
+//                    let cancelAction = UIAlertAction(title:"確定", style: .cancel, handler: nil)
+//                    alert.addAction(cancelAction)
+//                    self.present(alert, animated: true, completion: nil)
+//                }
             }
         }else{
             self.performSegue(withIdentifier: "openLibary", sender: nil)

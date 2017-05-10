@@ -36,7 +36,7 @@ class GovDetailTableViewCell: UITableViewCell {
         if tittleLable.text != "供應廠商地址"{
             dashLineBottomView.addDashedLine(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: dashLineBottomView.frame.width, y: 0))
         }else{
-            cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: self.bounds.height - 46)}
+            cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: self.bounds.height - 30)}
         
     }
     

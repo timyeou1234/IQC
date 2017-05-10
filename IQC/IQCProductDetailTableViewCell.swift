@@ -1,14 +1,14 @@
 //
-//  ProductDetailItemTableViewCell.swift
+//  IQCProductDetailTableViewCell.swift
 //  IQC
 //
-//  Created by YeouTimothy on 2017/2/27.
+//  Created by YeouTimothy on 2017/5/7.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
 
 import UIKit
 
-class ProductDetailItemTableViewCell: UITableViewCell, UITableViewDelegate, UITableViewDataSource {
+class IQCProductDetailTableViewCell: UITableViewCell, UITableViewDelegate, UITableViewDataSource {
     
     //新加入之說明
     var content:String?
@@ -17,48 +17,56 @@ class ProductDetailItemTableViewCell: UITableViewCell, UITableViewDelegate, UITa
     var indexPath:IndexPath?
     var reportDetail = [ReportDetail]()
     var cellHeightChange:CellHeightChangeDelegate?
-    var tableViewHeight:CGFloat = 0
-    var contentHeight:CGFloat = 0
     var isOpen = false
     
+    @IBOutlet weak var tittleViewHeight: NSLayoutConstraint!
     @IBOutlet weak var tittleView: UIView!
+    @IBOutlet weak var contentsView: UIView!
+    @IBOutlet weak var tableViewHeight: NSLayoutConstraint!
     @IBOutlet weak var tittleLable: UILabel!
     @IBOutlet weak var ProductDetailTestTableView: UITableView!
+    @IBOutlet weak var contentLable: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
         ProductDetailTestTableView.dataSource = self
         ProductDetailTestTableView.delegate = self
-        ProductDetailTestTableView.rowHeight = UITableViewAutomaticDimension
-        ProductDetailTestTableView.estimatedRowHeight = 132
+//        ProductDetailTestTableView.rowHeight = UITableViewAutomaticDimension
+//        ProductDetailTestTableView.estimatedRowHeight = 132
         ProductDetailTestTableView.register(UINib(nibName: "ProductDetailTestTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell")
-        ProductDetailTestTableView.register(UINib(nibName: "ProductContentTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell1")
     }
     
     @IBAction func cellChangeHeight(_ sender: Any) {
         
-        let height = self.ProductDetailTestTableView.contentSize.height
+        contentLable.sizeToFit()
+        let height = 132 * CGFloat(reportDetail.count) + contentLable.frame.height + 59
         
-        //            let height = self.tableViewHeight
         if self.bounds.height > 42{
-//            isOpen = false
-//            tittleView.backgroundColor = UIColor.white
+            isOpen = false
+            tittleView.backgroundColor = UIColor.white
+            contentLable.isHidden = true
             self.cellHeightChange?.cellHeightChange(tableView:self.tableView! ,whichCell: self.indexPath!, height: 40 , howMuch: -height)
+            
         }else{
-//            isOpen = true
-//            tittleView.backgroundColor = UIColor(colorLiteralRed: 238/255, green: 249/255, blue: 251/255, alpha: 1)
+            isOpen = true
+            tittleView.backgroundColor = UIColor(colorLiteralRed: 238/255, green: 249/255, blue: 251/255, alpha: 1)
+            contentLable.isHidden = false
             self.cellHeightChange?.cellHeightChange(tableView:self.tableView! ,whichCell: self.indexPath!, height: 40 + height, howMuch: height)
+            
         }
-        
     }
     
-    func cellHeightChangexc(){
+    func requiredHeight(labelText:String) -> CGFloat {
         
-    }
-    
-    override func updateConstraints() {
-        super.updateConstraints()
+        let font = UIFont(name: "Helvetica", size: 16.0)
+        let label:UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: contentLable.bounds.width, height: .greatestFiniteMagnitude))
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        label.font = font
+        label.text = labelText
+        label.sizeToFit()
+        return label.frame.height
         
     }
     
@@ -73,36 +81,22 @@ class ProductDetailItemTableViewCell: UITableViewCell, UITableViewDelegate, UITa
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if content != nil && reportDetail.count == 0{
-            return 1
-        }else if content != nil{
-            return reportDetail.count + 1
-        }
+        tableViewHeight.constant = 132 * CGFloat(reportDetail.count)
         return reportDetail.count
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        if content != nil && indexPath.row == 0{
-            return UITableViewAutomaticDimension
-        }
+        
         return 132
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if content != nil && indexPath.row == 0{
-            let cell = tableView.dequeueReusableCell(withIdentifier: "Cell1", for: indexPath) as! ProductContentTableViewCell
-            cell.contentLable.text = self.content
-            
-            return cell
-        }
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ProductDetailTestTableViewCell
         var detail = ReportDetail()
-        if content != nil{
-            detail = reportDetail[indexPath.row - 1]
-        }else{
-            detail = reportDetail[indexPath.row]
-        }
+        
+        detail = reportDetail[indexPath.row]
+        
         if detail.file != nil{
             cell.fileUrl = detail.file!
             cell.fileId = detail.id!

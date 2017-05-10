@@ -202,7 +202,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     
     override func viewWillDisappear(_ animated: Bool) {
         loadingView.stopRotate()
-        NotificationCenter.default.removeObserver(self)
+//        NotificationCenter.default.removeObserver(self)
     }
     
     override func didReceiveMemoryWarning() {

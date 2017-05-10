@@ -19,6 +19,7 @@ class ScannerCoachViewController: UIViewController {
     var count = 0
     var isAnimateing = false
     
+    
     @IBOutlet weak var backgroundImage: UIImageView!
     @IBOutlet weak var handImageView: UIImageView!
     @IBOutlet weak var phoneImageView: UIImageView!
@@ -111,27 +112,37 @@ class ScannerCoachViewController: UIViewController {
         barcodeImageView.isHidden = true
         handImageView.isHidden = true
         
-        UIView.animate(withDuration: 1.0, animations: {
-            self.phoneImageView.frame = CGRect(x: self.bottleImageView.frame.maxX - self.phoneImageView.frame.width, y: self.phoneImageView.frame.minY, width: self.phoneImageView.frame.width, height: self.phoneImageView.frame.height)
-            self.phoneImageView.frame = CGRect(x: self.bottleImageView.frame.maxX - self.phoneImageView.bounds.width + 50, y: self.phoneImageView.frame.minY, width: self.phoneImageView.frame.width, height: self.phoneImageView.frame.height)
+        UIView.animate(withDuration: 2, delay: 1, options: [], animations: {
+            self.phoneBottleAlign.constant = 50
+//            self.view.layoutIfNeeded()
         }, completion: {
             success in
-            UIView.animate(withDuration: 1.0, animations: {
-                self.phoneImageView.frame = CGRect(x: self.phoneImageView.frame.minX - 100, y: self.phoneImageView.frame.minY, width: self.phoneImageView.frame.width, height: self.phoneImageView.frame.height)
+            UIView.animate(withDuration: 2, delay: 0, options: [], animations: {
+                self.phoneBottleAlign.constant = -50
+                self.view.layoutIfNeeded()
             }, completion: {
                 success in
-                UIView.animate(withDuration: 1.0, animations: {
-                    self.phoneImageView.frame = CGRect(x: self.phoneImageView.frame.minX + 50, y: self.phoneImageView.frame.minY, width: self.phoneImageView.frame.width, height: self.phoneImageView.frame.height)
+                UIView.animate(withDuration: 2, delay: 0, options: [], animations: {
+                    self.phoneBottleAlign.constant = 50
+                    self.view.layoutIfNeeded()
                 }, completion: {
                     success in
-                    self.count += 1
-                    if !self.timer.isValid{
-                        self.presentFirst()
-                    }
+                    UIView.animate(withDuration: 2, delay: 0, options: [], animations: {
+                        self.phoneBottleAlign.constant = -50
+                        self.view.layoutIfNeeded()
+                    }, completion: {
+                        success in
+                        UIView.animate(withDuration: 2, delay: 0, options: [], animations: {
+                            self.phoneBottleAlign.constant = 0
+                            self.view.layoutIfNeeded()
+                        }, completion: {
+                            success in
+                        })
+                    })
                 })
             })
         })
-
+        
     }
     
     func changeImage(){

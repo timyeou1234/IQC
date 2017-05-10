@@ -18,7 +18,7 @@ protocol CellHeightChangeDelegate {
 
 class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     
-    
+    var loadingView = LoadingView()
     var observing = false
     var cellHeightChange:CellHeightChangeDelegate?
     var navigationBarOriginalOffset : CGFloat?
@@ -87,7 +87,7 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     @IBOutlet weak var simularProductCollectionView: UICollectionView!
     
     @IBAction func shareAction(_ sender: Any) {
-        let myWebsite = NSURL(string: "https://iqctest.com/article/\(productId)")
+        let myWebsite = NSURL(string: "https://iqctest.com/product/\(productId)")
         
         guard let url = myWebsite else {
             print("nothing found")
@@ -97,6 +97,7 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
         let shareItems:Array = [url]
         let activityViewController:UIActivityViewController = UIActivityViewController(activityItems: shareItems, applicationActivities: nil)
         activityViewController.excludedActivityTypes = [UIActivityType.print, UIActivityType.postToWeibo, UIActivityType.copyToPasteboard, UIActivityType.addToReadingList, UIActivityType.postToVimeo]
+        activityViewController.popoverPresentationController?.sourceView = self.view
         self.present(activityViewController, animated: true, completion: nil)
     }
     
@@ -264,7 +265,8 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     @IBAction func ingrediantOpenAction(_ sender: Any) {
         if ingrediantTableViewHightConstraint.constant == 0{
             if isLatest{
-                ingrediantTableViewHightConstraint.constant = tableViewHeightList[2]
+                //                ingrediantTableViewHightConstraint.constant = tableViewHeightList[2]
+                ingrediantTableViewHightConstraint.constant = ingrediantTableView.contentSize.height
             }else{
                 ingrediantTableViewHightConstraint.constant = ingrediantTableView.contentSize.height
             }
@@ -287,7 +289,7 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
         secondButton.layer.borderWidth = 1
         secondButton.layer.masksToBounds = true
         
-        sliderIndexBackView.clipBackground(cornerRadious: sliderIndexBackView.bounds.height/2, color: UIColor(colorLiteralRed: 215/255, green: 215/255, blue: 215/255, alpha: 1))        
+        sliderIndexBackView.clipBackground(cornerRadious: sliderIndexBackView.bounds.height/2, color: UIColor(colorLiteralRed: 215/255, green: 215/255, blue: 215/255, alpha: 1))
         reportButton.setTitleColor((UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1)), for: .selected)
         productButton.setTitleColor((UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1)), for: .selected)
         reportButton.setTitleColor(UIColor(colorLiteralRed: 155/255, green: 155/255, blue: 155/255, alpha: 1), for: .normal)
@@ -339,20 +341,26 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
         productTableView.register(UINib(nibName: "ProductTittleTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell1")
         productTableView.register(UINib(nibName: "ProductDetailTestTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell2")
         productTableView.register(UINib(nibName: "ProductDetailItemTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell3")
+        productTableView.register(UINib(nibName: "IQCProductDetailTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell4")
         
         halfProductTableView.register(UINib(nibName: "ProductDetailTestTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell")
         halfProductTableView.register(UINib(nibName: "ProductTittleTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell21")
         halfProductTableView.register(UINib(nibName: "ProductDetailTestTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell22")
         halfProductTableView.register(UINib(nibName: "ProductDetailItemTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell3")
+        halfProductTableView.register(UINib(nibName: "IQCProductDetailTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell4")
         
         ingrediantTableView.register(UINib(nibName: "ProductDetailTestTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell")
         ingrediantTableView.register(UINib(nibName: "ProductTittleTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell31")
         ingrediantTableView.register(UINib(nibName: "ProductDetailTestTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell32")
         ingrediantTableView.register(UINib(nibName: "ProductDetailItemTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell3")
+        ingrediantTableView.register(UINib(nibName: "IQCProductDetailTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell4")
         
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        loadingView.frame = self.view.frame
+        loadingView.startRotate()
+        self.view.addSubview(loadingView)
         self.tabBarController?.tabBar.isHidden = true
         getProductDetail()
         NotificationCenter.default.addObserver(self,
@@ -388,10 +396,10 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
             // We're not just minusing the kb height from the view height because
             // the view could already have been resized for the keyboard before
             if facebookCommentWebview.scrollView.contentSize.height < 1000{
-            self.view.frame = CGRect(x: self.view.frame.origin.x,
-                                     y: self.view.frame.origin.y,
-                                     width: self.view.frame.width,
-                                     height: window.origin.y + window.height - keyboardSize.height)
+                self.view.frame = CGRect(x: self.view.frame.origin.x,
+                                         y: self.view.frame.origin.y,
+                                         width: self.view.frame.width,
+                                         height: window.origin.y + window.height - keyboardSize.height)
                 self.scrollView.contentOffset.y = self.scrollView.contentSize.height
             }
         } else {
@@ -402,11 +410,11 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     func keyboardWillHideForResizing(notification: Notification) {
         if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             if facebookCommentWebview.scrollView.contentSize.height < 1000{
-            let viewHeight = self.view.frame.height
-            self.view.frame = CGRect(x: self.view.frame.origin.x,
-                                     y: self.view.frame.origin.y,
-                                     width: self.view.frame.width,
-                                     height: viewHeight + keyboardSize.height)
+                let viewHeight = self.view.frame.height
+                self.view.frame = CGRect(x: self.view.frame.origin.x,
+                                         y: self.view.frame.origin.y,
+                                         width: self.view.frame.width,
+                                         height: viewHeight + keyboardSize.height)
             }
         } else {
             debugPrint("We're about to hide the keyboard and the keyboard size is nil. Now is the rapture.")
@@ -443,6 +451,7 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        loadingView.stopRotate()
         NotificationCenter.default.removeObserver(self)
         self.tabBarController?.tabBar.isHidden = false
     }
@@ -507,6 +516,8 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         if collectionView == productSliderCollectionView{
             return 0
+        }else if collectionView == buyCollectionView{
+            return 10
         }
         return 30
     }
@@ -807,7 +818,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
             case 4:
                 cell.tittleItemLable.text = "素食標示"
                 var text = ""
-                if product.allergy != nil{
+                if product.veg != nil{
                     for veg in product.veg!{
                         if text == ""{
                             text += "\(veg)"
@@ -925,6 +936,35 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     cell.tittleNameLable.text = ""
                     return cell
                 }else{
+                    //                    新加入若有說明
+                    if (currentReport[section].item?[(index - 2)].content) != nil{
+                        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell4", for: indexPath) as! IQCProductDetailTableViewCell
+                        cell.contentLable.text = (currentReport[section].item?[(index - 2)].content)
+                        if productCellHeight[indexPath] != nil{
+                            if productCellHeight[indexPath]! != 40{
+                                cell.contentLable.isHidden = false
+                                cell.tittleView.backgroundColor = UIColor(colorLiteralRed: 238/255, green: 249/255, blue: 251/255, alpha: 1)
+                            }else{
+                                cell.contentLable.isHidden = true
+                                cell.tittleView.backgroundColor = UIColor.white
+                            }
+                        }else{
+                            cell.contentLable.isHidden = true
+                            cell.tittleView.backgroundColor = UIColor.white
+                        }
+                        
+                        cell.contentLable.text = (currentReport[section].item?[(index - 2)].content)
+                        cell.cellHeightChange = self
+                        cell.indexPath = indexPath
+                        cell.tableView = tableView
+                        cell.reportDetail = (currentReport[section].item?[(index - 2)].reportid)!
+                        cell.tittleLable.text = currentReport[section].item?[(index - 2)].itemid
+                        
+                        cell.ProductDetailTestTableView.reloadData()
+                        return cell
+
+                    }
+                    
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell3", for: indexPath) as! ProductDetailItemTableViewCell
                     
                     cell.productId = self.productId
@@ -960,6 +1000,34 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     cell.tittleNameLable.text = ""
                     return cell
                 }else{
+                    //                    新加入若有說明
+                    if (currentReport[section].item?[(index - 2)].content) != nil{
+                        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell4", for: indexPath) as! IQCProductDetailTableViewCell
+                        cell.contentLable.text = (currentReport[section].item?[(index - 2)].content)
+                        if halfProductCellHeight[indexPath] != nil{
+                            if halfProductCellHeight[indexPath]! != 40{
+                                cell.contentLable.isHidden = false
+                                cell.tittleView.backgroundColor = UIColor(colorLiteralRed: 238/255, green: 249/255, blue: 251/255, alpha: 1)
+                            }else{
+                                cell.contentLable.isHidden = true
+                                cell.tittleView.backgroundColor = UIColor.white
+                            }
+                        }else{
+                            cell.contentLable.isHidden = true
+                            cell.tittleView.backgroundColor = UIColor.white
+                        }
+                        
+                        cell.contentLable.text = (currentReport[section].item?[(index - 2)].content)
+                        cell.cellHeightChange = self
+                        cell.indexPath = indexPath
+                        cell.tableView = tableView
+                        cell.reportDetail = (currentReport[section].item?[(index - 2)].reportid)!
+                        cell.tittleLable.text = currentReport[section].item?[(index - 2)].itemid
+                        
+                        cell.ProductDetailTestTableView.reloadData()
+                        return cell
+                    }
+                    
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell3", for: indexPath) as! ProductDetailItemTableViewCell
                     
                     cell.cellHeightChange = self
@@ -994,8 +1062,37 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     cell.tittleNameLable.text = ""
                     return cell
                 }else{
+                    //                    新加入若有說明
+                    if (currentReport[section].item?[(index - 2)].content) != nil{
+                        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell4", for: indexPath) as! IQCProductDetailTableViewCell
+                        cell.contentLable.text = (currentReport[section].item?[(index - 2)].content)
+                        if ingrediantCellHeight[indexPath] != nil{
+                            if ingrediantCellHeight[indexPath]! != 40{
+                                cell.contentLable.isHidden = false
+                                cell.tittleView.backgroundColor = UIColor(colorLiteralRed: 238/255, green: 249/255, blue: 251/255, alpha: 1)
+                            }else{
+                                cell.contentLable.isHidden = true
+                                cell.tittleView.backgroundColor = UIColor.white
+                            }
+                        }else{
+                            cell.contentLable.isHidden = true
+                            cell.tittleView.backgroundColor = UIColor.white
+                        }
+                        
+                        cell.contentLable.text = (currentReport[section].item?[(index - 2)].content)
+                        cell.cellHeightChange = self
+                        cell.indexPath = indexPath
+                        cell.tableView = tableView
+                        cell.reportDetail = (currentReport[section].item?[(index - 2)].reportid)!
+                        cell.tittleLable.text = currentReport[section].item?[(index - 2)].itemid
+                        
+                        cell.ProductDetailTestTableView.reloadData()
+                        return cell
+
+                    }
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell3", for: indexPath) as! ProductDetailItemTableViewCell
                     
+                    //                    cell.content = (currentReport[section].item?[(index - 2)].content)
                     cell.cellHeightChange = self
                     cell.indexPath = indexPath
                     cell.tableView = tableView
@@ -1094,7 +1191,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 cell.testUnitLable.text = detail.title
                 
                 return cell
-
+                
             }
             
             if tableView == halfProductTableView{
@@ -1173,10 +1270,11 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         default:
             ingrediantTableViewHightConstraint.constant += howMuch
             tableViewHeightList[2] = ingrediantTableViewHightConstraint.constant
-            ingrediantCellHeight[whichCell] = height
+            
         }
         
         tableView.reloadRows(at: [whichCell], with: .none)
+        
     }
     
     func getProductDetail(){
@@ -1210,6 +1308,9 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                                     reportClass.itemid = itemid
                                 }else{
                                     reportClass.itemid = ""
+                                }
+                                if let content = jsonReportClass.1["content"].string{
+                                    reportClass.content = content
                                 }
                                 for jsonReportDetail in jsonReportClass.1["reportid"]{
                                     
@@ -1495,6 +1596,7 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         self.underLineView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width/2, height: self.underLineView.bounds.height)
         stickyViewConstraint.constant = headerTopView.frame.maxY
         navigationBarOriginalOffset = headerTopView.frame.maxY
+        loadingView.isHidden = true
     }
     
     //取得所屬品牌後刷新頁面

@@ -18,6 +18,8 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
     var product = GovProduct()
     var productId = ""
     var productList = [Product]()
+    var productCellHeight = [IndexPath:CGFloat]()
+    var openCell = [IndexPath:Bool]()
     
     @IBOutlet weak var productTableView: UITableView!
     @IBOutlet weak var productTableViewHeightConstant: NSLayoutConstraint!
@@ -38,7 +40,7 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
     @IBOutlet weak var productIngrediantHeightConstraint: NSLayoutConstraint!
     
     @IBAction func shareAction(_ sender: Any) {
-        let myWebsite = NSURL(string: "https://iqctest.com/article/\(productId)")
+        let myWebsite = NSURL(string: "https://iqctest.com/product/\(productId)")
         
         guard let url = myWebsite else {
             print("nothing found")
@@ -48,6 +50,7 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
         let shareItems:Array = [url]
         let activityViewController:UIActivityViewController = UIActivityViewController(activityItems: shareItems, applicationActivities: nil)
         activityViewController.excludedActivityTypes = [UIActivityType.print, UIActivityType.postToWeibo, UIActivityType.copyToPasteboard, UIActivityType.addToReadingList, UIActivityType.postToVimeo]
+        activityViewController.popoverPresentationController?.sourceView = self.view
         self.present(activityViewController, animated: true, completion: nil)
     }
     
@@ -67,6 +70,7 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
     
     @IBAction func productAction(_ sender: Any) {
         if productTableViewHeightConstant.constant == 0{
+            productTableView.layoutIfNeeded()
             productTableViewHeightConstant.constant = productTableView.contentSize.height
         }else{
             productTableViewHeightConstant.constant = 0
@@ -106,12 +110,14 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
         productTableView.register(UINib(nibName: "ProductDetailTestTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell")
         productTableView.register(UINib(nibName: "ProductTittleTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell1")
         productTableView.register(UINib(nibName: "ProductDetailTestTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell2")
-        productTableView.register(UINib(nibName: "ProductDetailItemTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell3")
+        productTableView.register(UINib(nibName: "IQCProductDetailTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell3")
+        productTableView.register(UINib(nibName: "ProductSubjectTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell4")
         
         // Do any additional setup after loading the view.
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        getProductDetail()
         sliderIndexBackView.clipBackground(cornerRadious: sliderIndexBackView.bounds.height/2, color: UIColor(colorLiteralRed: 215/255, green: 215/255, blue: 215/255, alpha: 1))
         let facebookUrl = "<!DOCTYPE html><html> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> </head><body> <div id=\"fb-root\"></div><script>(function(d, s, id){var js, fjs=d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js=d.createElement(s); js.id=id; js.src=\"//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8&appId=700015816832989\"; fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script> <div class=\"fb-comments\" data-href=\"https://iqctest.com/product/\(productId)\" data-numposts=\"5\"></div></body></html>"
         
@@ -186,7 +192,7 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
         }
         
     }
-
+    
     
     override func viewWillAppear(_ animated: Bool) {
         NotificationCenter.default.addObserver(self,
@@ -197,9 +203,9 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
                                                selector: #selector(keyboardWillHideForResizing),
                                                name: Notification.Name.UIKeyboardWillHide,
                                                object: nil)
-
+        
         self.tabBarController?.tabBar.isHidden = true
-        getProductDetail()
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -314,49 +320,28 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
         
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if tableView == productTableView{
-            var count = 0
-            if product.latestreport == nil{
-                return 0
-            }
-            for report in product.latestreport!{
-                if report.type! == "成品檢驗合格區"{
-                    count += 2
-                    if report.item != nil{
-                        count += (report.item?.count)!
-                    }
-                }
-            }
-            return count
-
-        }
-        return 4
-        
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
-        
-        
-        if tableView == productTableView{
-            
+            //計算每一種不同的report共有多少欄數
             var countForReport = [Int]()
             if tableView == productTableView{
                 for report in product.latestreport!{
-                    if report.type == "成品檢驗合格區"{
+                    if report.type == "檢驗合格區"{
                         var count = 2
+                        if report.reportDetail != nil{
+                            count += 1
+                        }
                         if report.item == nil{
                             
                         }else{
                             count += (report.item?.count)!
-                            
                         }
                         countForReport.append(count)
                     }
                 }
             }
-
+            
+            //計算欄數總和與所在區塊
             var total = 0
             var section = 0
             for count in countForReport{
@@ -367,19 +352,102 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
                     section += 1
                 }
             }
+            
+            //            換算不同區塊的index
             var index = indexPath.row
             if section > 0{
                 for sectionCount in 0...section - 1{
-                    index = indexPath.row - countForReport[sectionCount]
+                    index -= countForReport[sectionCount]
                 }
             }
             
+            if let cellHeight = productCellHeight[indexPath]{
+                return cellHeight
+            }else{
+                if index != 1{
+                    return 40
+                }
+            }
+        }
+        return UITableViewAutomaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if tableView == productTableView{
+            var count = 0
+            if product.latestreport == nil{
+                return 0
+            }
+            for report in product.latestreport!{
+                if report.type! == "檢驗合格區"{
+                    count += 2
+                    if report.item != nil{
+                        count += (report.item?.count)!
+                    }
+                    if report.reportDetail != nil{
+                        count += 1
+                    }
+                }
+            }
+            return count
+            
+        }
+        return 4
+        
+    }
+    
+    //MARK:TableView Cell for row
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        if tableView == productTableView{
+            
+            //計算每一種不同的report共有多少欄數
+            var countForReport = [Int]()
+            if tableView == productTableView{
+                for report in product.latestreport!{
+                    if report.type == "檢驗合格區"{
+                        var count = 2
+                        if report.reportDetail != nil{
+                            count += 1
+                        }
+                        if report.item == nil{
+                            
+                        }else{
+                            count += (report.item?.count)!
+                        }
+                        countForReport.append(count)
+                    }
+                }
+            }
+            
+            //計算欄數總和與所在區塊
+            var total = 0
+            var section = 0
+            for count in countForReport{
+                total += count
+                if indexPath.row + 1 <= total {
+                    break
+                }else{
+                    section += 1
+                }
+            }
+            
+            //            換算不同區塊的index
+            var index = indexPath.row
+            if section > 0{
+                for sectionCount in 0...section - 1{
+                    index -= countForReport[sectionCount]
+                }
+            }
+            
+            //作出報告的陣列
             var currentReport = [Report]()
             for report in product.latestreport!{
-                if report.type == "成品檢驗合格區"{
+                if report.type == "檢驗合格區"{
                     currentReport.append(report)
                 }
             }
+            
             if index == 0{
                 let cell = tableView.dequeueReusableCell(withIdentifier: "Cell1", for: indexPath) as! ProductTittleTableViewCell
                 cell.drawDash()
@@ -388,26 +456,48 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
                 cell.tittleNameLable.text = currentReport[section].tittle
                 return cell
             }else if index == 1{
-                let cell = tableView.dequeueReusableCell(withIdentifier: "Cell1", for: indexPath) as! ProductTittleTableViewCell
-                cell.tittleBackView.backgroundColor = UIColor.white
-                cell.tittleLable.text = "檢驗項目"
-                cell.tittleNameLable.text = ""
+                if currentReport[section].reportDetail != nil{
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "Cell2", for: indexPath) as! ProductDetailTestTableViewCell
+                    let detail = currentReport[section].reportDetail
+                    cell.fileId = (detail?.id)!
+                    cell.fileUrl = (detail?.file)!
+                    cell.productId = self.productId
+                    cell.testSource.text = detail?.source
+                    cell.testDateLable.text = detail?.reportdate
+                    cell.testUnitLable.text = detail?.title
+                    return cell
+                }
+            }else if index == 2{
+                let cell = tableView.dequeueReusableCell(withIdentifier: "Cell4", for: indexPath) as! ProductSubjectTableViewCell
                 return cell
             }else{
-                let cell = tableView.dequeueReusableCell(withIdentifier: "Cell3", for: indexPath) as! ProductDetailItemTableViewCell
-                
-                cell.productId = self.productId
-                cell.cellHeightChange = self
-                cell.indexPath = indexPath
+                let cell = tableView.dequeueReusableCell(withIdentifier: "Cell3", for: indexPath) as! IQCProductDetailTableViewCell
+                if productCellHeight[indexPath] != nil{
+                    if productCellHeight[indexPath]! != 40{
+                        cell.contentLable.isHidden = false
+                        cell.tittleView.backgroundColor = UIColor(colorLiteralRed: 238/255, green: 249/255, blue: 251/255, alpha: 1)
+                    }else{
+                        cell.contentLable.isHidden = true
+                        cell.tittleView.backgroundColor = UIColor.white
+                    }
+                }else{
+                    cell.contentLable.isHidden = true
+                    cell.tittleView.backgroundColor = UIColor.white
+                }
+                cell.contentLable.text = (currentReport[section].item?[(index - 3)].content)
                 cell.tableView = tableView
-                cell.reportDetail = (currentReport[section].item?[(index - 2)].reportid)!
-                cell.tittleLable.text = currentReport[section].item?[(index - 2)].itemid
+                cell.indexPath = indexPath
+                cell.cellHeightChange = self
+                cell.tittleLable.text = currentReport[section].item?[index - 3].itemid
+                cell.content = currentReport[section].item?[index - 3].content
+                
+                
                 
                 cell.ProductDetailTestTableView.reloadData()
                 return cell
             }
-
-        
+            
+            
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! GovDetailTableViewCell
         switch indexPath.row {
@@ -451,7 +541,6 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
         return cell
     }
     
-    
 }
 
 extension GovProductDetailViewController:CellHeightChangeDelegate{
@@ -459,12 +548,19 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
     func cellHeightChange(tableView:UITableView ,whichCell:IndexPath, height:CGFloat, howMuch: CGFloat) {
         
         if tableView == productTableView{
-            productTableViewHeightConstant.constant = productTableView.contentSize.height
+            if howMuch > 0{
+                openCell[whichCell] = true
+            }else{
+                openCell[whichCell] = false
+            }
+            productTableViewHeightConstant.constant += howMuch
+            productCellHeight[whichCell] = height
+        }else{
+            
+            productIngrediantHeightConstraint.constant = detailTableView.contentSize.height
+            dashLineView.addDashedLine(startPoint: CGPoint(x: self.view.bounds.width/3, y: 0), endPoint: CGPoint(x: self.view.bounds.width/3, y: detailTableView.bounds.height))
         }
-        
-        productIngrediantHeightConstraint.constant += howMuch + 10
-        dashLineView.addDashedLine(startPoint: CGPoint(x: self.view.bounds.width/3, y: 0), endPoint: CGPoint(x: self.view.bounds.width/3, y: detailTableView.bounds.height))
-        
+        tableView.reloadRows(at: [whichCell], with: .none)
     }
     
     func getProductDetail(){
@@ -490,46 +586,48 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                         if let type = jsonLatest.1["type"].string{
                             latestReport.type = type
                         }
+                        if let report = jsonLatest.1["report"].array{
+                            let jsonReportDetail = report[0]
+                            let reportDetail = ReportDetail()
+                            if let id = jsonReportDetail["id"].string{
+                                reportDetail.id = id
+                            }
+                            if let title = jsonReportDetail["title"].string{
+                                reportDetail.title = title
+                            }
+                            if let source = jsonReportDetail["source"].string{
+                                reportDetail.source = source
+                            }
+                            if let reportdate = jsonReportDetail["reportdate"].string{
+                                reportDetail.reportdate = reportdate
+                            }
+                            if let file = jsonReportDetail["file"].string{
+                                reportDetail.file = file
+                            }
+                            latestReport.reportDetail = reportDetail
+                        }
                         if jsonLatest.1["item"] != nil{
                             var reportClassList = [ReportClass]()
                             for jsonReportClass in jsonLatest.1["item"]{
                                 
-                                var repoerDetailList = [ReportDetail]()
+                                let repoerDetailList = [ReportDetail]()
                                 let reportClass = ReportClass()
                                 if let itemid = jsonReportClass.1["itemid"].string{
                                     reportClass.itemid = itemid
                                 }else{
                                     reportClass.itemid = ""
                                 }
-                                for jsonReportDetail in jsonReportClass.1["reportid"]{
-                                    
-                                    let reportDetail = ReportDetail()
-                                    if let reportdate = jsonReportDetail.1["reportdate"].string{
-                                        reportDetail.reportdate = reportdate
-                                    }
-                                    if let id = jsonReportDetail.1["id"].string{
-                                        reportDetail.id = id
-                                    }
-                                    if let title = jsonReportDetail.1["title"].string{
-                                        reportDetail.title = title
-                                    }
-                                    if let source = jsonReportDetail.1["source"].string{
-                                        reportDetail.source = source
-                                    }
-                                    if let file = jsonReportDetail.1["file"].string{
-                                        reportDetail.file = file
-                                    }
-                                    repoerDetailList.append(reportDetail)
+                                if let content = jsonReportClass.1["content"].string{
+                                    reportClass.content = content
                                 }
                                 reportClass.reportid = repoerDetailList
                                 reportClassList.append(reportClass)
                             }
-                            
                             latestReport.item = reportClassList
                         }
                         reportList.append(latestReport)
                     }
-                    self.product.latestreport = reportList
+                    product.latestreport = reportList
                 }
                 
                 
@@ -598,7 +696,9 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                     }
                 }
                 self.product = product
-                self.refreshView()
+                DispatchQueue.main.async {
+                    self.refreshView()
+                }
             }
         })
         
@@ -653,8 +753,22 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
         productSliderCollectionView.reloadData()
         detailTableView.reloadData()
         detailTableView.layoutIfNeeded()
-        productIngrediantHeightConstraint.constant = detailTableView.contentSize.height
         
+        detailTableView.layoutIfNeeded()
+        productIngrediantHeightConstraint.constant = detailTableView.contentSize.height
+        productTableView.layoutIfNeeded()
+        productTableViewHeightConstant.constant = 0
+        productTableView.reloadData()
+        openProduct()
+    }
+    
+    func openProduct(){
+        let when = DispatchTime.now() + 1
+        self.productAction(self)
+        DispatchQueue.main.asyncAfter(deadline: when) {
+            self.productAction(self)
+            self.productAction(self)
+        }
     }
     
     func getProductDetailGo(id:String){
@@ -684,7 +798,6 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                 }
             }
         })
-        
     }
     
 }

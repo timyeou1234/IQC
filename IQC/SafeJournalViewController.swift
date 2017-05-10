@@ -61,7 +61,7 @@ class SafeJournalViewController: UIViewController {
     
     @IBAction func ownAction(_ sender: Any) {
         currentType = "自己食安自己救"
-        buttonScrollView.contentOffset = CGPoint(x: buttonScrollView.contentSize.width, y: 0)
+        buttonScrollView.contentOffset = CGPoint(x: buttonScrollView.contentSize.width - self.view.bounds.width, y: 0)
         articleTableView.reloadData()
         UIView.animate(withDuration: 0.1, animations:
             {
@@ -186,70 +186,6 @@ class SafeJournalViewController: UIViewController {
         })
     }
     
-    func updateType(type: String){
-        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
-        
-        Alamofire.request("https://iqctest.com/api/blog/list/\(type)", headers: headers).responseJSON(completionHandler: {
-            response in
-            print(response)
-            
-            if let JSONData = response.result.value{
-                let json = JSON(JSONData)
-                print(json)
-                if json["list"].array == nil{
-                    self.articleTableView.isHidden = true
-                    self.loadingView.isHidden = true
-                    return
-                }else{
-                    
-                }
-                for article in json["list"]{
-                    let articleData = Article()
-                    if let id = article.1["id"].string{
-                        articleData.id = id
-                    }
-                    if let modify = article.1["modify"].string{
-                        articleData.modify = modify
-                    }
-                    if let content = article.1["content"].string{
-                        articleData.content = content
-                    }
-                    if let img = article.1["list_img"].string{
-                        articleData.img = img
-                    }
-                    if let article = article.1["article"].string{
-                        articleData.article = article
-                    }
-                    if let title = article.1["title"].string{
-                        articleData.title = title
-                    }
-                    if let main_img = article.1["main_img"].string{
-                        articleData.main_img = main_img
-                    }
-                    if let video = article.1["video"].string{
-                        articleData.video = video
-                    }
-                    if let type = article.1["type"].string{
-                        articleData.type = type
-                        switch type{
-                        case "食安專訪":
-                            self.articleList.append(articleData)
-                        case "食安生活":
-                            self.lifeList.append(articleData)
-                        case "食安新知":
-                            self.newsList.append(articleData)
-                        case "自己食安自己救":
-                            self.ownList.append(articleData)
-                        default:
-                            break
-                        }
-                    }
-                }
-                self.articleTableView.reloadData()
-            }
-        })
-    }
-    
     // MARK: - Navigation
     
     // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -268,6 +204,15 @@ class SafeJournalViewController: UIViewController {
 }
 
 extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource, UIViewControllerTransitioningDelegate, MenuActionDelegate{
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        if refreshControl.isRefreshing {
+            if !isUpdating {
+                update(type: currentType)
+            }
+            refreshControl.endRefreshing()
+        }
+    }
     
     func openSegue(_ segueName: String, sender: AnyObject?) {
         dismiss(animated: false){
@@ -289,7 +234,20 @@ extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource,
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "showDetail", sender: articleList[indexPath.item].id!)
+        var article = Article()
+        switch currentType{
+        case "食安專訪":
+            article = articleList[indexPath.row]
+        case "食安生活":
+            article = lifeList[indexPath.row]
+        case "食安新知":
+            article = newsList[indexPath.row]
+        case "自己食安自己救":
+            article = ownList[indexPath.row]
+        default:
+            break
+        }
+        performSegue(withIdentifier: "showDetail", sender: article.id!)
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -335,11 +293,11 @@ extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource,
         return cell
     }
     
-    func update(){
+    func update(type:String){
         isUpdating = true
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        Alamofire.request("https://iqctest.com/api/topic/list", headers: headers).responseJSON(completionHandler: {
+        Alamofire.request("https://iqctest.com/api/blog/list/\(type)", headers: headers).responseJSON(completionHandler: {
             response in
             print(response)
             
@@ -347,7 +305,20 @@ extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource,
                 let json = JSON(JSONData)
                 print(json)
                 if let list = json["list"].array{
-                    if list.count == self.articleList.count{
+                    var count = 0
+                    switch type{
+                    case "食安專訪":
+                        count = self.articleList.count
+                    case "食安生活":
+                        count = self.lifeList.count
+                    case "食安新知":
+                        count = self.newsList.count
+                    case "自己食安自己救":
+                        count = self.ownList.count
+                    default:
+                        break
+                    }
+                    if list.count == count{
                         self.isUpdating = false
                         return
                     }
@@ -363,7 +334,7 @@ extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource,
                     if let content = article.1["content"].string{
                         articleData.content = content
                     }
-                    if let img = article.1["img"].string{
+                    if let img = article.1["list_img"].string{
                         articleData.img = img
                     }
                     if let article = article.1["article"].string{
@@ -372,10 +343,27 @@ extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource,
                     if let title = article.1["title"].string{
                         articleData.title = title
                     }
-                    if let des = article.1["des"].string{
-                        articleData.des = des
+                    if let main_img = article.1["main_img"].string{
+                        articleData.main_img = main_img
                     }
-                    self.articleList.append(articleData)
+                    if let video = article.1["video"].string{
+                        articleData.video = video
+                    }
+                    if let type = article.1["type"].string{
+                        articleData.type = type
+                        switch type{
+                        case "食安專訪":
+                            self.articleList.append(articleData)
+                        case "食安生活":
+                            self.lifeList.append(articleData)
+                        case "食安新知":
+                            self.newsList.append(articleData)
+                        case "自己食安自己救":
+                            self.ownList.append(articleData)
+                        default:
+                            break
+                        }
+                    }
                 }
                 self.articleTableView.reloadData()
                 self.isUpdating = false

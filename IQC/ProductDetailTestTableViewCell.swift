@@ -37,6 +37,7 @@ class ProductDetailTestTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        buttonBackView.layer.cornerRadius = 5
         buttonBackView.layer.drawsAsynchronously = true
         buttonBackView.layer.borderWidth = 1
         buttonBackView.layer.borderColor = UIColor(colorLiteralRed: 2/255, green: 182/255, blue: 197/255, alpha: 1).cgColor

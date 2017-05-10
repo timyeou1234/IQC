@@ -157,8 +157,6 @@ class SafeViewController: UIViewController {
                 print(json)
                 for productType in json["list"]{
                     
-                    
-                    
                     let productData = ProductType()
                     
                     if let id = productType.1["id"].string{
@@ -341,24 +339,28 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        if collectionView == brandCollectionView{
-            return UIEdgeInsetsMake(0, 10, 0, 10)
-        }
-        return UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 0)
+//        if collectionView == brandCollectionView{
+//            return UIEdgeInsetsMake(0, 10, 0, 10)
+//        }
+        return UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 4)
     }
     
     //    MARK: CollectionView delegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        //MARK:Main select
         if collectionView == tittleCollectionView{
             selectedTittle = indexPath.item
             selectedSubTittel = -1
             tittleCollectionView.reloadData()
             subTittleCollectionView.reloadData()
-            searchProduct(productTypeList[indexPath.item].id!, subId: "", productType: self.productTypeList[0])
+            searchProduct(productTypeList[indexPath.item].id!, subId: "", productType: self.productTypeList[indexPath.item])
+        //MARK:Sub select
         }else if collectionView == subTittleCollectionView{
             selectedSubTittel = indexPath.item
             subTittleCollectionView.reloadData()
-            searchProduct(productTypeList[selectedTittle].id!, subId: (productTypeList[selectedTittle].submenu?[selectedSubTittel].id!)!, productType: productTypeList[selectedTittle])
+            if productDict[productTypeList[selectedTittle]] != nil{
+                filterSubTitle(productList: productDict[productTypeList[selectedTittle]]!, subId: (productTypeList[selectedTittle].submenu?[selectedSubTittel].id!)!, productType: productTypeList[selectedTittle])
+            }
         }else if collectionView == productCollectionView{
             if !isLoaded{
                 isLoaded = true
@@ -460,7 +462,11 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
 extension SafeViewController{
     
     func searchProduct(_ tittleId:String, subId:String, productType:ProductType){
-        
+        if productDict[productType] != nil{
+            self.productList = self.productDict[productType]!
+            self.productCollectionView.reloadData()
+            return
+        }
         productList = [Product]()
         loadingView.isHidden = false
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
@@ -496,6 +502,9 @@ extension SafeViewController{
                     if let title = product.1["title"].string{
                         productData.title = title
                     }
+                    if let subId = product.1["submenuid"].string{
+                        productData.subId = subId
+                    }
                     productList.append(productData)
                     //                    self.productList.append(productData)
                 }
@@ -508,7 +517,14 @@ extension SafeViewController{
     }
     
     func filterSubTitle(productList:[Product], subId:String, productType:ProductType){
-        
+        var filteredProduct = [Product]()
+        for product in productList{
+            if product.subId == subId{
+                filteredProduct.append(product)
+            }
+        }
+        self.productList = filteredProduct
+        productCollectionView.reloadData()
     }
     
     //    判斷是否為政府檢驗

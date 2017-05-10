@@ -10,6 +10,8 @@ import UIKit
 
 class Product: NSObject {
     
+    var mainId:String?
+    var subId:String?
     var gov:String?
     var id:String?
     var img:String?
@@ -30,7 +32,6 @@ class Product: NSObject {
     var latestreport:[Report]?
     var historyreport:[Report]?
     
-    
 }
 
 class Mall: NSObject {
@@ -42,6 +43,7 @@ class Report: NSObject {
     
     var tittle:String?
     var type:String?
+    var reportDetail:ReportDetail?
     var item:[ReportClass]?
     
 }
@@ -49,6 +51,7 @@ class Report: NSObject {
 class ReportClass: NSObject{
     
     var itemid:String?
+    var content:String?
     var reportid:[ReportDetail]?
     
 }
@@ -77,6 +80,7 @@ class GovProduct:NSObject{
     var website:String?
     var similar:String?
     var modify:String?
+    var reportTitle:String?
     var latestreport:[Report]?
     
 }

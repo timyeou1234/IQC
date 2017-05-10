@@ -75,6 +75,7 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
         let shareItems:Array = [url]
         let activityViewController:UIActivityViewController = UIActivityViewController(activityItems: shareItems, applicationActivities: nil)
         activityViewController.excludedActivityTypes = [UIActivityType.print, UIActivityType.postToWeibo, UIActivityType.copyToPasteboard, UIActivityType.addToReadingList, UIActivityType.postToVimeo]
+        activityViewController.popoverPresentationController?.sourceView = self.view
         self.present(activityViewController, animated: true, completion: nil)
     }
     
@@ -275,7 +276,7 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
         if collectionView == readingCollectionView{
             return 20
         }
-        return 4.0
+        return 2.0
     }
     
     func collectionView(_ collectionView: UICollectionView, layout
@@ -284,7 +285,7 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
         if collectionView == readingCollectionView{
             return 20
         }
-        return 4.0
+        return 2.0
     }
     
     func collectionView(_ collectionView: UICollectionView,
@@ -308,7 +309,28 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
             self.navigationController?.pushViewController(vc, animated: true)
         }
         if collectionView == productCollectionView{
-            getProductDetailGo(id: productList[indexPath.item].id!)
+            if productList.count <= indexPath.item{
+                return
+            }
+            let product = productList[indexPath.item]
+            if product.gov != nil{
+                let vc = self.storyboard?.instantiateViewController(withIdentifier: "GovProductDetail") as! GovProductDetailViewController
+                vc.productId = product.id!
+                let backItem = UIBarButtonItem()
+                backItem.title = ""
+                self.navigationItem.backBarButtonItem = backItem
+                self.loadingView.isHidden = true
+                self.navigationController?.pushViewController(vc, animated: true)
+            }else{
+                let vc = self.storyboard?.instantiateViewController(withIdentifier: "IQCProductDetail") as! IQCProductDetailViewController
+                let backItem = UIBarButtonItem()
+                backItem.title = ""
+                self.navigationItem.backBarButtonItem = backItem
+                vc.productId = product.id!
+                self.loadingView.isHidden = true
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+//            getProductDetailGo(id: productList[indexPath.item].id!)
         }
         if collectionView == tagCollectionView{
             performSegue(withIdentifier: "search", sender: article.tag?.components(separatedBy: ",")[indexPath.item])
@@ -473,6 +495,10 @@ extension DetailArticleViewController{
                     
                     if let img = jsonData["img"].string{
                         product.img = img
+                    }
+                    
+                    if let gov = jsonData["gov"].string{
+                        product.gov = gov
                     }
                     
                     self.productList.append(product)

@@ -25,13 +25,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "IQC/LoadingView.swift"
-            timestampString = "514803316.819314"
+            filePath = "IQC/GovProductDetailViewController.swift"
+            timestampString = "516080041.947221"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "69"
-            endingLineNumber = "69"
-            landmarkName = "rotate()"
+            startingLineNumber = "73"
+            endingLineNumber = "73"
+            landmarkName = "productAction(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -41,13 +41,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "IQC/LoadingView.swift"
-            timestampString = "514803316.819314"
+            filePath = "IQC/IQCProductDetailViewController.swift"
+            timestampString = "516080041.947221"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "75"
-            endingLineNumber = "75"
-            landmarkName = "remove()"
+            startingLineNumber = "1019"
+            endingLineNumber = "1019"
+            landmarkName = "tableView(_:cellForRowAt:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -57,14 +57,62 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "IQC/LoadingView.swift"
-            timestampString = "514803316.819314"
+            filePath = "IQC/ScannerCoachViewController.swift"
+            timestampString = "515908233.056791"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "68"
-            endingLineNumber = "68"
-            landmarkName = "rotate()"
+            startingLineNumber = "116"
+            endingLineNumber = "116"
+            landmarkName = "presentFirst()"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "IQC/ScannerCoachViewController.swift"
+            timestampString = "515908233.056791"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "114"
+            endingLineNumber = "114"
+            landmarkName = "presentFirst()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "IQC.ScannerCoachViewController.presentFirst () -&gt; ()"
+                  moduleName = "IQC"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yeoutimothy/Desktop/Wework/IQC/IQC/ScannerCoachViewController.swift"
+                  timestampString = "515907780.342312"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "114"
+                  endingLineNumber = "114"
+                  offsetFromSymbolStart = "1660">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "IQC.ScannerCoachViewController.(presentFirst () -&gt; ()).(closure #1)"
+                  moduleName = "IQC"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/yeoutimothy/Desktop/Wework/IQC/IQC/ScannerCoachViewController.swift"
+                  timestampString = "515907780.343879"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "115"
+                  endingLineNumber = "115"
+                  offsetFromSymbolStart = "28">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

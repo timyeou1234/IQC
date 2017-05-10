@@ -45,7 +45,16 @@ class SubscribeViewController: UIViewController {
             }
             
         }else if nameTextField.text != "" && emailTextField.text != "" && moreView.isHidden{
-            postRequest(name: nameTextField.text!, gender: gender, mail: emailTextField.text!, company: "", job: "", subscribe: "0")
+            if isValidEmail(testStr: emailTextField.text!){
+                postRequest(name: nameTextField.text!, gender: gender, mail: emailTextField.text!, company: "", job: "", subscribe: "0")
+            }else{
+                let alert = UIAlertController(title: "請輸入正確信箱", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+            }
+            
         }else{
             let alert = UIAlertController(title: "請輸入完整資訊", message: nil, preferredStyle: .alert)
             let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
@@ -179,9 +188,9 @@ class SubscribeViewController: UIViewController {
                 self.dissmissAction(self)
             })
             alert.addAction(cancelAction)
+            self.present(alert, animated: true, completion: nil)
         })
         
-        //        dissmissAction(self)
     }
     
     func isValidEmail(testStr:String) -> Bool {
