@@ -195,6 +195,11 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
             webViewHeightConstant.constant = webView.frame.size.height
         }else if webView == facebookWebview{
             facebookWebviewHeightConstant.constant = webView.scrollView.contentSize.height
+            let currentURL : String = (webView.request?.url?.absoluteString)!
+            if currentURL.contains("/close_popup"){
+                let facebookUrl = "<!DOCTYPE html><html> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> </head><body> <div id=\"fb-root\"></div><script>(function(d, s, id){var js, fjs=d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js=d.createElement(s); js.id=id; js.src=\"//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8&appId=700015816832989\"; fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script> <div class=\"fb-comments\" data-href=\"https://iqctest.com/article/\(articleId)\" data-numposts=\"5\"></div></body></html>"
+                facebookWebview.loadHTMLString(facebookUrl, baseURL: URL(string: "https://www.facebook.com/iqc.com.tw"))
+            }
             if (!observing) {
                 startObservingHeight()
             }
@@ -275,6 +280,8 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         if collectionView == readingCollectionView{
             return 20
+        }else if collectionView == productCollectionView{
+            return 8
         }
         return 2.0
     }
@@ -299,7 +306,25 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
         }else if collectionView == readingCollectionView{
             return CGSize(width: readingCollectionView.bounds.height-20, height: readingCollectionView.bounds.height-30)
         }
-        return CGSize(width: ((article.tag?.components(separatedBy: ",")[indexPath.item].characters.count)! * 17) + 20, height: 40)
+        let tag = article.tag?.components(separatedBy: ",")[indexPath.item]
+        return CGSize(width: (getSizeFromString(string: tag!, withFont: classTittle.font).width + 15), height: 40)
+    }
+    
+    func sizeOfString (string: String, constrainedToWidth width: Double) -> CGSize {
+        let attributes = [NSFontAttributeName:self,]
+        let attString = NSAttributedString(string: string,attributes: attributes)
+        let framesetter = CTFramesetterCreateWithAttributedString(attString)
+        return CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRange(location: 0,length: 0), nil, CGSize(width: width, height: DBL_MAX), nil)
+    }
+    
+    func getSizeFromString(string:String, withFont font:UIFont)->CGSize{
+        
+        let textSize = NSString(string: string ).size(
+            
+            attributes: [ NSFontAttributeName:font ])
+        
+        return textSize
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -609,4 +634,20 @@ extension DetailArticleViewController{
     }
     
     
+}
+
+extension NSAttributedString {
+    func height(withConstrainedWidth width: CGFloat) -> CGFloat {
+        let constraintRect = CGSize(width: width, height: .greatestFiniteMagnitude)
+        let boundingBox = boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil)
+        
+        return boundingBox.height
+    }
+    
+    func width(withConstrainedHeight height: CGFloat) -> CGFloat {
+        let constraintRect = CGSize(width: .greatestFiniteMagnitude, height: height)
+        let boundingBox = boundingRect(with: constraintRect, options: .usesLineFragmentOrigin, context: nil)
+        
+        return boundingBox.width
+    }
 }

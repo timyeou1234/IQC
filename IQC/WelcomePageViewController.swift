@@ -16,6 +16,7 @@ class WelcomePageViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        UIApplication.shared.statusBarStyle = .lightContent
         let when = DispatchTime.now() + 1 // change 2 to desired number of seconds
         let userDefaults = Foundation.UserDefaults.standard
         if userDefaults.value(forKey: "isFirst") == nil{
@@ -33,6 +34,10 @@ class WelcomePageViewController: UIViewController {
                 self.performSegue(withIdentifier: "showMain", sender: nil)
             }
         }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        UIApplication.shared.statusBarStyle = .default
     }
     
     override func didReceiveMemoryWarning() {

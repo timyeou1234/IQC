@@ -15,6 +15,8 @@ class SubscribeViewController: UIViewController {
     let gradient = CAGradientLayer()
     var keyboardHeight:CGFloat = 0
     
+    @IBOutlet weak var shadowView: UIView!
+    @IBOutlet weak var subButton: UIButton!
     @IBOutlet weak var buttonView: UIView!
     @IBOutlet weak var femaleButton: UIButton!
     @IBOutlet weak var maleButton: UIButton!
@@ -94,6 +96,8 @@ class SubscribeViewController: UIViewController {
     }
     
     @IBAction func dissmissAction(_ sender: Any) {
+        let appl = UIApplication.shared.delegate as! AppDelegate
+        appl.isFromMenu = nil
         _ = self.navigationController?.popToRootViewController(animated: false)
     }
     
@@ -101,6 +105,11 @@ class SubscribeViewController: UIViewController {
         super.viewDidLoad()
         self.navigationController?.navigationBar.isHidden = true
         self.tabBarController?.tabBar.isHidden = true
+        
+        shadowView.addShadow()
+        shadowView.layer.shadowRadius = 2
+        shadowView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        shadowView.layer.masksToBounds = false
         
         nameTextField.delegate = self
         emailTextField.delegate = self
@@ -158,6 +167,8 @@ class SubscribeViewController: UIViewController {
             self.buttonView.layer.addSublayer(gradient)
             gradient.zPosition = 0
         }
+        subButton.layer.borderColor = UIColor.lightGray.cgColor
+        subButton.layer.borderWidth = 1
     }
     
     override func viewWillDisappear(_ animated: Bool) {

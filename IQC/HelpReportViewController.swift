@@ -415,7 +415,7 @@ extension HelpReportViewController: PhotoPassingDelegate, YNActionSheetDelegate{
                 self.performSegue(withIdentifier: "openLibary", sender: nil)
                 return
             }else{
-                let cameraMediaType = AVMediaTypeVideo
+                    let cameraMediaType = AVMediaTypeVideo
                 let cameraAuthorizationStatus = AVCaptureDevice.authorizationStatus(forMediaType: cameraMediaType)
                 switch cameraAuthorizationStatus {
                 case .authorized:
@@ -437,31 +437,47 @@ extension HelpReportViewController: PhotoPassingDelegate, YNActionSheetDelegate{
                             self.present(imagePicker, animated: true, completion: nil)
                         } else {
                             print("Denied access to \(cameraMediaType)")
-                            let alert:UIAlertController = UIAlertController(title: "Camera Unavailable", message: "Unable to find a camera on this device", preferredStyle: UIAlertControllerStyle.alert)
-                            let cancelAction = UIAlertAction(title:"確定", style: .cancel, handler: nil)
-                            alert.addAction(cancelAction)
+                            let alert = UIAlertController(title: "請至手機的設定中將相機權限開啟", message: "", preferredStyle: .alert )
+                            alert.addAction(UIAlertAction(title: "Open Settings", style: .cancel) { alert in
+                                UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+                            })
                             self.present(alert, animated: true, completion: nil)
                         }
                     }
                 }
-//                if cameraAuthorizationStatus == .authorized{
-//                    let imagePicker = UIImagePickerController()
-//                    imagePicker.delegate = self
-//                    imagePicker.sourceType = UIImagePickerControllerSourceType.camera
-//                    imagePicker.allowsEditing = false
-//                    self.present(imagePicker, animated: true, completion: nil)
-//                }else{
-//                    let alert:UIAlertController = UIAlertController(title: "Camera Unavailable", message: "Unable to find a camera on this device", preferredStyle: UIAlertControllerStyle.alert)
-//                    let cancelAction = UIAlertAction(title:"確定", style: .cancel, handler: nil)
-//                    alert.addAction(cancelAction)
-//                    self.present(alert, animated: true, completion: nil)
-//                }
             }
         }else{
             self.performSegue(withIdentifier: "openLibary", sender: nil)
         }
     }
     
+    func alertPromptToAllowCameraAccessViaSettings() {
+        let alert = UIAlertController(title: "請至手機的設定中將相機權限開啟", message: "", preferredStyle: .alert )
+        alert.addAction(UIAlertAction(title: "Open Settings", style: .cancel) { alert in
+            UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+        })
+        present(alert, animated: true, completion: nil)
+    }
+    
+    
+    func permissionPrimeCameraAccess() {
+        let alert = UIAlertController( title: "請至手機的設定中將相機權限開啟", message: "", preferredStyle: .alert )
+        let allowAction = UIAlertAction(title: "Allow", style: .default, handler: { (alert) -> Void in
+            if AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo).count > 0 {
+                AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { [weak self] granted in
+                    DispatchQueue.main.async {
+                        self?.buttonClick(index: 1) // try again
+                    }
+                })
+            }
+        })
+        alert.addAction(allowAction)
+        let declineAction = UIAlertAction(title: "Not Now", style: .cancel) { (alert) in
+        }
+        alert.addAction(declineAction)
+        present(alert, animated: true, completion: nil)
+    }
+
     func postRequest(){
         var isComplete = [Bool]()
         for _ in 0...photoArray.count - 1{

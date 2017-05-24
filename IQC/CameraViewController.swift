@@ -186,6 +186,10 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     
     override func viewDidAppear(_ animated: Bool) {
         //        設定掃描
+        let appl = UIApplication.shared.delegate as! AppDelegate
+        if appl.isFromMenu != nil{
+            return
+        }
         setupCameraView()
         codeImage1.frame = codeImage2.frame
         if gradient.frame != self.searchBackgroundView.layer.bounds{
@@ -202,7 +206,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     
     override func viewWillDisappear(_ animated: Bool) {
         loadingView.stopRotate()
-//        NotificationCenter.default.removeObserver(self)
+        //        NotificationCenter.default.removeObserver(self)
     }
     
     override func didReceiveMemoryWarning() {
@@ -263,7 +267,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         }else{
             pointsStackView.spacing = 10
         }
-
+        
         codeImageArray = [codeImage1, codeImage2, codeImage3, codeImage4, codeImage5, codeImage6, codeImage7, codeImage8, codeImage9, codeImage10, codeImage11, codeImage12, codeImage13]
         codeLableArray = [codeLable1, codeLable2, codeLable3, codeLable4, codeLable5, codeLable6, codeLable7, codeLable8, codeLable9, codeLable10, codeLable11, codeLable12, codeLable13]
         for imageView in codeImageArray{
@@ -277,6 +281,29 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     }
     
     func setupCameraView(){
+        
+        
+        //        MARK:若不同意再次詢問camera usage
+        let cameraMediaType = AVMediaTypeVideo
+        let cameraAuthorizationStatus = AVCaptureDevice.authorizationStatus(forMediaType: cameraMediaType)
+        switch cameraAuthorizationStatus {
+        case .authorized: break
+        default:
+            // Prompting user for the permission to use the camera.
+            AVCaptureDevice.requestAccess(forMediaType: cameraMediaType) { granted in
+                if granted {
+                    
+                } else {
+                    print("Denied access to \(cameraMediaType)")
+                    let alert = UIAlertController(title: "請至手機的設定中將相機權限開啟", message: "", preferredStyle: .alert )
+                    alert.addAction(UIAlertAction(title: "Open Settings", style: .cancel) { alert in
+                        UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+                    })
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
+        }
+        
         let captureDevice = AVCaptureDevice.defaultDevice(withMediaType: AVMediaTypeVideo)
         
         do {
@@ -326,12 +353,35 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         
     }
     
+    //        MARK: camera usage 權限處
+    func alertPromptToAllowCameraAccessViaSettings() {
+        let alert = UIAlertController(title: "請至手機的設定中將相機權限開啟", message: "", preferredStyle: .alert )
+        alert.addAction(UIAlertAction(title: "Open Settings", style: .cancel) { alert in
+            UIApplication.shared.openURL(URL(string: UIApplicationOpenSettingsURLString)!)
+        })
+        present(alert, animated: true, completion: nil)
+    }
+    
+    func permissionPrimeCameraAccess() {
+        let alert = UIAlertController( title: "請至手機的設定中將相機權限開啟", message: "", preferredStyle: .alert )
+        let allowAction = UIAlertAction(title: "Allow", style: .default, handler: { (alert) -> Void in
+            if AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo).count > 0 {
+                AVCaptureDevice.requestAccess(forMediaType: AVMediaTypeVideo, completionHandler: { [weak self] granted in
+                    self?.setupCameraView()
+                })
+            }
+        })
+        alert.addAction(allowAction)
+        let declineAction = UIAlertAction(title: "Not Now", style: .cancel) { (alert) in
+        }
+        alert.addAction(declineAction)
+        present(alert, animated: true, completion: nil)
+    }
     
     func sendRequest(_ code:String){
         print("detect the code: \(code)")
         self.view.endEditing(true)
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
-        
         
         Alamofire.request("https://iqctest.com/api/search/product/\(code)", headers: headers).responseJSON(completionHandler: {
             response in
@@ -374,11 +424,13 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         
     }
     
-    
     // MARK: - Navigation
     
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.destination is AboutViewController || segue.destination is DeclareViewController || segue.destination is SubscribeViewController{
+            return
+        }
         switch segue.identifier! {
         case "openMenu":
             inputTextfield.endEditing(true)
@@ -420,8 +472,10 @@ extension CameraViewController:UITextFieldDelegate, UIViewControllerTransitionin
     
     func openSegue(_ segueName: String, sender: AnyObject?) {
         dismiss(animated: false){
-            let vc = self.storyboard?.instantiateViewController(withIdentifier: segueName)
-            self.navigationController?.pushViewController(vc!, animated: false)
+            DispatchQueue.main.async {
+                let vc = self.storyboard?.instantiateViewController(withIdentifier: segueName)
+                self.navigationController?.pushViewController(vc!, animated: false)
+            }
         }
     }
     
@@ -452,8 +506,8 @@ extension CameraViewController:UITextFieldDelegate, UIViewControllerTransitionin
             
         }else{
             if string != ""{
-            let allowedCharacters = CharacterSet.decimalDigits
-            let characterSet = CharacterSet(charactersIn: string)
+                let allowedCharacters = CharacterSet.decimalDigits
+                let characterSet = CharacterSet(charactersIn: string)
                 return allowedCharacters.isSuperset(of: characterSet)
             }
         }

@@ -49,8 +49,7 @@ class MultipleResultViewController: UIViewController {
         }
         
     }
-    
-    
+
 }
 
 extension MultipleResultViewController:UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout{
@@ -59,13 +58,17 @@ extension MultipleResultViewController:UICollectionViewDataSource, UICollectionV
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        return CGSize(width: (productCollectionView.bounds.width/2)-10, height: productCollectionView.bounds.width/2 + 40)
+        return CGSize(width: (productCollectionView.bounds.width/2)-15, height: productCollectionView.bounds.width/2 + 40)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 10)
     }
     
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 4.0
+        return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, layout

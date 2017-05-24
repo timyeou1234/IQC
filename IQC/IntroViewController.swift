@@ -56,7 +56,6 @@ class IntroViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         firstOringinFrame = firstImage.frame
-        
         buttonFirst.setImage(#imageLiteral(resourceName: "btn_coach_nor"), for: .normal)
         buttonFirst.setImage(#imageLiteral(resourceName: "btn_coach_prs"), for: .selected)
         buttonSecond.setImage(#imageLiteral(resourceName: "btn_coach_nor"), for: .normal)
@@ -65,6 +64,7 @@ class IntroViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        UIApplication.shared.statusBarStyle = .lightContent
         secondImageHand.isHidden = true
         secondImageBubble.isHidden = true
         buttonFirst.isSelected = true
@@ -80,6 +80,10 @@ class IntroViewController: UIViewController {
         gradient.locations = [0, 1]
         self.buttonView.layer.addSublayer(gradient)
         gradient.zPosition = 0
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        UIApplication.shared.statusBarStyle = .default
     }
 
     override func didReceiveMemoryWarning() {
@@ -100,11 +104,11 @@ class IntroViewController: UIViewController {
         }, completion: {
             success in
             UIView.animate(withDuration: 1, delay: 0, options: [], animations: {
-                self.secondImageBubble.transform = self.secondImageBubble.transform.rotated(by: CGFloat(M_PI_4))
+                self.secondImageBubble.transform = self.secondImageBubble.transform.rotated(by: CGFloat(M_PI_4 / 2))
             }, completion: {
                 success in
                 UIView.animate(withDuration: 1, animations: {
-                    self.secondImageBubble.transform = self.secondImageBubble.transform.rotated(by:CGFloat(-M_PI_4))
+                    self.secondImageBubble.transform = self.secondImageBubble.transform.rotated(by:CGFloat(-M_PI_4 / 2))
                 })
             })
         })

@@ -16,6 +16,8 @@ class NoResultViewController: UIViewController {
     
     @IBOutlet weak var reportButton: UIButton!
     @IBOutlet weak var reportView: UIView!
+    @IBOutlet weak var outcomeLable: UILabel!
+    @IBOutlet weak var detailLable: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,16 +26,21 @@ class NoResultViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        if fromSearch{
-            reportButton.isHidden = true
-            reportView.isHidden = true
-        }else{
-            reportView.isHidden = false
-            reportView.isHidden = false
-        }
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        if fromSearch{
+            outcomeLable.text = "查無資訊"
+            reportButton.isHidden = true
+            reportView.isHidden = true
+            detailLable.isHidden = true
+        }else{
+            outcomeLable.text = "此商品查無資訊"
+            reportView.isHidden = false
+            reportView.isHidden = false
+            detailLable.isHidden = false
+        }
         if gradient.frame != self.reportView.bounds{
             //設定漸層效果
             gradient.frame = self.reportView.bounds

@@ -6,7 +6,6 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -20,14 +19,14 @@
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="gOQ-Qq-wSZ">
-                        <rect key="frame" x="118" y="115.5" width="20" height="20"/>
+                        <rect key="frame" x="118" y="118.5" width="20" height="20"/>
                         <color key="color" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     </activityIndicatorView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fDb-7z-zzx">
-                        <rect key="frame" x="13" y="10" width="231" height="231"/>
+                        <rect key="frame" x="8" y="8" width="241" height="241"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="qtx-6t-PiZ">
-                                <rect key="frame" x="0.0" y="0.0" width="231" height="231"/>
+                                <rect key="frame" x="0.0" y="0.0" width="241" height="241"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="qtx-6t-PiZ" secondAttribute="height" multiplier="1:1" id="SJ2-XA-oNA"/>
                                 </constraints>
@@ -42,9 +41,9 @@
                             <constraint firstItem="qtx-6t-PiZ" firstAttribute="leading" secondItem="fDb-7z-zzx" secondAttribute="leading" id="l3J-9p-mmP"/>
                         </constraints>
                     </view>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iTh-pG-Pqw">
-                        <rect key="frame" x="15" y="254" width="227" height="19.5"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="lable" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iTh-pG-Pqw">
+                        <rect key="frame" x="15" y="262" width="227" height="18"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                         <userDefinedRuntimeAttributes>
@@ -55,15 +54,15 @@
             </view>
             <constraints>
                 <constraint firstItem="iTh-pG-Pqw" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="47r-RI-umq"/>
-                <constraint firstItem="fDb-7z-zzx" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="6gp-Ed-7vK"/>
+                <constraint firstAttribute="trailing" secondItem="fDb-7z-zzx" secondAttribute="trailing" constant="8" id="AfP-1Z-aZh"/>
                 <constraint firstItem="iTh-pG-Pqw" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="15" id="CcK-nf-9gh"/>
-                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="iTh-pG-Pqw" secondAttribute="bottom" constant="8" id="I2g-X6-7vw"/>
+                <constraint firstItem="fDb-7z-zzx" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="8" id="GsD-FR-a0u"/>
+                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="iTh-pG-Pqw" secondAttribute="bottom" constant="4" id="I2g-X6-7vw"/>
                 <constraint firstAttribute="trailing" secondItem="iTh-pG-Pqw" secondAttribute="trailing" constant="15" id="L1o-7h-CDM"/>
                 <constraint firstItem="gOQ-Qq-wSZ" firstAttribute="centerY" secondItem="fDb-7z-zzx" secondAttribute="centerY" id="aWh-rU-M4s"/>
                 <constraint firstItem="gOQ-Qq-wSZ" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="mMv-uW-gPD"/>
                 <constraint firstItem="iTh-pG-Pqw" firstAttribute="top" secondItem="fDb-7z-zzx" secondAttribute="bottom" constant="13" id="mlo-lV-fyH"/>
-                <constraint firstItem="fDb-7z-zzx" firstAttribute="width" secondItem="gTV-IL-0wX" secondAttribute="width" multiplier="90:100" id="mov-hS-cta"/>
-                <constraint firstItem="fDb-7z-zzx" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="r5r-wL-P0K"/>
+                <constraint firstItem="fDb-7z-zzx" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="8" id="o2D-eK-d8L"/>
             </constraints>
             <size key="customSize" width="257" height="317"/>
             <connections>

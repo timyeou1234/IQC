@@ -22,9 +22,9 @@ class MenuViewController: UIViewController, GotoRootDelegate{
     var isFromSub = false
     var menuActionDelegate:MenuActionDelegate? = nil
     
-    
-    
     @IBAction func aboutAction(_ sender: Any){
+        let appl = UIApplication.shared.delegate as! AppDelegate
+        appl.isFromMenu = true
         menuActionDelegate?.openSegue("About", sender: nil)
     }
     
@@ -55,7 +55,6 @@ class MenuViewController: UIViewController, GotoRootDelegate{
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
         if isFromSub{
             dismiss(animated: false, completion: nil)
         }

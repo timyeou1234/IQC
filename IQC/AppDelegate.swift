@@ -15,6 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var orientationLock = UIInterfaceOrientationMask.portrait
     var window: UIWindow?
+    var isFromMenu:Bool?
 
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         return self.orientationLock
@@ -22,7 +23,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        UIApplication.shared.statusBarStyle = .default
         UINavigationBar.appearance().barTintColor = UIColor.white
+        let backImg: UIImage = UIImage(named: "nav_back_prs")!
+        let backImage = backImg.withRenderingMode(.alwaysOriginal).resizableImage(withCapInsets: UIEdgeInsetsMake(backImg.size.height, backImg.size.width, 0, 0))
+//        let renderedImage = backImg.withRenderingMode(.alwaysTemplate)
+        UIBarButtonItem.appearance().setBackButtonBackgroundImage(backImage, for: [], barMetrics: .default)
+        UIBarButtonItem.appearance().setBackButtonTitlePositionAdjustment(UIOffsetMake(-400, 0), for: .default)
+        
         UINavigationBar.appearance().tintColor = UIColor(colorLiteralRed:155/255, green: 155/255, blue: 155/255, alpha: 1)
         UINavigationBar.appearance().shadowImage = UIImage()
         UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)

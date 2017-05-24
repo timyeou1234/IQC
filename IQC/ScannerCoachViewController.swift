@@ -18,6 +18,7 @@ class ScannerCoachViewController: UIViewController {
     var currentIndex = 5
     var count = 0
     var isAnimateing = false
+    var barcodeOriginalFrame = CGRect()
     
     
     @IBOutlet weak var backgroundImage: UIImageView!
@@ -43,6 +44,7 @@ class ScannerCoachViewController: UIViewController {
             nextButton.setTitle("下一則", for: .normal)
             presentFirst()
         }else{
+            timer.invalidate()
             self.performSegue(withIdentifier: "showMain", sender: nil)
         }
     }
@@ -87,6 +89,7 @@ class ScannerCoachViewController: UIViewController {
         gradient.zPosition = 0
         barcodeImageView.isHidden = true
         handImageView.isHidden = true
+        self.barcodeOriginalFrame = barcodeImageView.frame
         
         presentFirst()
         
@@ -149,25 +152,25 @@ class ScannerCoachViewController: UIViewController {
         var imageName = ""
         switch currentIndex {
         case 5:
-            imageName = "icon_barcode_0\(currentIndex)@3x.png"
+            imageName = "icon_barcode_0\(currentIndex).png"
             currentIndex = 1
         case 1,2,3:
-            imageName = "icon_barcode_0\(currentIndex)@3x.png"
+            imageName = "icon_barcode_0\(currentIndex).png"
             currentIndex += 1
         case 4:
-            imageName = "icon_barcode_0\(currentIndex)@3x.png"
+            imageName = "icon_barcode_0\(currentIndex).png"
             currentIndex = 6
         case 6:
-            imageName = "icon_barcode_03@3x.png"
+            imageName = "icon_barcode_03.png"
             currentIndex = 7
         case 7:
-            imageName = "icon_barcode_02@3x.png"
+            imageName = "icon_barcode_02.png"
             currentIndex = 8
         case 8:
-            imageName = "icon_barcode_01@3x.png"
+            imageName = "icon_barcode_01.png"
             currentIndex = 9
         case 9:
-            imageName = "icon_barcode_05@3x.png"
+            imageName = "icon_barcode_05.png"
             currentIndex = 5
             if loopIndex == 0{
                 loopIndex = 1
@@ -178,7 +181,10 @@ class ScannerCoachViewController: UIViewController {
             break
         }
         DispatchQueue.main.async {
+            self.barcodeImageView.frame = self.barcodeOriginalFrame
+            self.barcodeImageView.contentMode = .scaleAspectFit
             self.barcodeImageView.image = UIImage(named: imageName)
+            
         }
         
     }
@@ -186,8 +192,8 @@ class ScannerCoachViewController: UIViewController {
     func presentSecond(){
         timer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.changeImage), userInfo: nil, repeats: true)
         phoneImageView.layer.removeAllAnimations()
-        backgroundImage.image = #imageLiteral(resourceName: "bg_coach_02@3x.png")
-        barcodeImageView.image = #imageLiteral(resourceName: "icon_barcode_05@3x.png")
+        backgroundImage.image = #imageLiteral(resourceName: "bg_coach_02")
+        barcodeImageView.image = #imageLiteral(resourceName: "icon_barcode_05")
         currentIndex = 5
         desLable.text = "條碼掃不出來？\r沒關係！輸入數字也可以查詢"
         buttonFirst.isSelected = false

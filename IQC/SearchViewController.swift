@@ -30,6 +30,7 @@ class SearchViewController: UIViewController {
     
     var loadingView = LoadingView()
     
+    @IBOutlet weak var underLineLeadinConstraint: NSLayoutConstraint!
     @IBOutlet weak var relativeHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var relativeView: UIView!
     @IBOutlet weak var relativeLable: UILabel!
@@ -54,6 +55,8 @@ class SearchViewController: UIViewController {
     @IBOutlet weak var articleTableView: UITableView!
     
     @IBAction func productAction(_ sender: Any) {
+        articleButton.isSelected = false
+        productButton.isSelected = true
         productCollectionView.isHidden = false
         articleTableView.isHidden = true
         if isRelative{
@@ -62,7 +65,7 @@ class SearchViewController: UIViewController {
         
         UIView.animate(withDuration: 0.1, animations:
             {
-                self.underLineView.frame = CGRect(x: 0, y: self.underLineView.frame.minY, width: self.underLineView.bounds.width, height: self.underLineView.bounds.height)
+                self.underLineLeadinConstraint.constant = 0
         })
         
         text = "<font size=\"5\"  color=\"#636363\">共有\"</font><font font size=\"5\"   color=\"#00B6C4\">\(self.productList.count)</font><font size=\"5\"  color=\"#636363\">\"筆關於\"</font><font size=\"5\"  color=\"#00B6C4\">\(searchedWord)</font><font size=\"5\"  color=\"#636363\">\"的商品搜尋結果</font>"
@@ -76,14 +79,11 @@ class SearchViewController: UIViewController {
     }
     
     @IBAction func articleAction(_ sender: Any) {
+        articleButton.isSelected = true
+        productButton.isSelected = false
         productCollectionView.isHidden = true
         articleTableView.isHidden = false
-        relativeHeightConstraint.constant = 0
-        
-        UIView.animate(withDuration: 0.1, animations:
-            {
-                self.underLineView.frame = CGRect(x: self.view.frame.midX, y: self.underLineView.frame.minY, width: self.underLineView.bounds.width, height: self.underLineView.bounds.height)
-        })
+//        relativeHeightConstraint.constant = 0
         
         text = "<font size=\"5\" color=\"#636363\">共有\"</font><font size=\"5\"   color=\"#00B6C4\">\(self.articleList.count)</font><font size=\"5\"   color=\"#636363\">\"筆關於\"</font><font size=\"5\" color=\"#00B6C4\">\(searchedWord)</font><font size=\"5\" color=\"#636363\">\"的文章搜尋結果</font>"
         
@@ -92,6 +92,10 @@ class SearchViewController: UIViewController {
             options: [ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
             documentAttributes: nil)
         self.desLable.attributedText = attrStr
+        UIView.animate(withDuration: 0.1, animations:
+            {
+                self.underLineLeadinConstraint.constant = self.view.bounds.width/2
+        })
     }
     
     @IBAction func classAction(_ sender: Any) {
@@ -120,19 +124,7 @@ class SearchViewController: UIViewController {
         dropDown.anchorView = classButton
         dropDown.dataSource = ["商品", "文章"]
         
-        dropDown.selectionAction = {
-            (index: Int, item: String) in
-            self.classLable.text = item
-            if index == 0{
-                self.productButton.isSelected = true
-                self.articleButton.isSelected = false
-                self.productAction(self)
-            }else{
-                self.productButton.isSelected = false
-                self.articleButton.isSelected = true
-                self.articleAction(self)
-            }
-        }
+        
         
         articleButton.setTitleColor((UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1)), for: .selected)
         productButton.setTitleColor((UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1)), for: .selected)
@@ -208,6 +200,22 @@ class SearchViewController: UIViewController {
         }
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        dropDown.selectionAction = {
+            (index: Int, item: String) in
+            self.classLable.text = item
+            if index == 0{
+                self.productButton.isSelected = true
+                self.articleButton.isSelected = false
+                self.productAction(self)
+            }else{
+                self.productButton.isSelected = false
+                self.articleButton.isSelected = true
+                self.articleAction(self)
+            }
+        }
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         loadingView.stopRotate()
         self.navigationController?.navigationBar.isHidden = false
@@ -241,6 +249,7 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
             let alert = UIAlertController(title: "請輸入關鍵字", message: nil, preferredStyle: .alert)
             let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
             alert.addAction(cancelAction)
+            self.present(alert, animated: false, completion: nil)
             return true
         }
         getOutcome(keyWord: textField.text!)
@@ -408,7 +417,7 @@ extension SearchViewController{
                     if let result = json["result"].string{
                         if result == "2"{
                             self.relativeHeightConstraint.constant = 80
-                            let relativeText = "<font size=\"5\"  color=\"#636363\">查無\"</font><font font size=\"5\"   color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"相關文章根據上述商品類型，為你推薦有檢驗報告的相似商品</font>"
+                            let relativeText = "<font size=\"5\"  color=\"#636363\">查無\"</font><font font size=\"5\"   color=\"#00B6C4\">\(keyWord)</font><font size=\"5\"  color=\"#636363\">\"相關文章根據上述商品類型，為你推薦有檢驗報告的相似商品與文章</font>"
                             let attrStrRe = try! NSAttributedString(
                                 data: relativeText.data(using: String.Encoding.unicode, allowLossyConversion: true)!,
                                 options: [ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
@@ -535,7 +544,7 @@ extension SearchViewController{
                                 width -= (tag.characters.count * 17) + 20
                             }
                         }
-                        self.tagCollectionViewHeight.constant = CGFloat(40 * tagRow)
+                        self.tagCollectionViewHeight.constant = CGFloat(45 * tagRow)
                         self.tagCollectionView.reloadData()
                     }
                     

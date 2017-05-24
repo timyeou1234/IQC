@@ -280,7 +280,7 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
         
         facebookCommentWebview.delegate = self
         scrollView.delegate = self
-        sliderContainView.addShadow()
+        
         tittleBackView.addShadow()
         self.navigationItem.backBarButtonItem?.title = ""
         
@@ -385,6 +385,13 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
         webView.frame.size = webView.sizeThatFits(CGSize.zero)
         webView.scrollView.isScrollEnabled = false
         webViewHeightConstant.constant = webView.frame.size.height
+        let currentURL : String = (webView.request?.url?.absoluteString)!
+        if currentURL.contains("/close_popup"){
+            let facebookUrl = "<!DOCTYPE html><html> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> </head><body> <div id=\"fb-root\"></div><script>(function(d, s, id){var js, fjs=d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js=d.createElement(s); js.id=id; js.src=\"//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8&appId=700015816832989\"; fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script> <div class=\"fb-comments\" data-href=\"https://iqctest.com/product/\(productId)\" data-numposts=\"5\"></div></body></html>"
+            
+            
+            facebookCommentWebview.loadHTMLString(facebookUrl, baseURL: URL(string: "https://www.facebook.com/iqc.com.tw"))
+        }
         if (!observing) {
             startObservingHeight()
         }
@@ -462,6 +469,7 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     }
     
     
+    
     /*
      // MARK: - Navigation
      
@@ -525,15 +533,45 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
     func collectionView(_ collectionView: UICollectionView, layout
         collectionViewLayout: UICollectionViewLayout,
                         minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        if collectionView == productSliderCollectionView{
+            return 0
+        }
         return 10
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        var product = Product()
+        if collectionView == cerCollectionView{
+            return
+        }
         if collectionView == brandOwnedProductCollectionView{
-            getProductDetailGo(id: brandOwnedProduct[indexPath.item].id!)
+            if brandOwnedProduct.count <= indexPath.item{
+                return
+            }
+            product = brandOwnedProduct[indexPath.item]
         }
         if collectionView == simularProductCollectionView{
-            getProductDetailGo(id: simularProduct[indexPath.item].id!)
+            if simularProduct.count <= indexPath.item{
+                return
+            }
+            product = simularProduct[indexPath.item]
+        }
+        if product.gov != nil{
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: "GovProductDetail") as! GovProductDetailViewController
+            vc.productId = product.id!
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            self.navigationItem.backBarButtonItem = backItem
+            self.loadingView.isHidden = true
+            self.navigationController?.pushViewController(vc, animated: true)
+        }else{
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: "IQCProductDetail") as! IQCProductDetailViewController
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            self.navigationItem.backBarButtonItem = backItem
+            vc.productId = product.id!
+            self.loadingView.isHidden = true
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
     
@@ -925,7 +963,6 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 if index == 0{
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell1", for: indexPath) as! ProductTittleTableViewCell
                     cell.drawDash()
-                    cell.tittleBackView.backgroundColor = UIColor(colorLiteralRed: 215/255, green: 215/255, blue: 215/255, alpha: 215/255)
                     cell.tittleLable.text = "檢體名稱"
                     cell.tittleNameLable.text = currentReport[section].tittle
                     return cell
@@ -1270,6 +1307,7 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         default:
             ingrediantTableViewHightConstraint.constant += howMuch
             tableViewHeightList[2] = ingrediantTableViewHightConstraint.constant
+            ingrediantCellHeight[whichCell] = height
             
         }
         
@@ -1603,7 +1641,7 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
     func refreshBrandContent(){
         backGroundImageView.sd_setImage(with: URL(string: brandData.img!))
         brandImageView.sd_setImage(with: URL(string: brandData.logo!))
-        brandIdLable.text = brandData.title
+        brandIdLable.text = brandData.name
         if brandData.product != nil{
             getProductList(id: brandData.product!, type: "brand")
         }
@@ -1634,6 +1672,11 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                     if let img = jsonData["img"].string{
                         product.img = img
                     }
+                    
+                    if let gov = jsonData["gov"].string{
+                        product.gov = gov
+                    }
+                    
                     if type == "brand"{
                         self.brandOwnedProduct.append(product)
                         self.brandOwnedProductCollectionView.reloadData()

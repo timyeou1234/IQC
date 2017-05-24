@@ -101,7 +101,7 @@ class SafeViewController: UIViewController {
         buttonBackView.layer.shadowColor = UIColor.gray.cgColor
         buttonBackView.layer.shadowOpacity = 0.3
         buttonBackView.layer.shadowOffset = CGSize(width: 0, height: 4)
-        buttonBackView.layer.shadowRadius = 3
+        buttonBackView.layer.shadowRadius = 2
         
         tittleCollectionView.delegate = self
         tittleCollectionView.dataSource = self
@@ -321,7 +321,7 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
         if collectionView == tittleCollectionView || collectionView == subTittleCollectionView{
             return CGSize(width: CGFloat(productTypeList[indexPath.item].title!.characters.count * 16 + 32), height: self.tittleCollectionView.bounds.height)
         }else if collectionView == productCollectionView || collectionView == brandCollectionView{
-            return CGSize(width: (productCollectionView.bounds.width/2 - 10), height: productCollectionView.bounds.width/2 + 40)
+            return CGSize(width: (productCollectionView.bounds.width/2 - 15), height: productCollectionView.bounds.width/2 + 40)
         }
         return CGSize()
     }
@@ -329,6 +329,9 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        if collectionView == brandCollectionView || collectionView == productCollectionView{
+            return 0
+        }
         return 4.0
     }
     
@@ -339,10 +342,13 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        if collectionView == tittleCollectionView || collectionView == subTittleCollectionView{
+            return UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
+        }
 //        if collectionView == brandCollectionView{
 //            return UIEdgeInsetsMake(0, 10, 0, 10)
 //        }
-        return UIEdgeInsets(top: 0, left: 4, bottom: 0, right: 4)
+        return UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 10)
     }
     
     //    MARK: CollectionView delegate

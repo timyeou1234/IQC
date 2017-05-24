@@ -17,6 +17,8 @@ class DeclareViewController: UIViewController, UIWebViewDelegate {
     var gotoRoot:GotoRootDelegate?
 
     @IBAction func dismiss(_ sender: Any) {
+        let appl = UIApplication.shared.delegate as! AppDelegate
+        appl.isFromMenu = nil
         _ = self.navigationController?.popToRootViewController(animated: false)
     }
     @IBOutlet weak var shadowView: UIView!
@@ -28,6 +30,7 @@ class DeclareViewController: UIViewController, UIWebViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         contentWebView.delegate = self
+        contentWebView.scrollView.isDirectionalLockEnabled = true
         shadowView.addShadow()
         shadowView.layer.shadowRadius = 2
         shadowView.layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -80,6 +83,7 @@ class DeclareViewController: UIViewController, UIWebViewDelegate {
         
         webView.frame.size = webView.sizeThatFits(CGSize.zero)
         webviewHightConstant.constant = webView.frame.height
+        webView.frame = CGRect(x: 0, y: 0, width: contentWebView.frame.width, height: webviewHightConstant.constant)
     }
 
 

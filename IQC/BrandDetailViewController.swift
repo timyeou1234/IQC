@@ -46,10 +46,7 @@ class BrandDetailViewController: UIViewController {
         
         productCollectionView.register(UINib(nibName: "ProductCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
         
-        //        設定讀取中圖示
-        loadingView.frame = self.view.bounds
-        self.view.addSubview(loadingView)
-        loadingView.isHidden = true
+        
         // Do any additional setup after loading the view.
     }
     
@@ -57,8 +54,16 @@ class BrandDetailViewController: UIViewController {
         
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        //        設定讀取中圖示
+        loadingView.frame = self.view.bounds
+        loadingView.startRotate()
+        self.view.addSubview(loadingView)
+        loadingView.isHidden = true
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
-        loadingView.remove()
+        loadingView.stopRotate()
     }
     
     override func didReceiveMemoryWarning() {
@@ -211,7 +216,11 @@ extension BrandDetailViewController:UICollectionViewDelegate, UICollectionViewDa
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         
-        return CGSize(width: (productCollectionView.bounds.width/2)-10, height: productCollectionView.bounds.width/2 + 40)
+        return CGSize(width: (productCollectionView.bounds.width/2) - 15, height: productCollectionView.bounds.width/2 + 40)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 10)
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

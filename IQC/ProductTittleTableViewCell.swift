@@ -28,6 +28,7 @@ class ProductTittleTableViewCell: UITableViewCell {
     
     func drawDash(){
         self.tittleBackView.addDashedLine(startPoint: CGPoint(x: tittleBackView.frame.width, y: 0), endPoint: CGPoint(x: tittleBackView.frame.width, y: frame.height))
+        self.tittleBackView.backgroundColor = UIColor(colorLiteralRed: 251/255, green: 251/255, blue: 251/255, alpha: 1)
     }
     
 }

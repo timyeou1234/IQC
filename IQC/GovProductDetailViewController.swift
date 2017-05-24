@@ -14,6 +14,7 @@ import FBSDKShareKit
 
 class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
     
+    var loadingView = LoadingView()
     var observing = false
     var product = GovProduct()
     var productId = ""
@@ -116,6 +117,23 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
         // Do any additional setup after loading the view.
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        loadingView.frame = self.view.frame
+        loadingView.startRotate()
+        self.view.addSubview(loadingView)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillShowForResizing),
+                                               name: Notification.Name.UIKeyboardWillShow,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(keyboardWillHideForResizing),
+                                               name: Notification.Name.UIKeyboardWillHide,
+                                               object: nil)
+        
+        self.tabBarController?.tabBar.isHidden = true
+        
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         getProductDetail()
         sliderIndexBackView.clipBackground(cornerRadious: sliderIndexBackView.bounds.height/2, color: UIColor(colorLiteralRed: 215/255, green: 215/255, blue: 215/255, alpha: 1))
@@ -128,6 +146,13 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
         webView.frame.size.height = 1
         webView.frame.size = webView.sizeThatFits(CGSize.zero)
         webviewHeightConstant.constant = webView.frame.size.height
+        let currentURL : String = (webView.request?.url?.absoluteString)!
+        if currentURL.contains("/close_popup"){
+            let facebookUrl = "<!DOCTYPE html><html> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> </head><body> <div id=\"fb-root\"></div><script>(function(d, s, id){var js, fjs=d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js=d.createElement(s); js.id=id; js.src=\"//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8&appId=700015816832989\"; fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script> <div class=\"fb-comments\" data-href=\"https://iqctest.com/product/\(productId)\" data-numposts=\"5\"></div></body></html>"
+            
+            facebookCommentWebView.loadHTMLString(facebookUrl, baseURL: URL(string: "https://www.facebook.com/iqc.com.tw"))
+        }
+
         if (!observing) {
             startObservingHeight()
         }
@@ -193,27 +218,13 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
         
     }
     
-    
-    override func viewWillAppear(_ animated: Bool) {
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillShowForResizing),
-                                               name: Notification.Name.UIKeyboardWillShow,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillHideForResizing),
-                                               name: Notification.Name.UIKeyboardWillHide,
-                                               object: nil)
-        
-        self.tabBarController?.tabBar.isHidden = true
-        
-    }
-    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        loadingView.stopRotate()
         NotificationCenter.default.removeObserver(self)
         self.tabBarController?.tabBar.isHidden = false
     }
@@ -451,7 +462,6 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
             if index == 0{
                 let cell = tableView.dequeueReusableCell(withIdentifier: "Cell1", for: indexPath) as! ProductTittleTableViewCell
                 cell.drawDash()
-                cell.tittleBackView.backgroundColor = UIColor(colorLiteralRed: 215/255, green: 215/255, blue: 215/255, alpha: 215/255)
                 cell.tittleLable.text = "檢體名稱"
                 cell.tittleNameLable.text = currentReport[section].tittle
                 return cell
@@ -760,6 +770,7 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
         productTableViewHeightConstant.constant = 0
         productTableView.reloadData()
         openProduct()
+        loadingView.isHidden = true
     }
     
     func openProduct(){
