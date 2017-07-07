@@ -19,6 +19,7 @@ class IQCProductDetailTableViewCell: UITableViewCell, UITableViewDelegate, UITab
     var cellHeightChange:CellHeightChangeDelegate?
     var isOpen = false
     
+    @IBOutlet weak var changeButton: UIButton!
     @IBOutlet weak var tittleViewHeight: NSLayoutConstraint!
     @IBOutlet weak var tittleView: UIView!
     @IBOutlet weak var contentsView: UIView!
@@ -38,7 +39,7 @@ class IQCProductDetailTableViewCell: UITableViewCell, UITableViewDelegate, UITab
     }
     
     @IBAction func cellChangeHeight(_ sender: Any) {
-        
+        changeButton.isEnabled = false
         contentLable.sizeToFit()
         let height = 132 * CGFloat(reportDetail.count) + contentLable.frame.height + 59
         
@@ -53,7 +54,6 @@ class IQCProductDetailTableViewCell: UITableViewCell, UITableViewDelegate, UITab
             tittleView.backgroundColor = UIColor(colorLiteralRed: 238/255, green: 249/255, blue: 251/255, alpha: 1)
             contentLable.isHidden = false
             self.cellHeightChange?.cellHeightChange(tableView:self.tableView! ,whichCell: self.indexPath!, height: 40 + height, howMuch: height)
-            
         }
     }
     
@@ -107,7 +107,7 @@ class IQCProductDetailTableViewCell: UITableViewCell, UITableViewDelegate, UITab
         cell.testDateLable.text = detail.reportdate
         cell.testSource.text = detail.source
         cell.testUnitLable.text = detail.title
-        
+        cell.selectionStyle = .none
         
         return cell
     }

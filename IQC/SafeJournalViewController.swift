@@ -209,8 +209,9 @@ extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource,
         if refreshControl.isRefreshing {
             if !isUpdating {
                 update(type: currentType)
+            }else{
+                refreshControl.endRefreshing()
             }
-            refreshControl.endRefreshing()
         }
     }
     
@@ -365,6 +366,7 @@ extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource,
                         }
                     }
                 }
+                self.refreshControl.endRefreshing()
                 self.articleTableView.reloadData()
                 self.isUpdating = false
             }

@@ -13,6 +13,9 @@ import SDWebImage
 
 class SafeViewController: UIViewController {
     
+    // Tim 6/26 New need change
+    var isDetailBack = false
+    
     var gotoBrandId = ""
     var isLoaded = false
     var productTypeList = [ProductType]()
@@ -126,6 +129,7 @@ class SafeViewController: UIViewController {
         brandCollectionView.register(UINib(nibName: "ProductCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
         // Do any additional setup after loading the view.
         
+        IsDetailBack.isBackFlag.isDetailBack = false
         
     }
     
@@ -135,122 +139,126 @@ class SafeViewController: UIViewController {
         loadingView.startRotate()
         self.view.addSubview(loadingView)
         loadingView.isHidden = true
-        
         isLoaded = false
-        productTypeList = [ProductType]()
-        productList = [Product]()
-        brandList = [Brand]()
-        productAction(self)
-        brandDetailContainerView.isHidden = true
-        loadingView.isHidden = false
-        self.selectedTittle = 0
-        self.selectedSubTittel = -1
-        self.brandList = [Brand]()
-        let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        Alamofire.request("https://iqctest.com/api/website/menu", headers: headers).responseJSON(completionHandler: {
-            response in
-            print(response)
+        if !IsDetailBack.isBackFlag.isDetailBack!{
             
-            if let JSONData = response.result.value{
-                let json = JSON(JSONData)
-                print(json)
-                for productType in json["list"]{
-                    
-                    let productData = ProductType()
-                    
-                    if let id = productType.1["id"].string{
-                        if id != "59"{
-                            productData.id = id
-                            
-                            if let title = productType.1["title"].string{
-                                productData.title = title
-                            }
-                            
-                            var subProductList = [ProductSubMenu]()
-                            
-                            for subProductType in productType.1["submenu"]{
+            
+            productTypeList = [ProductType]()
+            productList = [Product]()
+            brandList = [Brand]()
+            productAction(self)
+            brandDetailContainerView.isHidden = true
+            loadingView.isHidden = false
+            self.selectedTittle = 0
+            self.selectedSubTittel = -1
+            self.brandList = [Brand]()
+            let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
+            
+            Alamofire.request("https://iqctest.com/api/website/menu", headers: headers).responseJSON(completionHandler: {
+                response in
+                print(response)
+                
+                if let JSONData = response.result.value{
+                    let json = JSON(JSONData)
+                    print(json)
+                    for productType in json["list"]{
+                        
+                        let productData = ProductType()
+                        
+                        if let id = productType.1["id"].string{
+                            if id != "59"{
+                                productData.id = id
                                 
-                                let subProductTypeData = ProductSubMenu()
-                                if let id = subProductType.1["id"].string{
-                                    subProductTypeData.id = id
+                                if let title = productType.1["title"].string{
+                                    productData.title = title
                                 }
-                                if let title = subProductType.1["title"].string{
-                                    subProductTypeData.title = title
+                                
+                                var subProductList = [ProductSubMenu]()
+                                
+                                for subProductType in productType.1["submenu"]{
+                                    
+                                    let subProductTypeData = ProductSubMenu()
+                                    if let id = subProductType.1["id"].string{
+                                        subProductTypeData.id = id
+                                    }
+                                    if let title = subProductType.1["title"].string{
+                                        subProductTypeData.title = title
+                                    }
+                                    if let modify = subProductType.1["modify"].string{
+                                        subProductTypeData.modify = modify
+                                    }
+                                    subProductList.append(subProductTypeData)
                                 }
-                                if let modify = subProductType.1["modify"].string{
-                                    subProductTypeData.modify = modify
-                                }
-                                subProductList.append(subProductTypeData)
+                                productData.submenu = subProductList
+                                
+                                self.productTypeList.append(productData)
                             }
-                            productData.submenu = subProductList
-                            
-                            self.productTypeList.append(productData)
                         }
                     }
+                    
                 }
-                
-            }
-            self.tittleCollectionView.reloadData()
-            if self.productTypeList.count > 0{
-                self.searchProduct(self.productTypeList[0].id!, subId: "", productType: self.productTypeList[0])
-            }
-            self.subTittleCollectionView.reloadData()
-            
-        })
-        
-        Alamofire.request("https://iqctest.com/api/brand/list/all", headers: headers).responseJSON(completionHandler: {
-            response in
-            print(response)
-            
-            if let JSONData = response.result.value{
-                let json = JSON(JSONData)
-                print(json)
-                for brand in json["list"]{
-                    let brandData = Brand()
-                    if let id = brand.1["id"].string{
-                        brandData.id = id
-                    }
-                    if let intro = brand.1["intro"].string{
-                        brandData.intro = intro
-                    }
-                    if let content = brand.1["content"].string{
-                        brandData.content = content
-                    }
-                    if let categoryid = brand.1["categoryid"].string{
-                        brandData.categoryid = categoryid
-                    }
-                    if let des = brand.1["des"].string{
-                        brandData.des = des
-                    }
-                    if let img = brand.1["img"].string{
-                        brandData.img = img
-                    }
-                    if let logo = brand.1["logo"].string{
-                        brandData.logo = logo
-                    }
-                    if let service = brand.1["service"].string{
-                        brandData.service = service
-                    }
-                    if let number = brand.1["number"].string{
-                        brandData.number = number
-                    }
-                    if let website = brand.1["website"].string{
-                        brandData.website = website
-                    }
-                    if let name = brand.1["name"].string{
-                        brandData.name = name
-                    }
-                    if let supplier = brand.1["supplier"].string{
-                        brandData.supplier = supplier
-                    }
-                    self.brandList.append(brandData)
+                self.tittleCollectionView.reloadData()
+                if self.productTypeList.count > 0{
+                    self.searchProduct(self.productTypeList[0].id!, subId: "", productType: self.productTypeList[0])
                 }
-                self.brandCollectionView.reloadData()
+                self.subTittleCollectionView.reloadData()
                 
-            }
-        })
-        
+            })
+            
+            Alamofire.request("https://iqctest.com/api/brand/list/all", headers: headers).responseJSON(completionHandler: {
+                response in
+                print(response)
+                
+                if let JSONData = response.result.value{
+                    let json = JSON(JSONData)
+                    print(json)
+                    for brand in json["list"]{
+                        let brandData = Brand()
+                        if let id = brand.1["id"].string{
+                            brandData.id = id
+                        }
+                        if let intro = brand.1["intro"].string{
+                            brandData.intro = intro
+                        }
+                        if let content = brand.1["content"].string{
+                            brandData.content = content
+                        }
+                        if let categoryid = brand.1["categoryid"].string{
+                            brandData.categoryid = categoryid
+                        }
+                        if let des = brand.1["des"].string{
+                            brandData.des = des
+                        }
+                        if let img = brand.1["img"].string{
+                            brandData.img = img
+                        }
+                        if let logo = brand.1["logo"].string{
+                            brandData.logo = logo
+                        }
+                        if let service = brand.1["service"].string{
+                            brandData.service = service
+                        }
+                        if let number = brand.1["number"].string{
+                            brandData.number = number
+                        }
+                        if let website = brand.1["website"].string{
+                            brandData.website = website
+                        }
+                        if let name = brand.1["name"].string{
+                            brandData.name = name
+                        }
+                        if let supplier = brand.1["supplier"].string{
+                            brandData.supplier = supplier
+                        }
+                        self.brandList.append(brandData)
+                    }
+                    self.brandCollectionView.reloadData()
+                    
+                }
+            })
+        }
+        IsDetailBack.isBackFlag.isDetailBack = false
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -268,6 +276,10 @@ class SafeViewController: UIViewController {
         loadingView.stopRotate()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -277,9 +289,11 @@ class SafeViewController: UIViewController {
     
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        self.isDetailBack = false
         if segue.identifier == "showDetail"{
             let destinationController = segue.destination as! IQCProductDetailViewController
             let product = sender as! Product
+            self.isDetailBack = true
             destinationController.productId = product.id!
         }else if segue.identifier == "showGovDetail"{
             let destinationController = segue.destination as! GovProductDetailViewController
@@ -345,9 +359,9 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
         if collectionView == tittleCollectionView || collectionView == subTittleCollectionView{
             return UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 0)
         }
-//        if collectionView == brandCollectionView{
-//            return UIEdgeInsetsMake(0, 10, 0, 10)
-//        }
+        //        if collectionView == brandCollectionView{
+        //            return UIEdgeInsetsMake(0, 10, 0, 10)
+        //        }
         return UIEdgeInsets(top: 10, left: 10, bottom: 0, right: 10)
     }
     
@@ -360,7 +374,7 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
             tittleCollectionView.reloadData()
             subTittleCollectionView.reloadData()
             searchProduct(productTypeList[indexPath.item].id!, subId: "", productType: self.productTypeList[indexPath.item])
-        //MARK:Sub select
+            //MARK:Sub select
         }else if collectionView == subTittleCollectionView{
             selectedSubTittel = indexPath.item
             subTittleCollectionView.reloadData()
@@ -543,7 +557,7 @@ extension SafeViewController{
                 let json = JSON(JSONData)
                 print(json)
                 for jsonData in json["list"]{
-                    
+                    IsDetailBack.isBackFlag.isDetailBack = true
                     if let _ = jsonData.1["gov"].string{
                         self.performSegue(withIdentifier: "showGovDetail", sender: product)
                     }else{
@@ -556,5 +570,13 @@ extension SafeViewController{
         
         
     }
+    
+}
+
+class IsDetailBack{
+    
+    static let isBackFlag = IsDetailBack()
+    
+    var isDetailBack:Bool?
     
 }

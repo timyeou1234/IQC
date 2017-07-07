@@ -71,6 +71,8 @@
 		6B2784C21EBAD6EC00B8B6EE /* ProductSubjectTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B2784C01EBAD6EC00B8B6EE /* ProductSubjectTableViewCell.xib */; };
 		6B2784C51EBF455F00B8B6EE /* IQCProductDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2784C31EBF455F00B8B6EE /* IQCProductDetailTableViewCell.swift */; };
 		6B2784C61EBF455F00B8B6EE /* IQCProductDetailTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B2784C41EBF455F00B8B6EE /* IQCProductDetailTableViewCell.xib */; };
+		6B2E08AB1F0C84E4007B8EAA /* HotTopicTopTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B2E08A91F0C84E4007B8EAA /* HotTopicTopTableViewCell.swift */; };
+		6B2E08AC1F0C84E4007B8EAA /* HotTopicTopTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B2E08AA1F0C84E4007B8EAA /* HotTopicTopTableViewCell.xib */; };
 		6B3DE3681E4C3BBF003374B8 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3DE3671E4C3BBF003374B8 /* Extension.swift */; };
 		6B3DE36A1E4DCECD003374B8 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3DE3691E4DCECD003374B8 /* LoadingView.swift */; };
 		6B3DE36C1E4DCEDE003374B8 /* LoaadingView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6B3DE36B1E4DCEDE003374B8 /* LoaadingView.xib */; };
@@ -167,10 +169,14 @@
 		6B2784C01EBAD6EC00B8B6EE /* ProductSubjectTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ProductSubjectTableViewCell.xib; sourceTree = "<group>"; };
 		6B2784C31EBF455F00B8B6EE /* IQCProductDetailTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IQCProductDetailTableViewCell.swift; sourceTree = "<group>"; };
 		6B2784C41EBF455F00B8B6EE /* IQCProductDetailTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IQCProductDetailTableViewCell.xib; sourceTree = "<group>"; };
+		6B2E08A91F0C84E4007B8EAA /* HotTopicTopTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HotTopicTopTableViewCell.swift; sourceTree = "<group>"; };
+		6B2E08AA1F0C84E4007B8EAA /* HotTopicTopTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HotTopicTopTableViewCell.xib; sourceTree = "<group>"; };
 		6B3DE3671E4C3BBF003374B8 /* Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		6B3DE3691E4DCECD003374B8 /* LoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		6B3DE36B1E4DCEDE003374B8 /* LoaadingView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoaadingView.xib; sourceTree = "<group>"; };
 		6B3DE36E1E4E197A003374B8 /* NoResultViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoResultViewController.swift; sourceTree = "<group>"; };
+		6B5512841F0E920200DC624C /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
+		6B5512851F0E920300DC624C /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		6B5EBA801E68385E00B902D0 /* GovProductDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovProductDetailViewController.swift; sourceTree = "<group>"; };
 		6B5EBA821E6844E800B902D0 /* GovDetailTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GovDetailTableViewCell.swift; sourceTree = "<group>"; };
 		6B5EBA831E6844E800B902D0 /* GovDetailTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = GovDetailTableViewCell.xib; sourceTree = "<group>"; };
@@ -303,6 +309,8 @@
 				6B1CA6681E5EC65E00C2C039 /* DetailArticleViewController.swift */,
 				6B1CA6621E5EAB5F00C2C039 /* HotTopicListTableViewCell.swift */,
 				6B1CA6631E5EAB5F00C2C039 /* HotTopicListTableViewCell.xib */,
+				6B2E08A91F0C84E4007B8EAA /* HotTopicTopTableViewCell.swift */,
+				6B2E08AA1F0C84E4007B8EAA /* HotTopicTopTableViewCell.xib */,
 				6B5EBA8A1E698D4200B902D0 /* TagCollectionViewCell.swift */,
 				6B5EBA8B1E698D4200B902D0 /* TagCollectionViewCell.xib */,
 				6B5EBA901E69C4B400B902D0 /* RelatedArticleCollectionViewCell.swift */,
@@ -492,6 +500,7 @@
 				6B1E04531E6468F0002A5005 /* ProductSliderCollectionViewCell.xib in Resources */,
 				6B1E04571E65D31D002A5005 /* IngrediantTableViewCell.xib in Resources */,
 				6B2784C61EBF455F00B8B6EE /* IQCProductDetailTableViewCell.xib in Resources */,
+				6B2E08AC1F0C84E4007B8EAA /* HotTopicTopTableViewCell.xib in Resources */,
 				6B1E04471E641DB4002A5005 /* ProductTittleTableViewCell.xib in Resources */,
 				6B2784BE1EB86A6900B8B6EE /* ProductContentTableViewCell.xib in Resources */,
 				6B25CF491E64067E009ECF32 /* ProductDetailItemTableViewCell.xib in Resources */,
@@ -526,13 +535,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-IQC-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		8A534D0079745010B1E59E16 /* [CP] Embed Pods Frameworks */ = {
@@ -571,13 +583,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-IQCTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		CDEE40C4E2B2D50A26B2E64C /* [CP] Copy Pods Resources */ = {
@@ -601,9 +616,66 @@
 			files = (
 			);
 			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-IQC/Pods-IQC-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/ANREye/ANREye.framework",
+				"${BUILT_PRODUCTS_DIR}/ASLEye/ASLEye.framework",
+				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/AppBaseKit/AppBaseKit.framework",
+				"${BUILT_PRODUCTS_DIR}/AppSwizzle/AppSwizzle.framework",
+				"${BUILT_PRODUCTS_DIR}/AssistiveButton/AssistiveButton.framework",
+				"${BUILT_PRODUCTS_DIR}/Bolts/Bolts.framework",
+				"${BUILT_PRODUCTS_DIR}/CarbonKit/CarbonKit.framework",
+				"${BUILT_PRODUCTS_DIR}/CrashEye/CrashEye.framework",
+				"${BUILT_PRODUCTS_DIR}/DropDown/DropDown.framework",
+				"${BUILT_PRODUCTS_DIR}/ESPullToRefresh/ESPullToRefresh.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKCoreKit/FBSDKCoreKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKLoginKit/FBSDKLoginKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FBSDKShareKit/FBSDKShareKit.framework",
+				"${BUILT_PRODUCTS_DIR}/FacebookCore/FacebookCore.framework",
+				"${BUILT_PRODUCTS_DIR}/FacebookLogin/FacebookLogin.framework",
+				"${BUILT_PRODUCTS_DIR}/FacebookShare/FacebookShare.framework",
+				"${BUILT_PRODUCTS_DIR}/FileBrowser/FileBrowser.framework",
+				"${BUILT_PRODUCTS_DIR}/GodEye/GodEye.framework",
+				"${BUILT_PRODUCTS_DIR}/LeakEye/LeakEye.framework",
+				"${BUILT_PRODUCTS_DIR}/Log4G/Log4G.framework",
+				"${BUILT_PRODUCTS_DIR}/NetworkEye.swift/NetworkEye.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SQLite.swift/SQLite.framework",
+				"${BUILT_PRODUCTS_DIR}/SwViewCapture/SwViewCapture.framework",
+				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
+				"${BUILT_PRODUCTS_DIR}/SystemEye/SystemEye.framework",
+				"${BUILT_PRODUCTS_DIR}/TagListView/TagListView.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ANREye.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ASLEye.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AppBaseKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AppSwizzle.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AssistiveButton.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Bolts.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CarbonKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CrashEye.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DropDown.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ESPullToRefresh.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKCoreKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKLoginKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FBSDKShareKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookCore.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookLogin.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FacebookShare.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FileBrowser.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GodEye.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LeakEye.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Log4G.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NetworkEye.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLite.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwViewCapture.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SystemEye.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TagListView.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -666,6 +738,7 @@
 				6B14FD821E7A730E00C37BD7 /* AboutViewController.swift in Sources */,
 				6B1C5A101E80FAD500F9EC07 /* JournalCoachViewController.swift in Sources */,
 				6B3DE3681E4C3BBF003374B8 /* Extension.swift in Sources */,
+				6B2E08AB1F0C84E4007B8EAA /* HotTopicTopTableViewCell.swift in Sources */,
 				6B1CA67C1E6335C500C2C039 /* IQCProductDetailViewController.swift in Sources */,
 				6B5EBA8C1E698D4200B902D0 /* TagCollectionViewCell.swift in Sources */,
 				6B1CA6751E5F05FF00C2C039 /* ProductCollectionViewCell.swift in Sources */,
@@ -696,6 +769,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				6B10C94F1E485F08001017DD /* Base */,
+				6B5512841F0E920200DC624C /* zh-Hant */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -704,6 +778,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				6B10C9541E485F08001017DD /* Base */,
+				6B5512851F0E920300DC624C /* zh-Hant */,
 			);
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
@@ -715,6 +790,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -765,6 +841,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";

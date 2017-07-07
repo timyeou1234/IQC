@@ -24,6 +24,7 @@ class IngrediantTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
@@ -33,17 +34,19 @@ class IngrediantTableViewCell: UITableViewCell {
     }
     
     func drawDash(){
-        if tittleItemLable.text != "警語"{
-            dashLineBottomView.addDashedLine(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: dashLineBottomView.frame.width, y: 0))
-            if tittleBackView.bounds.height > 40{
-                cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: tittleBackView.bounds.height - 40)
-            }
-        }else{
-            if tittleBackView.bounds.height > 40{
-                cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: tittleBackView.bounds.height - 40)
-            }
+        dashLineBottomView.isHidden = false
+        dashLineBottomView.addDashedLine(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: dashLineBottomView.frame.width, y: 0))
+        if tittleBackView.bounds.height > 40{
+            cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: tittleBackView.bounds.height - 40)
         }
         
+    }
+    
+    func endDrawDash(){
+        dashLineBottomView.isHidden = true
+        if tittleBackView.bounds.height > 40{
+            cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: tittleBackView.bounds.height - 40)
+        }
     }
     
 }

@@ -15,6 +15,7 @@ target 'IQC' do
   pod 'FacebookLogin'
   pod 'FacebookShare'
   pod 'GodEye'
+  pod 'TagListView', '~> 1.0'
   
   post_install do |installer|
       installer.pods_project.targets.each do |target|

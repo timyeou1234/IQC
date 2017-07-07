@@ -21,6 +21,7 @@ class ProductDetailItemTableViewCell: UITableViewCell, UITableViewDelegate, UITa
     var contentHeight:CGFloat = 0
     var isOpen = false
     
+    @IBOutlet weak var changeButton: UIButton!
     @IBOutlet weak var tittleView: UIView!
     @IBOutlet weak var tittleLable: UILabel!
     @IBOutlet weak var ProductDetailTestTableView: UITableView!
@@ -37,7 +38,7 @@ class ProductDetailItemTableViewCell: UITableViewCell, UITableViewDelegate, UITa
     }
     
     @IBAction func cellChangeHeight(_ sender: Any) {
-        
+//        changeButton.isEnabled = false
         let height = self.ProductDetailTestTableView.contentSize.height
         
         //            let height = self.tableViewHeight

@@ -16,6 +16,9 @@ class HotTopicDetailViewController: UIViewController {
     var articleId = ""
     var articleList = [Article]()
     var loadingView = LoadingView()
+    var topTitle:String?
+    var topSubtitle:String?
+    var topDesc:String?
     
     @IBOutlet weak var hotTopicTableView: UITableView!
     
@@ -28,8 +31,10 @@ class HotTopicDetailViewController: UIViewController {
         hotTopicTableView.dataSource = self
         
         hotTopicTableView.register(UINib(nibName: "HotTopicListTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell")
+        hotTopicTableView.register(UINib(nibName: "HotTopicTopTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell0")
         
-        hotTopicTableView.rowHeight = self.view.bounds.height / 2
+        
+        hotTopicTableView.rowHeight = UITableViewAutomaticDimension
         hotTopicTableView.estimatedRowHeight = self.view.bounds.height / 2
         
         
@@ -136,14 +141,21 @@ extension HotTopicDetailViewController:UITableViewDelegate, UITableViewDataSourc
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return articleList.count
+        return articleList.count + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.row == 0{
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Cell0", for: indexPath) as! HotTopicTopTableViewCell
+            cell.titleLable.text = topTitle
+            cell.subTitleLable.text = topSubtitle
+            cell.contentLable.text = topDesc
+            return cell
+        }
         let cell = hotTopicTableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! HotTopicListTableViewCell
         cell.selectionStyle = .none
         
-        let article = articleList[indexPath.row]
+        let article = articleList[indexPath.row - 1]
         if article.main_img != nil{
             cell.backImageView.sd_setImage(with: URL(string: article.main_img!))
         }
@@ -152,6 +164,7 @@ extension HotTopicDetailViewController:UITableViewDelegate, UITableViewDataSourc
         cell.descriptionLable.text = contentText
         cell.topicClass.text = article.type
         cell.topicBackView.clipBackground(color: UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1))
+        cell.playButtonImage.isHidden = article.video == nil
         
         return cell
     }

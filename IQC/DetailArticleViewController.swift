@@ -13,6 +13,7 @@ import SwiftyJSON
 import Social
 import FacebookShare
 import FBSDKShareKit
+import TagListView
 
 var MyObservationContext = 0
 
@@ -29,6 +30,7 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
     var loadingView = LoadingView()
     var facebookActive = false
     
+    @IBOutlet weak var tagList: TagListView!
     @IBOutlet weak var facebookWebviewHeightConstant: NSLayoutConstraint!
     @IBOutlet weak var noteView: UIView!
     @IBOutlet weak var noteTextLable: UILabel!
@@ -42,8 +44,7 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
     @IBOutlet weak var modifyDate: UILabel!
     @IBOutlet weak var titteLable: UILabel!
     //    @IBOutlet weak var contentLable: UILabel!
-    @IBOutlet weak var tagCollectionView: UICollectionView!
-    @IBOutlet weak var tagCollectionViewHeight: NSLayoutConstraint!
+    
     
     @IBOutlet weak var otherArticleView: UIView!
     @IBOutlet weak var otherProductView: UIView!
@@ -82,6 +83,10 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        tagList.delegate = self
+        tagList.alignment = .right
+        tagList.textFont = UIFont.systemFont(ofSize: 17)
+        
         facebookWebview.delegate = self
         contentWebView.delegate = self
         AppUtility.lockOrientation(.portrait)
@@ -96,11 +101,6 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
         readingCollectionView.delegate = self
         
         readingCollectionView.register(UINib(nibName: "RelatedArticleCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
-        
-        tagCollectionView.dataSource = self
-        tagCollectionView.delegate = self
-        
-        tagCollectionView.register(UINib(nibName: "TagCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
         
         // Do any additional setup after loading the view.
     }
@@ -121,6 +121,7 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        
         let facebookUrl = "<!DOCTYPE html><html> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> </head><body> <div id=\"fb-root\"></div><script>(function(d, s, id){var js, fjs=d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js=d.createElement(s); js.id=id; js.src=\"//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8&appId=700015816832989\"; fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script> <div class=\"fb-comments\" data-href=\"https://iqctest.com/article/\(articleId)\" data-numposts=\"5\"></div></body></html>"
         if isFirstLoad{
             facebookWebview.loadHTMLString(facebookUrl, baseURL: URL(string: "https://www.facebook.com/iqc.com.tw"))
@@ -137,8 +138,8 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
             playButton.isHidden = true
             youtubeWebView.isHidden = true
         }else{
-            playButton.isHidden = false
-            youtubeWebView.isHidden = true
+            youtubeWebView.loadRequest(URLRequest(url: URL(string: article.video!)!))
+            youtubeWebView.isHidden = false
         }
         if article.main_img != nil{
             self.backImageView.sd_setImage(with: URL(string: article.main_img!))
@@ -164,17 +165,13 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
         }
         
         if article.tag != nil{
-            var width = Int(self.view.bounds.width)
+            var tagList = [String]()
             for tag in (article.tag?.components(separatedBy: ","))!{
-                if tag.characters.count > width{
-                    tagRow += 1
-                    width = Int(self.view.bounds.width)
-                }else{
-                    width -= (tag.characters.count * 17) + 20
-                }
+                tagList.append(tag)
             }
-            tagCollectionView.reloadData()
-            tagCollectionViewHeight.constant = CGFloat(40 * tagRow)
+            self.tagList.removeAllTags()
+            self.tagList.addTags(tagList)
+            
         }
         
         if article.note != nil{
@@ -273,7 +270,11 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
     
 }
 
-extension DetailArticleViewController:UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
+extension DetailArticleViewController:UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, TagListViewDelegate{
+    
+    func tagPressed(_ title: String, tagView: TagView, sender: TagListView) {
+        performSegue(withIdentifier: "search", sender: title)
+    }
     
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
@@ -307,7 +308,8 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
             return CGSize(width: readingCollectionView.bounds.height-20, height: readingCollectionView.bounds.height-30)
         }
         let tag = article.tag?.components(separatedBy: ",")[indexPath.item]
-        return CGSize(width: (getSizeFromString(string: tag!, withFont: classTittle.font).width + 15), height: 40)
+        return CGSize(width: (tag! as NSString).size(attributes: nil).width + 24, height: 40)
+        //return CGSize(width: (getSizeFromString(string: tag!, withFont: classTittle.font).width + 15), height: 40)
     }
     
     func sizeOfString (string: String, constrainedToWidth width: Double) -> CGSize {
@@ -357,17 +359,13 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
             }
 //            getProductDetailGo(id: productList[indexPath.item].id!)
         }
-        if collectionView == tagCollectionView{
-            performSegue(withIdentifier: "search", sender: article.tag?.components(separatedBy: ",")[indexPath.item])
-        }
+        
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if collectionView == productCollectionView{
             return productList.count
-        }
-        if article.tag != nil && collectionView == tagCollectionView{
-            return (article.tag?.components(separatedBy: ",").count)!
         }
         if collectionView == readingCollectionView{
             if relatedeArticle.count == 0{
@@ -381,21 +379,10 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        if collectionView == tagCollectionView{
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! TagCollectionViewCell
-            
-            cell.tagLable.text = article.tag?.components(separatedBy: ",")[indexPath.item]
-            cell.tagLable.font = cell.tagLable.font.withSize(13)
-            cell.backView.clipBackground(cornerRadious: 12, color: .clear)
-            cell.backView.layer.borderColor = UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1).cgColor
-            cell.backView.layer.borderWidth = 1
-            cell.backView.layer.masksToBounds = true
-            
-            return cell
-        }else if collectionView == readingCollectionView{
+        if collectionView == readingCollectionView{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! RelatedArticleCollectionViewCell
             
-            if relatedeArticle.count == 0{
+            if relatedeArticle.count == 0 || relatedeArticle.count - 1 < indexPath.row{
                 return cell
             }
             

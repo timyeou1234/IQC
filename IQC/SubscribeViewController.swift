@@ -202,6 +202,7 @@ class SubscribeViewController: UIViewController {
             self.present(alert, animated: true, completion: nil)
         })
         
+        
     }
     
     func isValidEmail(testStr:String) -> Bool {

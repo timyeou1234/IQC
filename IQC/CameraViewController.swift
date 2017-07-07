@@ -63,6 +63,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     @IBOutlet weak var codeImage11: UIImageView!
     @IBOutlet weak var codeImage12: UIImageView!
     @IBOutlet weak var codeImage13: UIImageView!
+    @IBOutlet weak var codeImage14: UIImageView!
     
     @IBOutlet weak var codeLable1: UILabel!
     @IBOutlet weak var codeLable2: UILabel!
@@ -77,6 +78,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     @IBOutlet weak var codeLable11: UILabel!
     @IBOutlet weak var codeLable12: UILabel!
     @IBOutlet weak var codeLable13: UILabel!
+    @IBOutlet weak var codeLable14: UILabel!
     
     @IBOutlet weak var inputTextfield: UITextField!
     
@@ -127,7 +129,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     }
     
     @IBAction func searchAction(_ sender: Any) {
-        if codeArray.count == 8 || codeArray.count == 13{
+        if codeArray.count > 5{
             loadingView.isHidden = false
             var code = ""
             for codeDigit in codeArray{
@@ -146,7 +148,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
+        ScanDetailBack.scanDetailBack.isDetailBack = false
         //設定按鈕圖示
         cameraButton.setImage(#imageLiteral(resourceName: "icon_cam_01_prs"), for: .selected)
         cameraButton.setImage(#imageLiteral(resourceName: "icon_cam_01_nor"), for: .normal)
@@ -161,13 +163,21 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.navigationBar.isHidden = false
+        if ScanDetailBack.scanDetailBack.isDetailBack!{
         if codeArray.count != 0{
             var code = ""
             for i in codeArray{
                 code += String(i)
             }
             inputTextfield.text = code
+            }
+        }else{
+            inputTextfield.text = ""
+            codeArray = [Int]()
+            setupKeyboardView()
         }
+        ScanDetailBack.scanDetailBack.isDetailBack = false
         //        設定讀取中圖示
         loadingView.frame = self.view.frame
         loadingView.startRotate()
@@ -214,6 +224,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         // Dispose of any resources that can be recreated.
     }
     
+    //MARK: Frank MeataData recieve
     func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
         
         // Check if the metadataObjects array is not nil and it contains at least one object.
@@ -255,23 +266,27 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     
     func setupKeyboardView(){
         if self.view.bounds.width < 350{
-            pointsStackView.spacing = 5
+            //SE I5
+            pointsStackView.spacing = 4
         }else if self.view.bounds.width > 375 && self.view.bounds.width < 415{
-            pointsStackView.spacing = 13
-        }else if self.view.bounds.width < 375{
-            pointsStackView.spacing = 9
+            //plus
+            pointsStackView.spacing = 11
         }else if self.view.bounds.width > 414 && self.view.bounds.width < 900{
-            pointsStackView.spacing = 43
+            //Ipad
+            pointsStackView.spacing = 38
         }else if self.view.bounds.width > 900{
-            pointsStackView.spacing = 63
+            //Ipad Pro
+            pointsStackView.spacing = 58
         }else{
-            pointsStackView.spacing = 10
+            //I6
+            pointsStackView.spacing = 8
         }
         
-        codeImageArray = [codeImage1, codeImage2, codeImage3, codeImage4, codeImage5, codeImage6, codeImage7, codeImage8, codeImage9, codeImage10, codeImage11, codeImage12, codeImage13]
-        codeLableArray = [codeLable1, codeLable2, codeLable3, codeLable4, codeLable5, codeLable6, codeLable7, codeLable8, codeLable9, codeLable10, codeLable11, codeLable12, codeLable13]
+        codeImageArray = [codeImage1, codeImage2, codeImage3, codeImage4, codeImage5, codeImage6, codeImage7, codeImage8, codeImage9, codeImage10, codeImage11, codeImage12, codeImage13, codeImage14]
+        codeLableArray = [codeLable1, codeLable2, codeLable3, codeLable4, codeLable5, codeLable6, codeLable7, codeLable8, codeLable9, codeLable10, codeLable11, codeLable12, codeLable13, codeLable14]
         for imageView in codeImageArray{
             imageView.contentMode = .scaleAspectFit
+            imageView.isHidden = false
         }
         for lable in codeLableArray{
             lable.text = ""
@@ -280,6 +295,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         
     }
     
+    //MARK:Frank Setup capture
     func setupCameraView(){
         
         
@@ -444,18 +460,21 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
             captureSession?.stopRunning()
             self.videoPreviewLayer?.removeFromSuperlayer()
             videoPreviewLayer = nil
+            ScanDetailBack.scanDetailBack.isDetailBack = true
         case "showGovDetail":
             let destinationController = segue.destination as! GovProductDetailViewController
             destinationController.productId = (sender as! Product).id!
             captureSession?.stopRunning()
             self.videoPreviewLayer?.removeFromSuperlayer()
             videoPreviewLayer = nil
+            ScanDetailBack.scanDetailBack.isDetailBack = true
         case "showDetail":
             let destinationController = segue.destination as! IQCProductDetailViewController
             destinationController.productId = (sender as! Product).id!
             captureSession?.stopRunning()
             self.videoPreviewLayer?.removeFromSuperlayer()
             videoPreviewLayer = nil
+            ScanDetailBack.scanDetailBack.isDetailBack = true
         default:
             captureSession?.stopRunning()
             self.videoPreviewLayer?.removeFromSuperlayer()
@@ -520,7 +539,7 @@ extension CameraViewController:UITextFieldDelegate, UIViewControllerTransitionin
         }
         
         if (textField.text?.characters.count)! >= codeImageArray.count {
-            textField.text = "000000000000"
+            textField.text = "0000000000000"
             return true
         }
         
@@ -570,6 +589,14 @@ extension CameraViewController:UITextFieldDelegate, UIViewControllerTransitionin
         })
         
     }
+    
+}
+
+class ScanDetailBack:NSObject{
+    
+    static let scanDetailBack = ScanDetailBack()
+    
+    var isDetailBack:Bool?
     
 }
 

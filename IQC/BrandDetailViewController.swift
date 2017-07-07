@@ -11,12 +11,19 @@ import Alamofire
 import SDWebImage
 import SwiftyJSON
 
-class BrandDetailViewController: UIViewController {
+class BrandDetailViewController: UIViewController, UIWebViewDelegate {
     
     var brandId = ""
     var brandData = Brand()
     var brandOwnedProduct = [Product]()
     var loadingView = LoadingView()
+    
+    // 6/26Change
+    @IBOutlet weak var desWebView: UIWebView!
+    @IBOutlet weak var detailDesWebView: UIWebView!
+    @IBOutlet weak var desWebViewHeightt: NSLayoutConstraint!
+    @IBOutlet weak var detailDesWebviewHeight: NSLayoutConstraint!
+    
     
     @IBOutlet weak var backImageView: UIImageView!
     @IBOutlet weak var logoImageView: UIImageView!
@@ -40,6 +47,9 @@ class BrandDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        desWebView.delegate = self
+        detailDesWebView.delegate = self
         
         productCollectionView.delegate = self
         productCollectionView.dataSource = self
@@ -168,7 +178,28 @@ class BrandDetailViewController: UIViewController {
             options: [ NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
             documentAttributes: nil)
         desIntroLable.attributedText = attrStr2
+        
+//        6/26 Change to web view
+        desWebView.loadHTMLString(brandData.intro!, baseURL: nil)
+        detailDesWebView.loadHTMLString(brandData.content!, baseURL: nil)
+        
         loadingView.isHidden = true
+    }
+    
+    //        6/26 Change to web view
+    func webViewDidFinishLoad(_ webView: UIWebView) {
+        webView.frame.size.height = 1
+        
+        webView.frame.size = webView.sizeThatFits(CGSize.zero)
+        
+        if webView == desWebView{
+            desWebViewHeightt.constant = webView.frame.height
+             webView.bounds = CGRect(x: 0, y: 0, width: webView.frame.width, height: desWebViewHeightt.constant)
+        }else{
+            detailDesWebviewHeight.constant = webView.frame.height
+             webView.bounds = CGRect(x: 0, y: 0, width: webView.frame.width, height: detailDesWebviewHeight.constant)
+        }
+        
     }
     
     //    取得品牌擁有的產品與相似產品（資訊所需較少）

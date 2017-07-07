@@ -1,0 +1,483 @@
+
+/* Class = "UIButton"; normalTitle = "送出"; ObjectID = "0Mu-0V-HUw"; */
+"0Mu-0V-HUw.normalTitle" = "送出";
+
+/* Class = "UINavigationItem"; title = "IQC食安誌"; ObjectID = "0gh-3a-6Nz"; */
+"0gh-3a-6Nz.title" = "IQC食安誌";
+
+/* Class = "UILabel"; text = "商品條碼"; ObjectID = "0jv-JY-RRU"; */
+"0jv-JY-RRU.text" = "商品條碼";
+
+/* Class = "UILabel"; text = "建議避免填寫如：Yahoo, Gmail 等免費電子郵件信箱申請，避免有漏、擋信情形，另外可將我們的信箱 service@corehealth.com.tw 設為通訊錄聯絡人，確保能順利收信。"; ObjectID = "102-Sk-oBh"; */
+"102-Sk-oBh.text" = "建議避免填寫如：Yahoo, Gmail 等免費電子郵件信箱申請，避免有漏、擋信情形，另外可將我們的信箱 service@corehealth.com.tw 設為通訊錄聯絡人，確保能順利收信。";
+
+/* Class = "UIButton"; normalTitle = "略過"; ObjectID = "1mX-Qe-ctA"; */
+"1mX-Qe-ctA.normalTitle" = "略過";
+
+/* Class = "UILabel"; text = "搜尋過的關鍵字"; ObjectID = "223-AY-QDf"; */
+"223-AY-QDf.text" = "搜尋過的關鍵字";
+
+/* Class = "UIButton"; normalTitle = "官方網站"; ObjectID = "2FA-XH-eUi"; */
+"2FA-XH-eUi.normalTitle" = "官方網站";
+
+/* Class = "UILabel"; text = "熱門關鍵字"; ObjectID = "2IY-IZ-cVv"; */
+"2IY-IZ-cVv.text" = "熱門關鍵字";
+
+/* Class = "UIButton"; normalTitle = "取消"; ObjectID = "2pa-av-hnL"; */
+"2pa-av-hnL.normalTitle" = "取消";
+
+/* Class = "UILabel"; text = "了解各種食安新知"; ObjectID = "3ZX-9S-VUT"; */
+"3ZX-9S-VUT.text" = "了解各種食安新知";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "51k-dw-jzY"; */
+"51k-dw-jzY.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "5EK-UF-uul"; */
+"5EK-UF-uul.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "5FC-aj-eUe"; */
+"5FC-aj-eUe.text" = "Label";
+
+/* Class = "UITextField"; placeholder = "姓名"; ObjectID = "5Vb-Mi-p7o"; */
+"5Vb-Mi-p7o.placeholder" = "姓名";
+
+/* Class = "UINavigationItem"; title = " "; ObjectID = "61n-iz-sP2"; */
+"61n-iz-sP2.title" = " ";
+
+/* Class = "UIBarButtonItem"; title = " "; ObjectID = "6Qh-Xl-fpB"; */
+"6Qh-Xl-fpB.title" = " ";
+
+/* Class = "UILabel"; text = "半成品檢驗合格區"; ObjectID = "6VO-pA-84x"; */
+"6VO-pA-84x.text" = "半成品檢驗合格區";
+
+/* Class = "UINavigationItem"; title = "商品資訊與檢驗報告"; ObjectID = "6x7-qx-JRT"; */
+"6x7-qx-JRT.title" = "商品資訊與檢驗報告";
+
+/* Class = "UILabel"; text = "請依產品條碼，輸入6~14碼完整條碼數字"; ObjectID = "7XQ-V9-zIx"; */
+"7XQ-V9-zIx.text" = "請依產品條碼，輸入6~14碼完整條碼數字";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "7Xf-U6-T3G"; */
+"7Xf-U6-T3G.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "85a-XA-tze"; */
+"85a-XA-tze.text" = "Label";
+
+/* Class = "UILabel"; text = "雙活菌核桃"; ObjectID = "8nm-Qr-laM"; */
+"8nm-Qr-laM.text" = "雙活菌核桃";
+
+/* Class = "UIViewController"; title = "IQC食安誌"; ObjectID = "8rJ-Kc-sve"; */
+"8rJ-Kc-sve.title" = "IQC食安誌";
+
+/* Class = "UILabel"; text = "版權宣告"; ObjectID = "90j-oZ-k4B"; */
+"90j-oZ-k4B.text" = "版權宣告";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "98q-4h-6N3"; */
+"98q-4h-6N3.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "看報告"; ObjectID = "AaJ-Ac-i90"; */
+"AaJ-Ac-i90.normalTitle" = "看報告";
+
+/* Class = "UILabel"; text = "成品檢驗合格區"; ObjectID = "Acf-ew-uSt"; */
+"Acf-ew-uSt.text" = "成品檢驗合格區";
+
+/* Class = "UINavigationItem"; title = "版權宣告"; ObjectID = "B1F-Tl-Iwg"; */
+"B1F-Tl-Iwg.title" = "版權宣告";
+
+/* Class = "UITextField"; placeholder = "職稱"; ObjectID = "B2I-7O-Xon"; */
+"B2I-7O-Xon.placeholder" = "職稱";
+
+/* Class = "UIButton"; normalTitle = "產品一覽"; ObjectID = "BqU-5q-iEY"; */
+"BqU-5q-iEY.normalTitle" = "產品一覽";
+
+/* Class = "UIButton"; normalTitle = "產品專區"; ObjectID = "CrS-Pc-s1m"; */
+"CrS-Pc-s1m.normalTitle" = "產品專區";
+
+/* Class = "UILabel"; text = "認證標章"; ObjectID = "Dpv-zm-BzX"; */
+"Dpv-zm-BzX.text" = "認證標章";
+
+/* Class = "UIButton"; normalTitle = "女性"; ObjectID = "Dwb-vC-CMW"; */
+"Dwb-vC-CMW.normalTitle" = "女性";
+
+/* Class = "UITabBarItem"; title = "食在安心"; ObjectID = "EAb-Jh-nO3"; */
+"EAb-Jh-nO3.title" = "食在安心";
+
+/* Class = "UIBarButtonItem"; title = "  "; ObjectID = "ESU-Pk-3wq"; */
+"ESU-Pk-3wq.title" = "  ";
+
+/* Class = "UIButton"; normalTitle = "食安生活"; ObjectID = "F8D-El-09Q"; */
+"F8D-El-09Q.normalTitle" = "食安生活";
+
+/* Class = "UILabel"; text = "地         址："; ObjectID = "FQH-ns-fTZ"; */
+"FQH-ns-fTZ.text" = "地         址：";
+
+/* Class = "UIButton"; normalTitle = "官方網站"; ObjectID = "GE8-O0-DBM"; */
+"GE8-O0-DBM.normalTitle" = "官方網站";
+
+/* Class = "UILabel"; text = "關於iQC"; ObjectID = "GQa-VZ-xIA"; */
+"GQa-VZ-xIA.text" = "關於iQC";
+
+/* Class = "UILabel"; text = "產品一覽"; ObjectID = "GU2-E9-rKx"; */
+"GU2-E9-rKx.text" = "產品一覽";
+
+/* Class = "UIBarButtonItem"; title = "完成"; ObjectID = "GbS-Je-FkF"; */
+"GbS-Je-FkF.title" = "完成";
+
+/* Class = "UIButton"; normalTitle = "下一則"; ObjectID = "HFV-FA-XO7"; */
+"HFV-FA-XO7.normalTitle" = "下一則";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "Hkc-YL-KZg"; */
+"Hkc-YL-KZg.text" = "Label";
+
+/* Class = "UILabel"; text = "訪問網站"; ObjectID = "HzL-7u-F86"; */
+"HzL-7u-F86.text" = "訪問網站";
+
+/* Class = "UILabel"; text = "更多"; ObjectID = "IIG-Pc-PUm"; */
+"IIG-Pc-PUm.text" = "更多";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "Idy-Ap-Ggm"; */
+"Idy-Ap-Ggm.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "Ihl-6Q-eha"; */
+"Ihl-6Q-eha.text" = "Label";
+
+/* Class = "UILabel"; text = "追加訂閱"; ObjectID = "Irs-Ox-MND"; */
+"Irs-Ox-MND.text" = "追加訂閱";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "JE2-iO-KOU"; */
+"JE2-iO-KOU.text" = "Label";
+
+/* Class = "UITabBarItem"; title = "熱門專題"; ObjectID = "JTo-ea-DXM"; */
+"JTo-ea-DXM.title" = "熱門專題";
+
+/* Class = "UIBarButtonItem"; title = " "; ObjectID = "JZc-cN-SGW"; */
+"JZc-cN-SGW.title" = " ";
+
+/* Class = "UILabel"; text = "成品檢驗合格區"; ObjectID = "Jhm-6y-E64"; */
+"Jhm-6y-E64.text" = "成品檢驗合格區";
+
+/* Class = "UIButton"; normalTitle = "品牌專區"; ObjectID = "JoB-47-gO2"; */
+"JoB-47-gO2.normalTitle" = "品牌專區";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "JxA-ZA-Tu1"; */
+"JxA-ZA-Tu1.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "K5B-UI-Jnf"; */
+"K5B-UI-Jnf.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "下一則"; ObjectID = "KPY-Dd-xYq"; */
+"KPY-Dd-xYq.normalTitle" = "下一則";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "KmG-4f-UKp"; */
+"KmG-4f-UKp.text" = "Label";
+
+/* Class = "UINavigationItem"; title = "掃描條碼"; ObjectID = "Ls6-wu-Vkm"; */
+"Ls6-wu-Vkm.title" = "掃描條碼";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "M5N-1z-Yk3"; */
+"M5N-1z-Yk3.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "完成"; ObjectID = "MMS-H3-owF"; */
+"MMS-H3-owF.normalTitle" = "完成";
+
+/* Class = "UILabel"; text = "不定期發表各種食安資訊\n守護大家的健康"; ObjectID = "N7v-dO-sw3"; */
+"N7v-dO-sw3.text" = "不定期發表各種食安資訊\n守護大家的健康";
+
+/* Class = "UITextField"; placeholder = "公司名稱"; ObjectID = "NbH-DW-er8"; */
+"NbH-DW-er8.placeholder" = "公司名稱";
+
+/* Class = "UILabel"; text = "電        話："; ObjectID = "OBN-HQ-JVL"; */
+"OBN-HQ-JVL.text" = "電        話：";
+
+/* Class = "UIBarButtonItem"; title = " "; ObjectID = "OGi-Rw-9Pw"; */
+"OGi-Rw-9Pw.title" = " ";
+
+/* Class = "UILabel"; text = "感謝您的協助資料將於iQC審查後公開顯示                                "; ObjectID = "OKk-6u-HIa"; */
+"OKk-6u-HIa.text" = "感謝您的協助資料將於iQC審查後公開顯示                                ";
+
+/* Class = "UIBarButtonItem"; title = " "; ObjectID = "OWn-up-x9e"; */
+"OWn-up-x9e.title" = " ";
+
+/* Class = "UIBarButtonItem"; title = " "; ObjectID = "Oi4-aS-kgu"; */
+"Oi4-aS-kgu.title" = " ";
+
+/* Class = "UIButton"; normalTitle = "自己食安自己救"; ObjectID = "Osv-QH-ng3"; */
+"Osv-QH-ng3.normalTitle" = "自己食安自己救";
+
+/* Class = "UILabel"; text = "品牌介紹"; ObjectID = "PJx-DL-BhZ"; */
+"PJx-DL-BhZ.text" = "品牌介紹";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "QTj-dj-9A8"; */
+"QTj-dj-9A8.text" = "Label";
+
+/* Class = "UIBarButtonItem"; title = "取消"; ObjectID = "QWM-6I-P4D"; */
+"QWM-6I-P4D.title" = "取消";
+
+/* Class = "UINavigationItem"; title = "訂閱食報"; ObjectID = "Qf4-51-vWX"; */
+"Qf4-51-vWX.title" = "訂閱食報";
+
+/* Class = "UILabel"; text = "無任何檢驗報告於資料庫"; ObjectID = "Qte-LE-Ycf"; */
+"Qte-LE-Ycf.text" = "無任何檢驗報告於資料庫";
+
+/* Class = "UILabel"; text = "雙活菌核桃"; ObjectID = "SO7-jD-lEF"; */
+"SO7-jD-lEF.text" = "雙活菌核桃";
+
+/* Class = "UILabel"; text = "新進商品"; ObjectID = "SPy-PZ-maw"; */
+"SPy-PZ-maw.text" = "新進商品";
+
+/* Class = "UILabel"; text = "原料檢驗合格區"; ObjectID = "SeZ-Xu-iCS"; */
+"SeZ-Xu-iCS.text" = "原料檢驗合格區";
+
+/* Class = "UINavigationItem"; title = "相機膠捲"; ObjectID = "T9E-kx-97d"; */
+"T9E-kx-97d.title" = "相機膠捲";
+
+/* Class = "UINavigationItem"; title = "掃描結果"; ObjectID = "Tcz-mb-RFK"; */
+"Tcz-mb-RFK.title" = "掃描結果";
+
+/* Class = "UIButton"; normalTitle = "男性"; ObjectID = "U52-Z8-vVo"; */
+"U52-Z8-vVo.normalTitle" = "男性";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "UEr-8Y-vir"; */
+"UEr-8Y-vir.text" = "Label";
+
+/* Class = "UILabel"; text = "資訊報導以及新刊載檢驗報告商品通知（不定時發送）"; ObjectID = "UuZ-7x-tDb"; */
+"UuZ-7x-tDb.text" = "資訊報導以及新刊載檢驗報告商品通知（不定時發送）";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "VAg-Yk-tSu"; */
+"VAg-Yk-tSu.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "協助回報"; ObjectID = "VGU-cR-55m"; */
+"VGU-cR-55m.normalTitle" = "協助回報";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "VYp-30-Cbf"; */
+"VYp-30-Cbf.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "食安專訪"; ObjectID = "Vbl-rr-AKJ"; */
+"Vbl-rr-AKJ.normalTitle" = "食安專訪";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "VfR-m4-mVC"; */
+"VfR-m4-mVC.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "Vga-Z7-YOv"; */
+"Vga-Z7-YOv.text" = "Label";
+
+/* Class = "UILabel"; text = "橫向選單可以選擇分類\n閱讀食安的各種文章"; ObjectID = "WTB-iN-tUm"; */
+"WTB-iN-tUm.text" = "橫向選單可以選擇分類\n閱讀食安的各種文章";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "YUr-OI-tSE"; */
+"YUr-OI-tSE.text" = "Label";
+
+/* Class = "UINavigationItem"; title = "協助回報"; ObjectID = "YZ7-at-vXT"; */
+"YZ7-at-vXT.title" = "協助回報";
+
+/* Class = "UILabel"; text = "將畫面對準條碼進行掃描"; ObjectID = "YaC-wS-uAU"; */
+"YaC-wS-uAU.text" = "將畫面對準條碼進行掃描";
+
+/* Class = "UIButton"; normalTitle = "食安新知"; ObjectID = "YvU-v9-rFW"; */
+"YvU-v9-rFW.normalTitle" = "食安新知";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "Z9T-mV-8h8"; */
+"Z9T-mV-8h8.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "略過"; ObjectID = "ZEY-H8-Giq"; */
+"ZEY-H8-Giq.normalTitle" = "略過";
+
+/* Class = "UILabel"; text = "Facebook"; ObjectID = "aCw-Mc-tbe"; */
+"aCw-Mc-tbe.text" = "Facebook";
+
+/* Class = "UINavigationItem"; title = "掃描結果"; ObjectID = "ah8-HT-0Qp"; */
+"ah8-HT-0Qp.title" = "掃描結果";
+
+/* Class = "UIViewController"; title = "BrandDetailViewController"; ObjectID = "bAk-Qj-C3n"; */
+"bAk-Qj-C3n.title" = "BrandDetailViewController";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "bkn-Zz-uAf"; */
+"bkn-Zz-uAf.text" = "Label";
+
+/* Class = "UIBarButtonItem"; title = " "; ObjectID = "c14-6G-MdF"; */
+"c14-6G-MdF.title" = " ";
+
+/* Class = "UIButton"; normalTitle = "文章"; ObjectID = "cNE-OB-QZa"; */
+"cNE-OB-QZa.normalTitle" = "文章";
+
+/* Class = "UITabBarItem"; title = "IQC食安誌"; ObjectID = "cPa-gy-q4n"; */
+"cPa-gy-q4n.title" = "IQC食安誌";
+
+/* Class = "UILabel"; text = "iQC 為您守護健康遠離食安風險"; ObjectID = "cTQ-Mg-dkc"; */
+"cTQ-Mg-dkc.text" = "iQC 為您守護健康遠離食安風險";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "clz-ei-j03"; */
+"clz-ei-j03.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "看產品"; ObjectID = "dAo-7k-erA"; */
+"dAo-7k-erA.normalTitle" = "看產品";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "dgp-9O-lKT"; */
+"dgp-9O-lKT.text" = "Label";
+
+/* Class = "UILabel"; text = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA"; ObjectID = "e2R-o0-V5u"; */
+"e2R-o0-V5u.text" = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+
+/* Class = "UINavigationItem"; title = "關於iQC"; ObjectID = "e5H-w8-CC4"; */
+"e5H-w8-CC4.title" = "關於iQC";
+
+/* Class = "UILabel"; text = "類似產品"; ObjectID = "eWZ-tc-7MT"; */
+"eWZ-tc-7MT.text" = "類似產品";
+
+/* Class = "UILabel"; text = "1/10"; ObjectID = "fZE-Q5-Qp7"; */
+"fZE-Q5-Qp7.text" = "1/10";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "gne-fH-URT"; */
+"gne-fH-URT.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "完成"; ObjectID = "hAV-3N-Rum"; */
+"hAV-3N-Rum.normalTitle" = "完成";
+
+/* Class = "UIButton"; normalTitle = "搜尋"; ObjectID = "hX3-hl-Db8"; */
+"hX3-hl-Db8.normalTitle" = "搜尋";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "hvo-qd-aIm"; */
+"hvo-qd-aIm.text" = "Label";
+
+/* Class = "UITextField"; placeholder = "    輸入商品名稱"; ObjectID = "i77-dk-1YL"; */
+"i77-dk-1YL.placeholder" = "    輸入商品名稱";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "iEN-yN-9F1"; */
+"iEN-yN-9F1.text" = "Label";
+
+/* Class = "UIBarButtonItem"; title = " "; ObjectID = "iSb-Zl-Vxo"; */
+"iSb-Zl-Vxo.title" = " ";
+
+/* Class = "UILabel"; text = "類似商品"; ObjectID = "ivC-iv-f4B"; */
+"ivC-iv-f4B.text" = "類似商品";
+
+/* Class = "UITextField"; placeholder = "E-Mail"; ObjectID = "jOE-bI-D1J"; */
+"jOE-bI-D1J.placeholder" = "E-Mail";
+
+/* Class = "UIButton"; normalTitle = "送出"; ObjectID = "lHo-vU-Rfv"; */
+"lHo-vU-Rfv.normalTitle" = "送出";
+
+/* Class = "UILabel"; text = "分類"; ObjectID = "lNx-dW-oKG"; */
+"lNx-dW-oKG.text" = "分類";
+
+/* Class = "UILabel"; text = "理念簡介"; ObjectID = "lmQ-cE-ECk"; */
+"lmQ-cE-ECk.text" = "理念簡介";
+
+/* Class = "UINavigationItem"; title = "商品資訊與檢驗報告"; ObjectID = "mXu-qo-EUl"; */
+"mXu-qo-EUl.title" = "商品資訊與檢驗報告";
+
+/* Class = "UILabel"; text = "產品一覽"; ObjectID = "mcA-G9-kP9"; */
+"mcA-G9-kP9.text" = "產品一覽";
+
+/* Class = "UIButton"; normalTitle = "修改條碼"; ObjectID = "mu0-II-x9j"; */
+"mu0-II-x9j.normalTitle" = "修改條碼";
+
+/* Class = "UILabel"; text = "2016年09月21日"; ObjectID = "n4s-3H-Nva"; */
+"n4s-3H-Nva.text" = "2016年09月21日";
+
+/* Class = "UINavigationItem"; title = "食在安心"; ObjectID = "nFp-HS-fvT"; */
+"nFp-HS-fvT.title" = "食在安心";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "ntq-6s-rci"; */
+"ntq-6s-rci.text" = "Label";
+
+/* Class = "UILabel"; text = "訂閱食報"; ObjectID = "oKT-C7-UsJ"; */
+"oKT-C7-UsJ.text" = "訂閱食報";
+
+/* Class = "UITabBarItem"; title = "掃描條碼"; ObjectID = "obj-IC-ncd"; */
+"obj-IC-ncd.title" = "掃描條碼";
+
+/* Class = "UILabel"; text = "商品安全資訊網"; ObjectID = "oeI-wd-cXD"; */
+"oeI-wd-cXD.text" = "商品安全資訊網";
+
+/* Class = "UINavigationItem"; title = "熱門專題"; ObjectID = "osU-Vv-r6d"; */
+"osU-Vv-r6d.title" = "熱門專題";
+
+/* Class = "UILabel"; text = "登錄字號："; ObjectID = "oxo-kt-nTu"; */
+"oxo-kt-nTu.text" = "登錄字號：";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "pS9-92-ag1"; */
+"pS9-92-ag1.text" = "Label";
+
+/* Class = "UIButton"; normalTitle = "歷年報告"; ObjectID = "pU5-ya-6Ar"; */
+"pU5-ya-6Ar.normalTitle" = "歷年報告";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "pd0-4I-XtN"; */
+"pd0-4I-XtN.text" = "Label";
+
+/* Class = "UILabel"; text = "購買連結"; ObjectID = "qVc-qs-fPt"; */
+"qVc-qs-fPt.text" = "購買連結";
+
+/* Class = "UILabel"; text = "橫向選單可以選擇分類\n觀看有食品檢驗的安全商品"; ObjectID = "qXW-ZH-CiY"; */
+"qXW-ZH-CiY.text" = "橫向選單可以選擇分類\n觀看有食品檢驗的安全商品";
+
+/* Class = "UILabel"; text = "2016年9月21日 最後修改時間"; ObjectID = "rKh-DK-deY"; */
+"rKh-DK-deY.text" = "2016年9月21日 最後修改時間";
+
+/* Class = "UILabel"; text = "此商品查無資訊"; ObjectID = "rL0-yo-JAA"; */
+"rL0-yo-JAA.text" = "此商品查無資訊";
+
+/* Class = "UILabel"; text = "abcd"; ObjectID = "ruf-je-PxU"; */
+"ruf-je-PxU.text" = "abcd";
+
+/* Class = "UILabel"; text = "商品"; ObjectID = "sVu-l7-HBm"; */
+"sVu-l7-HBm.text" = "商品";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "tcA-6X-gLT"; */
+"tcA-6X-gLT.text" = "Label";
+
+/* Class = "UINavigationItem"; title = "熱門專題"; ObjectID = "tuq-YD-Dqc"; */
+"tuq-YD-Dqc.title" = "熱門專題";
+
+/* Class = "UILabel"; text = "商品品名"; ObjectID = "uzI-gt-itD"; */
+"uzI-gt-itD.text" = "商品品名";
+
+/* Class = "UILabel"; text = "對準任何商品條碼掃描\n立刻GET到食品檢驗報告"; ObjectID = "v6p-G7-c6u"; */
+"v6p-G7-c6u.text" = "對準任何商品條碼掃描\n立刻GET到食品檢驗報告";
+
+/* Class = "UILabel"; text = "請拍攝商品條碼與資訊處"; ObjectID = "vIX-HI-JI7"; */
+"vIX-HI-JI7.text" = "請拍攝商品條碼與資訊處";
+
+/* Class = "UIButton"; normalTitle = "商品"; ObjectID = "voA-LA-Cvq"; */
+"voA-LA-Cvq.normalTitle" = "商品";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "vrz-07-r9p"; */
+"vrz-07-r9p.text" = "Label";
+
+/* Class = "UILabel"; text = "2016年9月21日 最後修改時間"; ObjectID = "w0s-oF-ONd"; */
+"w0s-oF-ONd.text" = "2016年9月21日 最後修改時間";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "wBW-Zw-UWU"; */
+"wBW-Zw-UWU.text" = "Label";
+
+/* Class = "UILabel"; text = "延伸觀賞"; ObjectID = "wbX-2i-GT3"; */
+"wbX-2i-GT3.text" = "延伸觀賞";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "wst-yu-owC"; */
+"wst-yu-owC.text" = "Label";
+
+/* Class = "UILabel"; text = "1/10"; ObjectID = "x6a-pg-fBc"; */
+"x6a-pg-fBc.text" = "1/10";
+
+/* Class = "UIButton"; normalTitle = "官方網站"; ObjectID = "x7M-T0-6fn"; */
+"x7M-T0-6fn.normalTitle" = "官方網站";
+
+/* Class = "UIButton"; normalTitle = "近期報告"; ObjectID = "xe6-rk-jBh"; */
+"xe6-rk-jBh.normalTitle" = "近期報告";
+
+/* Class = "UILabel"; text = "追加訂閱 iQC 食安資訊誌，提供前一個月彙整的食品新聞、法規異動、業界脈動、品質行銷訊息及當月份食安進修課程 (每月8號出刊)"; ObjectID = "xzF-pU-g1P"; */
+"xzF-pU-g1P.text" = "追加訂閱 iQC 食安資訊誌，提供前一個月彙整的食品新聞、法規異動、業界脈動、品質行銷訊息及當月份食安進修課程 (每月8號出刊)";
+
+/* Class = "UILabel"; text = "iQC小知識"; ObjectID = "y59-wm-jTk"; */
+"y59-wm-jTk.text" = "iQC小知識";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "yC2-C4-szB"; */
+"yC2-C4-szB.text" = "Label";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "ydC-24-Tse"; */
+"ydC-24-Tse.text" = "Label";
+
+/* Class = "UILabel"; text = "版權宣告"; ObjectID = "yhX-j0-npa"; */
+"yhX-j0-npa.text" = "版權宣告";
+
+/* Class = "UILabel"; text = "推薦商品"; ObjectID = "z5c-eQ-vdN"; */
+"z5c-eQ-vdN.text" = "推薦商品";

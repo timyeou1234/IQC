@@ -11,6 +11,7 @@ import SwiftyJSON
 import SDWebImage
 import Alamofire
 import DropDown
+import TagListView
 
 class SearchViewController: UIViewController {
     
@@ -30,6 +31,11 @@ class SearchViewController: UIViewController {
     
     var loadingView = LoadingView()
     
+    
+    @IBOutlet weak var tagView: TagListView!
+    @IBOutlet weak var usedTagView: TagListView!
+    
+    
     @IBOutlet weak var underLineLeadinConstraint: NSLayoutConstraint!
     @IBOutlet weak var relativeHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var relativeView: UIView!
@@ -37,14 +43,14 @@ class SearchViewController: UIViewController {
     @IBOutlet weak var buttonView: UIView!
     @IBOutlet weak var searchBarView: UIView!
     @IBOutlet weak var outComeView: UIView!
-    @IBOutlet weak var usedCollectionView: UICollectionView!
-    @IBOutlet weak var tagCollectionView: UICollectionView!
+    //    @IBOutlet weak var usedCollectionView: UICollectionView!
+    //    @IBOutlet weak var tagCollectionView: UICollectionView!
     @IBOutlet weak var classLable: UILabel!
     @IBOutlet weak var searchTextField: UITextField!
     @IBOutlet weak var classButton: UIButton!
     
-    @IBOutlet weak var tagCollectionViewHeight: NSLayoutConstraint!
-    @IBOutlet weak var usedCollectionViewHeight: NSLayoutConstraint!
+    //    @IBOutlet weak var tagCollectionViewHeight: NSLayoutConstraint!
+    //    @IBOutlet weak var usedCollectionViewHeight: NSLayoutConstraint!
     
     @IBOutlet weak var articleButton: UIButton!
     @IBOutlet weak var productButton: UIButton!
@@ -83,7 +89,7 @@ class SearchViewController: UIViewController {
         productButton.isSelected = false
         productCollectionView.isHidden = true
         articleTableView.isHidden = false
-//        relativeHeightConstraint.constant = 0
+        //        relativeHeightConstraint.constant = 0
         
         text = "<font size=\"5\" color=\"#636363\">共有\"</font><font size=\"5\"   color=\"#00B6C4\">\(self.articleList.count)</font><font size=\"5\"   color=\"#636363\">\"筆關於\"</font><font size=\"5\" color=\"#00B6C4\">\(searchedWord)</font><font size=\"5\" color=\"#636363\">\"的文章搜尋結果</font>"
         
@@ -108,6 +114,17 @@ class SearchViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        SearchIsDetail.searchDetailBack.isDetailBack = false
+        
+        tagView.delegate = self
+        usedTagView.delegate = self
+        tagView.alignment = .left
+        tagView.textFont = UIFont.systemFont(ofSize: 17)
+        usedTagView.alignment = .left
+        usedTagView.textFont = UIFont.systemFont(ofSize: 17)
+        
+        
         relativeHeightConstraint.constant = 0
         //        searchBarView.addShadow()
         self.navigationController?.navigationItem.backBarButtonItem?.title = ""
@@ -136,16 +153,6 @@ class SearchViewController: UIViewController {
         
         productCollectionView.register(UINib(nibName: "ProductCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
         
-        tagCollectionView.dataSource = self
-        tagCollectionView.delegate = self
-        
-        tagCollectionView.register(UINib(nibName: "TagCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
-        
-        usedCollectionView.dataSource = self
-        usedCollectionView.delegate = self
-        
-        usedCollectionView.register(UINib(nibName: "TagCollectionViewCell", bundle:nil), forCellWithReuseIdentifier: "Cell")
-        
         articleTableView.delegate = self
         articleTableView.dataSource = self
         
@@ -167,15 +174,21 @@ class SearchViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        
         //        設定讀取中圖示
         loadingView.frame = self.view.frame
         loadingView.startRotate()
         self.view.addSubview(loadingView)
         isGo = false
         self.navigationController?.navigationBar.isHidden = true
+        if SearchIsDetail.searchDetailBack.isDetailBack!{
+            
+            return
+        }
+        searchTextField.text = ""
+        self.outComeView.isHidden = true
         tag = [String]()
         getKeyword()
-        self.navigationController?.navigationBar.isHidden = true
         searchTextField.becomeFirstResponder()
         let userDefaults = Foundation.UserDefaults.standard
         if userDefaults.array(forKey: "usedTag") != nil{
@@ -190,8 +203,8 @@ class SearchViewController: UIViewController {
                     width -= (tag.characters.count * 17) + 20
                 }
             }
-            usedCollectionViewHeight.constant = CGFloat(40 * tagRow)
-            usedCollectionView.reloadData()
+            usedTagView.removeAllTags()
+            usedTagView.addTags(usedTag)
         }
         articleTableView.isHidden = true
         loadingView.isHidden = true
@@ -201,6 +214,10 @@ class SearchViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        if SearchIsDetail.searchDetailBack.isDetailBack!{
+            SearchIsDetail.searchDetailBack.isDetailBack = false
+            return
+        }
         dropDown.selectionAction = {
             (index: Int, item: String) in
             self.classLable.text = item
@@ -219,8 +236,7 @@ class SearchViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         loadingView.stopRotate()
         self.navigationController?.navigationBar.isHidden = false
-        searchTextField.text = ""
-        self.outComeView.isHidden = true
+        
     }
     
     override func didReceiveMemoryWarning() {
@@ -234,6 +250,7 @@ class SearchViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         // Get the new view controller using segue.destinationViewController.
         // Pass the selected object to the new view controller.
+        
         if let destinationController = segue.destination as? NoResultViewController{
             destinationController.fromSearch = true
         }
@@ -242,7 +259,14 @@ class SearchViewController: UIViewController {
     
 }
 
-extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
+extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, TagListViewDelegate{
+    
+    func tagPressed(_ title: String, tagView: TagView, sender: TagListView) {
+        searchTextField.text = title
+        if searchTextField.text != ""{
+            getOutcome(keyWord: searchTextField.text!)
+        }
+    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if textField.text == ""{
@@ -280,8 +304,6 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == productCollectionView{
             return CGSize(width: (productCollectionView.bounds.width/2)-10, height: (productCollectionView.bounds.width/2) + 40)
-        }else if collectionView == tagCollectionView{
-            return CGSize(width: ((tag[indexPath.item].characters.count) * 17) + 20, height: 40)
         }
         return CGSize(width: ((usedTag[indexPath.item].characters.count) * 17) + 20, height: 40)
     }
@@ -289,50 +311,23 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == productCollectionView{
             if !isGo{
+                SearchIsDetail.searchDetailBack.isDetailBack = true
                 isGo = true
                 getProductDetail(id: productList[indexPath.item].id!)
             }
             return
         }
-        if collectionView == usedCollectionView{
-            searchTextField.text = usedTag[indexPath.item]
-        }else if collectionView == tagCollectionView{
-            searchTextField.text = tag[indexPath.item]
-        }
+        
         if searchTextField.text != ""{
             getOutcome(keyWord: searchTextField.text!)
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if collectionView == productCollectionView{
-            return productList.count
-        }else if collectionView == tagCollectionView{
-            return tag.count
-        }
-        return usedTag.count
+        return productList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        if collectionView == tagCollectionView{
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! TagCollectionViewCell
-            
-            cell.tagLable.text = tag[indexPath.item]
-            cell.drawBorder()
-            
-            return cell
-        }else if collectionView == usedCollectionView{
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! TagCollectionViewCell
-            
-            cell.tagLable.text = usedTag[indexPath.item]
-            if cell.tagLable.text?.characters.count == 1{
-                cell.backView.bounds = CGRect(x: 0, y: 0, width: 90, height: cell.backView.bounds.height)
-            }
-            cell.drawBorder()
-            
-            return cell
-        }
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! ProductCollectionViewCell
         
@@ -346,6 +341,7 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if !isGo{
+            SearchIsDetail.searchDetailBack.isDetailBack = true
             isGo = true
             let vc = self.storyboard?.instantiateViewController(withIdentifier: "DetailArticle") as! DetailArticleViewController
             self.navigationItem.backBarButtonItem?.title = ""
@@ -432,7 +428,7 @@ extension SearchViewController{
                 }
                 if self.isLoaded[0] && self.isLoaded[1]{
                     if self.articleList.count == 0 && self.productList.count == 0{
-                        self.performSegue(withIdentifier: "noResult", sender: nil)
+//                        self.performSegue(withIdentifier: "noResult", sender: nil)
                     }
                     var text = ""
                     if self.articleButton.isSelected{
@@ -496,7 +492,7 @@ extension SearchViewController{
                 }
                 if self.isLoaded[0] && self.isLoaded[1]{
                     if self.articleList.count == 0 && self.productList.count == 0{
-                        self.performSegue(withIdentifier: "noResult", sender: nil)
+//                        self.performSegue(withIdentifier: "noResult", sender: nil)
                     }
                     var text = ""
                     if self.articleButton.isSelected{
@@ -544,8 +540,11 @@ extension SearchViewController{
                                 width -= (tag.characters.count * 17) + 20
                             }
                         }
-                        self.tagCollectionViewHeight.constant = CGFloat(45 * tagRow)
-                        self.tagCollectionView.reloadData()
+                        //                        self.tagCollectionViewHeight.constant = CGFloat(45 * tagRow)
+                        //                        self.tagCollectionView.reloadData()
+                        self.tagView.removeAllTags()
+                        self.tagView.addTags(self.tag)
+                        //                        self.tagView.sizeToFit()
                     }
                     
                 }
@@ -588,5 +587,12 @@ extension SearchViewController{
     
 }
 
+class SearchIsDetail:NSObject{
+    
+    static let searchDetailBack = SearchIsDetail()
+    
+    var isDetailBack:Bool?
+    
+}
 
 

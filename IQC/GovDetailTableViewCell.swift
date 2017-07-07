@@ -12,7 +12,7 @@ class GovDetailTableViewCell: UITableViewCell {
     
     var tableView:UITableView?
     var indexPath:IndexPath?
-
+    
     @IBOutlet weak var tittleLable: UILabel!
     @IBOutlet weak var tittleBackView: UIView!
     @IBOutlet weak var tittleNameLable: UILabel!
@@ -24,20 +24,21 @@ class GovDetailTableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     
     func drawDash(){
-//        self.tittleBackView.addDashedLine(startPoint: CGPoint(x: tittleBackView.frame.width, y: 0), endPoint: CGPoint(x: tittleBackView.frame.width, y: frame.height))
-        if tittleLable.text != "供應廠商地址"{
-            dashLineBottomView.addDashedLine(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: dashLineBottomView.frame.width, y: 0))
-        }else{
-            cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: self.bounds.height - 30)}
-        
+        dashLineBottomView.addDashedLine(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: dashLineBottomView.frame.width, y: 0))
     }
+    
+    func drawEndDash(){
+        cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: self.bounds.height - 30)
+    }
+    
+    
     
 }

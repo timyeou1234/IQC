@@ -13,6 +13,8 @@ class IntroViewController: UIViewController {
     let gradient = CAGradientLayer()
     var firstOringinFrame:CGRect?
 
+    @IBOutlet weak var descSubTittle: UILabel!
+    @IBOutlet weak var descTittleLable: UILabel!
     @IBOutlet weak var buttonView: UIView!
     @IBOutlet weak var skipButton: UIButton!
     @IBOutlet weak var nextButton: UIButton!
@@ -93,12 +95,16 @@ class IntroViewController: UIViewController {
     
 
     func presentFirst(){
+        descTittleLable.text = "了解各種食安新知"
+        descSubTittle.text = "不定期發表各種食安資訊\n守護大家的健康"
         UIView.animate(withDuration: 2, animations: {
             self.firstImage.frame = CGRect(x: 0 - (self.firstImage.frame.width * 0.1), y: self.firstImage.frame.minY - (self.firstImage.frame.height * 0.1), width: self.firstImage.frame.width * 1.2, height: self.firstImage.frame.height * 1.2)
         })
     }
     
     func presentSecond(){
+        descTittleLable.text = "食品資訊幫手"
+        descSubTittle.text = "隨時隨地輕鬆掃描條碼\n查看檢驗報告"
         UIView.animate(withDuration: 0.2, animations: {
             self.secondImageBubble.isHidden = false
         }, completion: {

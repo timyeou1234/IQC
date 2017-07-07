@@ -18,6 +18,7 @@ protocol CellHeightChangeDelegate {
 
 class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     
+    var isDraw = false
     var loadingView = LoadingView()
     var observing = false
     var cellHeightChange:CellHeightChangeDelegate?
@@ -40,6 +41,8 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     @IBOutlet weak var headerTopView: UIView!
     @IBOutlet weak var stickyViewConstraint: NSLayoutConstraint!
     //    For 留在上方的參數
+    
+    @IBOutlet weak var productIngrediantBottomView: UIView!
     
     @IBOutlet weak var facebookCommentWebview: UIWebView!
     @IBOutlet weak var webViewHeightConstant: NSLayoutConstraint!
@@ -127,6 +130,7 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     @IBOutlet weak var forDashLineView: UIView!
     @IBOutlet weak var underLineView: UIView!
     @IBOutlet weak var reportButton: UIButton!
+    
     @IBAction func reportAction(_ sender: Any) {
         reportButton.isSelected = true
         productButton.isSelected = false
@@ -331,10 +335,6 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
         ingrediantTableView.dataSource = self
         ingrediantTableView.delegate = self
         
-        productTableView.rowHeight = UITableViewAutomaticDimension
-        halfProductTableView.rowHeight = UITableViewAutomaticDimension
-        ingrediantTableView.rowHeight = UITableViewAutomaticDimension
-        
         productIngrediantTableView.rowHeight = UITableViewAutomaticDimension
         productIngrediantTableView.estimatedRowHeight = 50
         productTableView.register(UINib(nibName: "ProductDetailTestTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell")
@@ -513,7 +513,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
         }else if collectionView == cerCollectionView{
             return CGSize(width: 50, height: 50)
         }else if collectionView == buyCollectionView{
-            return CGSize(width: 120, height: 40)
+            return CGSize(width: 100, height: 60)
         }
         
         return CGSize()
@@ -673,6 +673,8 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        //6/29修改
         if tableView == productIngrediantTableView{
             return 7
         }
@@ -790,6 +792,43 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         //此為成分標示表格，由字數決定高度
         if tableView == productIngrediantTableView{
+            
+            if product.ingredient == ""{
+                
+                if indexPath.row == 0{
+                    return 0
+                }
+            }
+            if product.origin == ""{
+                if indexPath.row == 1{
+                    return 0
+                }
+            }
+            if product.capacity == ""{
+                if indexPath.row == 2{
+                    return 0
+                }
+            }
+            if product.allergy?.count == 0{
+                if indexPath.row == 3{
+                    return 0
+                }
+            }
+            if product.veg?.count == 0{
+                if indexPath.row == 4{
+                    return 0
+                }
+            }
+            if product.number == ""{
+                if indexPath.row == 5{
+                    return 0
+                }
+            }
+            if product.warn == ""{
+                if indexPath.row == 6{
+                    return 0
+                }
+            }
             return UITableViewAutomaticDimension
         }
         if !isLatest{
@@ -823,6 +862,8 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
         //        產品標示
         if tableView == productIngrediantTableView{
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell1", for: indexPath) as! IngrediantTableViewCell
+            
+            
             switch indexPath.row {
             case 0:
                 cell.tittleItemLable.text = "成份"
@@ -881,11 +922,50 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
             default:
                 break
             }
+            if cell.detailContextLable.text == ""{
+                cell.isHidden = true
+            }else{
+                cell.isHidden = false
+            }
+            var count = 6
+            if product.ingredient == ""{
+                count -= 1
+            }
+            if product.origin == ""{
+                count -= 1
+            }
+            if product.capacity == ""{
+                count -= 1
+            }
+            if product.allergy?.count == 0{
+                count -= 1
+            }
+            if product.veg?.count == 0{
+                count -= 1
+            }
+            if product.number == ""{
+                count -= 1
+            }
+            if product.warn == ""{
+                count -= 1
+            }
+            
             if product.title != nil{
                 cell.indexPath = indexPath
                 cell.tableView = productIngrediantTableView
                 cell.cellHeightChange = self
-                cell.drawDash()
+                
+                if count == indexPath.row{
+                    productIngrediantBottomView.layer.zPosition = 0
+                    cell.endDrawDash()
+                    drawMiddleLine()
+                }else{
+                    if cell.detailContextLable.text != ""{
+                        cell.drawDash()
+                    }else{
+                        cell.isHidden = true
+                    }
+                }
             }
             return cell
         }
@@ -962,12 +1042,19 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 }
                 if index == 0{
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell1", for: indexPath) as! ProductTittleTableViewCell
-                    cell.drawDash()
+                    if !isDraw{
+                        cell.drawDash()
+                    }
+                    cell.tittleBackView.backgroundColor = UIColor(colorLiteralRed: 251/255, green: 251/255, blue: 251/255, alpha: 1)
+                    cell.strokeImageView.isHidden = false
+                    cell.selectionStyle = .none
                     cell.tittleLable.text = "檢體名稱"
                     cell.tittleNameLable.text = currentReport[section].tittle
                     return cell
                 }else if index == 1{
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell1", for: indexPath) as! ProductTittleTableViewCell
+                    cell.strokeImageView.isHidden = true
+                    cell.selectionStyle = .none
                     cell.tittleBackView.backgroundColor = UIColor.white
                     cell.tittleLable.text = "檢驗項目"
                     cell.tittleNameLable.text = ""
@@ -976,6 +1063,8 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     //                    新加入若有說明
                     if (currentReport[section].item?[(index - 2)].content) != nil{
                         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell4", for: indexPath) as! IQCProductDetailTableViewCell
+                        cell.changeButton.isEnabled = true
+                        cell.selectionStyle = .none
                         cell.contentLable.text = (currentReport[section].item?[(index - 2)].content)
                         if productCellHeight[indexPath] != nil{
                             if productCellHeight[indexPath]! != 40{
@@ -1003,7 +1092,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     }
                     
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell3", for: indexPath) as! ProductDetailItemTableViewCell
-                    
+//                    cell.changeButton.isEnabled = true
                     cell.productId = self.productId
                     cell.cellHeightChange = self
                     cell.indexPath = indexPath
@@ -1025,13 +1114,20 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 }
                 if index == 0{
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell21", for: indexPath) as! ProductTittleTableViewCell
-                    cell.drawDash()
-                    cell.tittleBackView.backgroundColor = UIColor(colorLiteralRed: 215/255, green: 215/255, blue: 215/255, alpha: 215/255)
+                    if !isDraw{
+                        cell.drawDash()
+                        
+                    }
+                    cell.tittleBackView.backgroundColor = UIColor(colorLiteralRed: 251/255, green: 251/255, blue: 251/255, alpha: 1)
+                    cell.strokeImageView.isHidden = false
+                    cell.selectionStyle = .none
                     cell.tittleLable.text = "檢體名稱"
                     cell.tittleNameLable.text = currentReport[section].tittle
                     return cell
                 }else if index == 1{
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell21", for: indexPath) as! ProductTittleTableViewCell
+                    cell.strokeImageView.isHidden = true
+                    cell.selectionStyle = .none
                     cell.tittleBackView.backgroundColor = UIColor.white
                     cell.tittleLable.text = "檢驗項目"
                     cell.tittleNameLable.text = ""
@@ -1040,6 +1136,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     //                    新加入若有說明
                     if (currentReport[section].item?[(index - 2)].content) != nil{
                         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell4", for: indexPath) as! IQCProductDetailTableViewCell
+                        cell.changeButton.isEnabled = true
                         cell.contentLable.text = (currentReport[section].item?[(index - 2)].content)
                         if halfProductCellHeight[indexPath] != nil{
                             if halfProductCellHeight[indexPath]! != 40{
@@ -1066,7 +1163,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     }
                     
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell3", for: indexPath) as! ProductDetailItemTableViewCell
-                    
+                    cell.changeButton.isEnabled = true
                     cell.cellHeightChange = self
                     cell.indexPath = indexPath
                     cell.tableView = tableView
@@ -1087,13 +1184,19 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 }
                 if index == 0{
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell31", for: indexPath) as! ProductTittleTableViewCell
-                    cell.drawDash()
-                    cell.tittleBackView.backgroundColor = UIColor(colorLiteralRed: 215/255, green: 215/255, blue: 215/255, alpha: 215/255)
+                    if !isDraw{
+                        cell.drawDash()
+                    }
+                    cell.tittleBackView.backgroundColor = UIColor(colorLiteralRed: 251/255, green: 251/255, blue: 251/255, alpha: 1)
+                    cell.strokeImageView.isHidden = false
+                    cell.selectionStyle = .none
                     cell.tittleLable.text = "檢體名稱"
                     cell.tittleNameLable.text = currentReport[section].tittle
                     return cell
                 }else if index == 1{
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell31", for: indexPath) as! ProductTittleTableViewCell
+                    cell.strokeImageView.isHidden = true
+                    cell.selectionStyle = .none
                     cell.tittleBackView.backgroundColor = UIColor.white
                     cell.tittleLable.text = "檢驗項目"
                     cell.tittleNameLable.text = ""
@@ -1102,6 +1205,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     //                    新加入若有說明
                     if (currentReport[section].item?[(index - 2)].content) != nil{
                         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell4", for: indexPath) as! IQCProductDetailTableViewCell
+                        cell.changeButton.isEnabled = true
                         cell.contentLable.text = (currentReport[section].item?[(index - 2)].content)
                         if ingrediantCellHeight[indexPath] != nil{
                             if ingrediantCellHeight[indexPath]! != 40{
@@ -1128,7 +1232,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
 
                     }
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell3", for: indexPath) as! ProductDetailItemTableViewCell
-                    
+                    cell.changeButton.isEnabled = true
                     //                    cell.content = (currentReport[section].item?[(index - 2)].content)
                     cell.cellHeightChange = self
                     cell.indexPath = indexPath
@@ -1290,7 +1394,7 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
     
     //    MARK: 計算展開後改變的高度
     func cellHeightChange(tableView:UITableView ,whichCell:IndexPath, height:CGFloat, howMuch: CGFloat) {
-        
+        self.isDraw = true
         switch tableView {
         case productTableView:
             productTableViewHeightConstant.constant += howMuch
@@ -1303,16 +1407,23 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         //此為成分標示表格，僅需畫虛線
         case productIngrediantTableView:
             productIngrediantHeightConstraint.constant += howMuch
-            forDashLineView.addDashedLine(startPoint: CGPoint(x: self.view.bounds.width/2, y: 0), endPoint: CGPoint(x: self.view.bounds.width/2, y: productIngrediantTableView.bounds.height))
         default:
             ingrediantTableViewHightConstraint.constant += howMuch
             tableViewHeightList[2] = ingrediantTableViewHightConstraint.constant
             ingrediantCellHeight[whichCell] = height
             
         }
+        if tableView != productIngrediantTableView{
+            tableView.reloadData()
+//            tableView.isUserInteractionEnabled = false
+//            tableView.reloadRows(at: [whichCell], with: .none)
+//            tableView.isUserInteractionEnabled = true
+        }
         
-        tableView.reloadRows(at: [whichCell], with: .none)
-        
+    }
+    
+    func drawMiddleLine(){
+        forDashLineView.addDashedLine(startPoint: CGPoint(x: self.view.bounds.width/2, y: 0), endPoint: CGPoint(x: self.view.bounds.width/2, y: productIngrediantHeightConstraint.constant))
     }
     
     func getProductDetail(){
@@ -1528,13 +1639,16 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                         if main == "0"{
                             if self.product.slider == nil{
                                 self.product.slider = [jsonSlider.1["img"].stringValue]
+                            }else{
+                                self.product.slider?.append(jsonSlider.1["img"].stringValue)
                             }
-                            self.product.slider?.append(jsonSlider.1["img"].stringValue)
                         }else{
                             if self.product.slider == nil{
                                 self.product.slider = [jsonSlider.1["img"].stringValue]
+                            }else{
+                            
+                                self.product.slider?.insert(jsonSlider.1["img"].stringValue, at: 0)
                             }
-                            self.product.slider?.insert(jsonSlider.1["img"].stringValue, at: 0)
                         }
                     }
                 }

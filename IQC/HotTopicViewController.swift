@@ -79,6 +79,9 @@ class HotTopicViewController: UIViewController {
                         if let des = article.1["des"].string{
                             articleData.des = des
                         }
+                        if let content = article.1["content"].string{
+                            articleData.content = content
+                        }
                         self.articleList.append(articleData)
                     }
                     self.hotTopicTableView.reloadData()
@@ -116,6 +119,9 @@ class HotTopicViewController: UIViewController {
         if segue.identifier == "showDetail"{
             let destinationController = segue.destination as! HotTopicDetailViewController
             let article = sender as! Article
+            destinationController.topTitle = article.title
+            destinationController.topSubtitle = article.des
+            destinationController.topDesc = article.content
             if article.article != nil{
                 destinationController.articleId = article.article!
             }

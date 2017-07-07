@@ -138,8 +138,19 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
         getProductDetail()
         sliderIndexBackView.clipBackground(cornerRadious: sliderIndexBackView.bounds.height/2, color: UIColor(colorLiteralRed: 215/255, green: 215/255, blue: 215/255, alpha: 1))
         let facebookUrl = "<!DOCTYPE html><html> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> </head><body> <div id=\"fb-root\"></div><script>(function(d, s, id){var js, fjs=d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js=d.createElement(s); js.id=id; js.src=\"//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8&appId=700015816832989\"; fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script> <div class=\"fb-comments\" data-href=\"https://iqctest.com/product/\(productId)\" data-numposts=\"5\"></div></body></html>"
+        print(facebookUrl)
         
         facebookCommentWebView.loadHTMLString(facebookUrl, baseURL: URL(string: "https://www.facebook.com/iqc.com.tw"))
+    }
+    
+    func webView(_ webView: UIWebView, didFailLoadWithError error: Error) {
+        
+    }
+    
+    func webViewDidStartLoad(_ webView: UIWebView) {
+        
+        
+        
     }
     
     func webViewDidFinishLoad(_ webView: UIWebView) {
@@ -152,7 +163,7 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
             
             facebookCommentWebView.loadHTMLString(facebookUrl, baseURL: URL(string: "https://www.facebook.com/iqc.com.tw"))
         }
-
+        
         if (!observing) {
             startObservingHeight()
         }
@@ -245,9 +256,11 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
 extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSource, UICollectionViewDelegate, UICollectionViewDataSource, UIScrollViewDelegate, UICollectionViewDelegateFlowLayout{
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        let cell = productSliderCollectionView.visibleCells[0]
-        let index = productSliderCollectionView.indexPath(for: cell)?.item
-        sliderIndexLable.text = "\(index! + 1)/\(collectionView(productSliderCollectionView, numberOfItemsInSection: 0))"
+        if product.slider != nil{
+            let cell = productSliderCollectionView.visibleCells[0]
+            let index = productSliderCollectionView.indexPath(for: cell)?.item
+            sliderIndexLable.text = "\(index! + 1)/\(collectionView(productSliderCollectionView, numberOfItemsInSection: 0))"
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView,
@@ -380,6 +393,27 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
                 }
             }
         }
+        
+        if product.factory == ""{
+            if indexPath.row == 0{
+                return 0
+            }
+        }
+        if product.address == ""{
+            if indexPath.row == 1{
+                return 0
+            }
+        }
+        if product.supplier == ""{
+            if indexPath.row == 2{
+                return 0
+            }
+        }
+        if product.supplieraddr == ""{
+            if indexPath.row == 3{
+                return 0
+            }
+        }
         return UITableViewAutomaticDimension
     }
     
@@ -500,8 +534,8 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
                 cell.cellHeightChange = self
                 cell.tittleLable.text = currentReport[section].item?[index - 3].itemid
                 cell.content = currentReport[section].item?[index - 3].content
-                
-                
+                cell.selectionStyle = .none
+                cell.changeButton.isEnabled = true
                 
                 cell.ProductDetailTestTableView.reloadData()
                 return cell
@@ -510,18 +544,33 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
             
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! GovDetailTableViewCell
+        var count = 3
+        if product.factory == ""{
+            count -= 1
+        }
+        if product.address == ""{
+            count -= 1
+        }
+        if product.supplier == ""{
+            count -= 1
+        }
+        if product.supplieraddr == ""{
+            count -= 1
+        }
+        
         switch indexPath.row {
         case 0:
             cell.tittleLable.text = "抽驗廠商"
             if product.factory == ""{
-                cell.tittleNameLable.text = " "
+                cell.tittleNameLable.text = ""
             }else{
                 cell.tittleNameLable.text = product.factory
+                cell.drawDash()
             }
         case 1:
             cell.tittleLable.text = "抽檢地點"
             if product.address == ""{
-                cell.tittleNameLable.text = " "
+                cell.tittleNameLable.text = ""
             }else{
                 cell.tittleNameLable.text = product.address
             }
@@ -535,7 +584,7 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
         case 3:
             cell.tittleLable.text = "供應廠商地址"
             if product.supplieraddr == ""{
-                cell.tittleNameLable.text = " "
+                cell.tittleNameLable.text = ""
             }else{
                 cell.tittleNameLable.text = product.supplieraddr
             }
@@ -546,7 +595,17 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
             cell.indexPath = indexPath
             cell.tableView = detailTableView
             cell.cellHeightChange = self
-            cell.drawDash()
+            
+            if count == indexPath.row{
+                cell.drawEndDash()
+                drawMiddleLine()
+            }else{
+                if cell.tittleNameLable.text != ""{
+                    cell.drawDash()
+                }else{
+                    cell.isHidden = true
+                }
+            }
         }
         return cell
     }
@@ -565,12 +624,15 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
             }
             productTableViewHeightConstant.constant += howMuch
             productCellHeight[whichCell] = height
+            tableView.reloadData()
         }else{
-            
             productIngrediantHeightConstraint.constant = detailTableView.contentSize.height
-            dashLineView.addDashedLine(startPoint: CGPoint(x: self.view.bounds.width/3, y: 0), endPoint: CGPoint(x: self.view.bounds.width/3, y: detailTableView.bounds.height))
         }
-        tableView.reloadRows(at: [whichCell], with: .none)
+        
+    }
+    
+    func drawMiddleLine(){
+        dashLineView.addDashedLine(startPoint: CGPoint(x: self.view.bounds.width/3, y: 0), endPoint: CGPoint(x: self.view.bounds.width/3, y: detailTableView.bounds.height))
     }
     
     func getProductDetail(){
@@ -656,19 +718,19 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                 if let supplieraddr = jsonData["supplieraddr"].string{
                     product.supplieraddr = supplieraddr
                 }else{
-                    product.supplieraddr = "  "
+                    product.supplieraddr = ""
                 }
                 
                 if let factory = jsonData["factory"].string{
                     product.factory = factory
                 }else{
-                    product.factory = "  "
+                    product.factory = ""
                 }
                 
                 if let address = jsonData["address"].string{
                     product.address = address
                 }else{
-                    product.factory = "  "
+                    product.factory = ""
                 }
                 
                 if let similar = jsonData["similar"].string{
@@ -685,13 +747,16 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                 
                 if let gov = jsonData["gov"].string{
                     product.gov = gov
+                }else{
+                    product.gov = ""
                 }
                 
                 if let supplier = jsonData["supplier"].string{
                     product.supplier = supplier
                 }else{
-                    product.supplier = "  "
+                    product.supplier = ""
                 }
+                
                 if jsonData["slider"].array != nil{
                     for img in jsonData["slider"]{
                         if product.slider == nil{
@@ -705,6 +770,7 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                         }
                     }
                 }
+                
                 self.product = product
                 DispatchQueue.main.async {
                     self.refreshView()

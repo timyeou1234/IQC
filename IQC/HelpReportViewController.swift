@@ -6,6 +6,12 @@
 //  Copyright © 2017年 Wework. All rights reserved.
 //
 
+extension UIApplication {
+    var statusBarView: UIView? {
+        return value(forKey: "statusBar") as? UIView
+    }
+}
+
 import UIKit
 import Photos
 import Alamofire
@@ -22,6 +28,7 @@ class HelpReportViewController: UIViewController {
     var codeLableArray:[UILabel] = []
     var selectedIndex = [Int]()
     let gradient = CAGradientLayer()
+    
     
     @IBOutlet weak var successLable: UILabel!
     @IBOutlet weak var productNameTextField: UITextField!
@@ -42,6 +49,7 @@ class HelpReportViewController: UIViewController {
     @IBOutlet weak var codeImage11: UIImageView!
     @IBOutlet weak var codeImage12: UIImageView!
     @IBOutlet weak var codeImage13: UIImageView!
+    @IBOutlet weak var codeImage14: UIImageView!
     
     @IBOutlet weak var codeLable1: UILabel!
     @IBOutlet weak var codeLable2: UILabel!
@@ -56,6 +64,7 @@ class HelpReportViewController: UIViewController {
     @IBOutlet weak var codeLable11: UILabel!
     @IBOutlet weak var codeLable12: UILabel!
     @IBOutlet weak var codeLable13: UILabel!
+    @IBOutlet weak var codeLable14: UILabel!
     
     @IBOutlet weak var completeImage: UIImageView!
     @IBOutlet weak var completeView: UIView!
@@ -63,6 +72,16 @@ class HelpReportViewController: UIViewController {
     
     @IBOutlet weak var changePasswordButton: UIButton!
     @IBAction func changePassWordAction(_ sender: Any) {
+        inputTextfield.text = ""
+        
+        for lable in codeLableArray{
+            lable.text = ""
+        }
+        for image in codeImageArray{
+            image.isHidden = false
+        }
+        codeArray = [Int]()
+        
         inputTextfield.becomeFirstResponder()
     }
     @IBAction func endEditing(_ sender: Any) {
@@ -92,7 +111,7 @@ class HelpReportViewController: UIViewController {
     @IBAction func reportAction(_ sender: Any) {
         
         self.view.endEditing(true)
-        if codeArray.count == 8 || codeArray.count == 13{
+        if codeArray.count > 5{
             if productNameTextField.text != "" && photoArray.count != 0{
                 self.loadingView.isHidden = false
                 postRequest()
@@ -130,6 +149,8 @@ class HelpReportViewController: UIViewController {
         loadingView.frame = self.view.frame
         loadingView.startRotate()
         self.view.addSubview(loadingView)
+        
+        UIApplication.shared.statusBarView?.backgroundColor = .white
     }
     
     override func didReceiveMemoryWarning() {
@@ -169,6 +190,8 @@ class HelpReportViewController: UIViewController {
             self.reportBackgroudView.layer.addSublayer(gradient)
             gradient.zPosition = 0
         }
+        navigationController?.navigationBar.backgroundColor = UIColor.white
+        UIApplication.shared.statusBarStyle = .default
         navigationItem.setHidesBackButton(true, animated: false)
         self.tabBarController?.tabBar.isHidden = true
     }
@@ -195,20 +218,23 @@ class HelpReportViewController: UIViewController {
     
     func setupKeyboardView(){
         if self.view.bounds.width < 350{
-            pointsStackView.spacing = 5
+            //SE I5
+            pointsStackView.spacing = 4
         }else if self.view.bounds.width > 375 && self.view.bounds.width < 415{
-            pointsStackView.spacing = 13
-        }else if self.view.bounds.width < 375{
-            pointsStackView.spacing = 9
+            //plus
+            pointsStackView.spacing = 11
         }else if self.view.bounds.width > 414 && self.view.bounds.width < 900{
-            pointsStackView.spacing = 43
+            //Ipad
+            pointsStackView.spacing = 38
         }else if self.view.bounds.width > 900{
-            pointsStackView.spacing = 63
+            //Ipad Pro
+            pointsStackView.spacing = 58
         }else{
-            pointsStackView.spacing = 10
+            //I6
+            pointsStackView.spacing = 8
         }
-        codeImageArray = [codeImage1, codeImage2, codeImage3, codeImage4, codeImage5, codeImage6, codeImage7, codeImage8, codeImage9, codeImage10, codeImage11, codeImage12, codeImage13]
-        codeLableArray = [codeLable1, codeLable2, codeLable3, codeLable4, codeLable5, codeLable6, codeLable7, codeLable8, codeLable9, codeLable10, codeLable11, codeLable12, codeLable13]
+        codeImageArray = [codeImage1, codeImage2, codeImage3, codeImage4, codeImage5, codeImage6, codeImage7, codeImage8, codeImage9, codeImage10, codeImage11, codeImage12, codeImage13, codeImage14]
+        codeLableArray = [codeLable1, codeLable2, codeLable3, codeLable4, codeLable5, codeLable6, codeLable7, codeLable8, codeLable9, codeLable10, codeLable11, codeLable12, codeLable13, codeLable14]
         for lable in codeLableArray{
             lable.text = ""
         }
@@ -217,7 +243,7 @@ class HelpReportViewController: UIViewController {
             imageView.contentMode = .scaleAspectFit
         }
         if code != ""{
-            if code.characters.count < 14{
+            if code.characters.count < 15{
                 rememberCode(code: code)
             }
         }
@@ -346,7 +372,7 @@ UINavigationControllerDelegate, UITextFieldDelegate {
         }
         
         if (textField.text?.characters.count)! >= codeImageArray.count {
-            textField.text = "000000000000"
+            textField.text = "0000000000000"
             return true
         }
         
@@ -543,7 +569,9 @@ extension HelpReportViewController: PhotoPassingDelegate, YNActionSheetDelegate{
     }
     
     func isComplete(){
-        successLable.text = "感謝您的協助\n資料將於IQC審查後公開顯示                                "
+        //首頁判斷鍵盤清空
+        ScanDetailBack.scanDetailBack.isDetailBack = false
+        successLable.text = "感謝您的協助\n資料將於iQC審查後公開顯示                                "
         reportBackgroudView.isHidden = true
         self.loadingView.isHidden = true
         completeImage.isHidden = false
@@ -582,3 +610,5 @@ extension HelpReportViewController: PhotoPassingDelegate, YNActionSheetDelegate{
     }
     
 }
+
+
