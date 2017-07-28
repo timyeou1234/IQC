@@ -363,6 +363,7 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
         let contentText = article.content!.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil)
         cell.descriptionLable.text = contentText
         cell.topicClass.text = article.type
+        cell.selectionStyle = .none
         cell.topicBackView.clipBackground(color: UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1))
         
         return cell

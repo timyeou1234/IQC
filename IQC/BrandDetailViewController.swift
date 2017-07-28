@@ -204,10 +204,12 @@ class BrandDetailViewController: UIViewController, UIWebViewDelegate {
     
     //    取得品牌擁有的產品與相似產品（資訊所需較少）
     func getProductList(id:String){
+        self.brandOwnedProduct = [Product]()
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         for id in (id.components(separatedBy: ",")){
             Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
                 response in
+                
                 if let JSONData = response.result.value{
                     let json = JSON(JSONData)
                     print(json)

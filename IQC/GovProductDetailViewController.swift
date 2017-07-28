@@ -510,8 +510,11 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
                     cell.testDateLable.text = detail?.reportdate
                     cell.testUnitLable.text = detail?.title
                     return cell
+                }else{
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "Cell4", for: indexPath) as! ProductSubjectTableViewCell
+                    return cell
                 }
-            }else if index == 2{
+            }else if index == 2 && currentReport[section].reportDetail != nil{
                 let cell = tableView.dequeueReusableCell(withIdentifier: "Cell4", for: indexPath) as! ProductSubjectTableViewCell
                 return cell
             }else{
@@ -527,6 +530,9 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
                 }else{
                     cell.contentLable.isHidden = true
                     cell.tittleView.backgroundColor = UIColor.white
+                }
+                if currentReport[section].reportDetail == nil{
+                    index -= 1
                 }
                 cell.contentLable.text = (currentReport[section].item?[(index - 3)].content)
                 cell.tableView = tableView
@@ -670,6 +676,9 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                             if let source = jsonReportDetail["source"].string{
                                 reportDetail.source = source
                             }
+                            if let source = jsonReportDetail["file"].string{
+                                reportDetail.source = source
+                            }
                             if let reportdate = jsonReportDetail["reportdate"].string{
                                 reportDetail.reportdate = reportdate
                             }
@@ -678,21 +687,21 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                             }
                             latestReport.reportDetail = reportDetail
                         }
-                        if jsonLatest.1["item"] != nil{
+                        
+                        if let item = jsonLatest.1["item"].array{
                             var reportClassList = [ReportClass]()
-                            for jsonReportClass in jsonLatest.1["item"]{
-                                
-                                let repoerDetailList = [ReportDetail]()
+                            for jsonReportClass in item{
+                                //let repoerDetailList = [ReportDetail]()
                                 let reportClass = ReportClass()
-                                if let itemid = jsonReportClass.1["itemid"].string{
+                                if let itemid = jsonReportClass["itemid"].string{
                                     reportClass.itemid = itemid
                                 }else{
                                     reportClass.itemid = ""
                                 }
-                                if let content = jsonReportClass.1["content"].string{
+                                if let content = jsonReportClass["content"].string{
                                     reportClass.content = content
                                 }
-                                reportClass.reportid = repoerDetailList
+                                //reportClass.reportid = repoerDetailList
                                 reportClassList.append(reportClass)
                             }
                             latestReport.item = reportClassList

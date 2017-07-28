@@ -162,6 +162,8 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
                 loadingView.isHidden = false
                 getReading(reading: article.reading!)
             }
+        }else if article.reading == nil && article.producrt == nil{
+            loadingView.isHidden = true
         }
         
         if article.tag != nil{
@@ -332,8 +334,10 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView == readingCollectionView{
             let vc = self.storyboard?.instantiateViewController(withIdentifier: "DetailArticle") as! DetailArticleViewController
-            vc.articleId = relatedeArticle[indexPath.item].id!
-            self.navigationController?.pushViewController(vc, animated: true)
+            if relatedeArticle.count > indexPath.item {
+                vc.articleId = relatedeArticle[indexPath.item].id!
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
         }
         if collectionView == productCollectionView{
             if productList.count <= indexPath.item{

@@ -114,7 +114,7 @@ class ProductDetailItemTableViewCell: UITableViewCell, UITableViewDelegate, UITa
         cell.testDateLable.text = detail.reportdate
         cell.testSource.text = detail.source
         cell.testUnitLable.text = detail.title
-        
+        cell.selectionStyle = .none
         
         return cell
     }

@@ -42,6 +42,20 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     @IBOutlet weak var stickyViewConstraint: NSLayoutConstraint!
     //    For 留在上方的參數
     
+    
+    //  7/19認證標章購買連接高度
+    
+    @IBOutlet weak var cerView: UIView!
+    @IBOutlet weak var mallView: UIView!
+    @IBOutlet weak var cerViewHightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var mallViewHeightConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var cerTitleViewHightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var cerCollerctionViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var mallTitleViewConstraint: NSLayoutConstraint!
+    @IBOutlet weak var mallCollectionViewHeightConstraint: NSLayoutConstraint!
+    
+    
     @IBOutlet weak var productIngrediantBottomView: UIView!
     
     @IBOutlet weak var facebookCommentWebview: UIWebView!
@@ -704,13 +718,15 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 }
                 return count
             }else{
+                
+                //歷年報告
                 if product.historyreport == nil{
                     return 0
                 }
                 for report in product.historyreport!{
                     if report.type! == "成品檢驗合格區"{
-                        if report.item != nil{
-                            count = (report.item![0].reportid?.count)!
+                        if report.list != nil{
+                            count = (report.list!.count)
                         }
                     }
                 }
@@ -741,8 +757,8 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 }
                 for report in product.historyreport!{
                     if report.type! == "半成品檢驗合格區"{
-                        if report.item != nil{
-                            count = (report.item![0].reportid?.count)!
+                        if report.list != nil{
+                            count = (report.list!.count)
                         }
                     }
                 }
@@ -774,8 +790,8 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 for report in product.historyreport!{
                     if report.type! == "原料檢驗合格區"{
                         count += 2
-                        if report.item != nil{
-                            count = (report.item![0].reportid?.count)!
+                        if report.list != nil{
+                            count = (report.list!.count)
                         }
                     }
                 }
@@ -809,12 +825,12 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     return 0
                 }
             }
-            if product.allergy?.count == 0{
+            if product.allergy?.count == 0 || product.allergy == nil{
                 if indexPath.row == 3{
                     return 0
                 }
             }
-            if product.veg?.count == 0{
+            if product.veg?.count == 0 || product.veg == nil{
                 if indexPath.row == 4{
                     return 0
                 }
@@ -867,7 +883,9 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
             switch indexPath.row {
             case 0:
                 cell.tittleItemLable.text = "成份"
-                
+                if product.ingredient == nil{
+                    product.ingredient = ""
+                }
                 cell.detailContextLable.text = product.ingredient
             case 1:
                 cell.tittleItemLable.text = "產地"
@@ -910,13 +928,13 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
             case 5:
                 cell.tittleItemLable.text = "投保產品責任險字號"
                 if product.number == nil{
-                    product.number = " "
+                    product.number = ""
                 }
                 cell.detailContextLable.text = product.number
             case 6:
                 cell.tittleItemLable.text = "警語"
                 if product.warn == nil{
-                    product.warn = " "
+                    product.warn = ""
                 }
                 cell.detailContextLable.text = product.warn
             default:
@@ -955,7 +973,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 cell.tableView = productIngrediantTableView
                 cell.cellHeightChange = self
                 
-                if count == indexPath.row{
+                if count == indexPath.row && count != 0{
                     productIngrediantBottomView.layer.zPosition = 0
                     cell.endDrawDash()
                     drawMiddleLine()
@@ -967,6 +985,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     }
                 }
             }
+            cell.selectionStyle = .none
             return cell
         }
         if isLatest{
@@ -1050,6 +1069,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     cell.selectionStyle = .none
                     cell.tittleLable.text = "檢體名稱"
                     cell.tittleNameLable.text = currentReport[section].tittle
+                    cell.selectionStyle = .none
                     return cell
                 }else if index == 1{
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell1", for: indexPath) as! ProductTittleTableViewCell
@@ -1058,6 +1078,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     cell.tittleBackView.backgroundColor = UIColor.white
                     cell.tittleLable.text = "檢驗項目"
                     cell.tittleNameLable.text = ""
+                    cell.selectionStyle = .none
                     return cell
                 }else{
                     //                    新加入若有說明
@@ -1087,12 +1108,13 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                         cell.tittleLable.text = currentReport[section].item?[(index - 2)].itemid
                         
                         cell.ProductDetailTestTableView.reloadData()
+                        cell.selectionStyle = .none
                         return cell
-
+                        
                     }
                     
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell3", for: indexPath) as! ProductDetailItemTableViewCell
-//                    cell.changeButton.isEnabled = true
+                    //                    cell.changeButton.isEnabled = true
                     cell.productId = self.productId
                     cell.cellHeightChange = self
                     cell.indexPath = indexPath
@@ -1101,6 +1123,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     cell.tittleLable.text = currentReport[section].item?[(index - 2)].itemid
                     
                     cell.ProductDetailTestTableView.reloadData()
+                    cell.selectionStyle = .none
                     return cell
                 }
             }
@@ -1123,6 +1146,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     cell.selectionStyle = .none
                     cell.tittleLable.text = "檢體名稱"
                     cell.tittleNameLable.text = currentReport[section].tittle
+                    cell.selectionStyle = .none
                     return cell
                 }else if index == 1{
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell21", for: indexPath) as! ProductTittleTableViewCell
@@ -1131,6 +1155,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     cell.tittleBackView.backgroundColor = UIColor.white
                     cell.tittleLable.text = "檢驗項目"
                     cell.tittleNameLable.text = ""
+                    cell.selectionStyle = .none
                     return cell
                 }else{
                     //                    新加入若有說明
@@ -1159,6 +1184,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                         cell.tittleLable.text = currentReport[section].item?[(index - 2)].itemid
                         
                         cell.ProductDetailTestTableView.reloadData()
+                        cell.selectionStyle = .none
                         return cell
                     }
                     
@@ -1171,6 +1197,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     cell.tittleLable.text = currentReport[section].item?[(index - 2)].itemid
                     
                     cell.ProductDetailTestTableView.reloadData()
+                    cell.selectionStyle = .none
                     return cell
                 }
             }
@@ -1192,6 +1219,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     cell.selectionStyle = .none
                     cell.tittleLable.text = "檢體名稱"
                     cell.tittleNameLable.text = currentReport[section].tittle
+                    cell.selectionStyle = .none
                     return cell
                 }else if index == 1{
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell31", for: indexPath) as! ProductTittleTableViewCell
@@ -1200,6 +1228,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     cell.tittleBackView.backgroundColor = UIColor.white
                     cell.tittleLable.text = "檢驗項目"
                     cell.tittleNameLable.text = ""
+                    cell.selectionStyle = .none
                     return cell
                 }else{
                     //                    新加入若有說明
@@ -1228,8 +1257,9 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                         cell.tittleLable.text = currentReport[section].item?[(index - 2)].itemid
                         
                         cell.ProductDetailTestTableView.reloadData()
+                        cell.selectionStyle = .none
                         return cell
-
+                        
                     }
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell3", for: indexPath) as! ProductDetailItemTableViewCell
                     cell.changeButton.isEnabled = true
@@ -1241,6 +1271,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     cell.tittleLable.text = currentReport[section].item?[(index - 2)].itemid
                     
                     cell.ProductDetailTestTableView.reloadData()
+                    cell.selectionStyle = .none
                     return cell
                 }
             }
@@ -1253,10 +1284,10 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 for report in product.historyreport!{
                     if report.type == "成品檢驗合格區"{
                         var count = 2
-                        if report.item == nil{
+                        if report.list == nil{
                             
                         }else{
-                            count += (report.item?.count)!
+                            count += (report.list?.count)!
                             
                         }
                         countForReport.append(count)
@@ -1268,10 +1299,10 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 for report in product.historyreport!{
                     if report.type == "半成品檢驗合格區"{
                         var count = 2
-                        if report.item == nil{
+                        if report.list == nil{
                             
                         }else{
-                            count += (report.item?.count)!
+                            count += (report.list?.count)!
                             
                         }
                         countForReport.append(count)
@@ -1283,10 +1314,10 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 for report in product.historyreport!{
                     if report.type == "原料檢驗合格區"{
                         var count = 2
-                        if report.item == nil{
+                        if report.list == nil{
                             
                         }else{
-                            count += (report.item?.count)!
+                            count += (report.list?.count)!
                             
                         }
                         countForReport.append(count)
@@ -1320,7 +1351,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 }
                 let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ProductDetailTestTableViewCell
                 
-                let detail = (currentReport[section].item?[0].reportid?[index])!
+                let detail = (currentReport[section].list?[index])!
                 
                 if detail.file != nil{
                     cell.fileUrl = detail.file!
@@ -1330,7 +1361,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 cell.testDateLable.text = detail.reportdate
                 cell.testSource.text = detail.source
                 cell.testUnitLable.text = detail.title
-                
+                cell.selectionStyle = .none
                 return cell
                 
             }
@@ -1344,7 +1375,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 }
                 let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ProductDetailTestTableViewCell
                 
-                let detail = (currentReport[section].item?[0].reportid?[index])!
+                let detail = (currentReport[section].list?[index])!
                 
                 if detail.file != nil{
                     cell.fileUrl = detail.file!
@@ -1367,7 +1398,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 }
                 let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! ProductDetailTestTableViewCell
                 
-                let detail = (currentReport[section].item?[0].reportid?[index])!
+                let detail = (currentReport[section].list?[index])!
                 
                 if detail.file != nil{
                     cell.fileUrl = detail.file!
@@ -1377,7 +1408,7 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 cell.testDateLable.text = detail.reportdate
                 cell.testSource.text = detail.source
                 cell.testUnitLable.text = detail.title
-                
+                cell.selectionStyle = .none
                 return cell
             }
         }
@@ -1407,6 +1438,9 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         //此為成分標示表格，僅需畫虛線
         case productIngrediantTableView:
             productIngrediantHeightConstraint.constant += howMuch
+            if productIngrediantHeightConstraint.constant < 10{
+                productIngrediantHeightConstraint.constant = 15
+            }
         default:
             ingrediantTableViewHightConstraint.constant += howMuch
             tableViewHeightList[2] = ingrediantTableViewHightConstraint.constant
@@ -1415,14 +1449,15 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         }
         if tableView != productIngrediantTableView{
             tableView.reloadData()
-//            tableView.isUserInteractionEnabled = false
-//            tableView.reloadRows(at: [whichCell], with: .none)
-//            tableView.isUserInteractionEnabled = true
+            //            tableView.isUserInteractionEnabled = false
+            //            tableView.reloadRows(at: [whichCell], with: .none)
+            //            tableView.isUserInteractionEnabled = true
         }
         
     }
     
     func drawMiddleLine(){
+        forDashLineView.layoutIfNeeded()
         forDashLineView.addDashedLine(startPoint: CGPoint(x: self.view.bounds.width/2, y: 0), endPoint: CGPoint(x: self.view.bounds.width/2, y: productIngrediantHeightConstraint.constant))
     }
     
@@ -1461,28 +1496,30 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                                 if let content = jsonReportClass.1["content"].string{
                                     reportClass.content = content
                                 }
-                                for jsonReportDetail in jsonReportClass.1["reportid"]{
-                                    
-                                    let reportDetail = ReportDetail()
-                                    if let reportdate = jsonReportDetail.1["reportdate"].string{
-                                        reportDetail.reportdate = reportdate
+                                if jsonReportClass.1["reportid"].array != nil{
+                                    for jsonReportDetail in jsonReportClass.1["reportid"]{
+                                        
+                                        let reportDetail = ReportDetail()
+                                        if let reportdate = jsonReportDetail.1["reportdate"].string{
+                                            reportDetail.reportdate = reportdate
+                                        }
+                                        if let id = jsonReportDetail.1["id"].string{
+                                            reportDetail.id = id
+                                        }
+                                        if let title = jsonReportDetail.1["title"].string{
+                                            reportDetail.title = title
+                                        }
+                                        if let source = jsonReportDetail.1["source"].string{
+                                            reportDetail.source = source
+                                        }
+                                        if let file = jsonReportDetail.1["file"].string{
+                                            reportDetail.file = file
+                                        }
+                                        repoerDetailList.append(reportDetail)
                                     }
-                                    if let id = jsonReportDetail.1["id"].string{
-                                        reportDetail.id = id
-                                    }
-                                    if let title = jsonReportDetail.1["title"].string{
-                                        reportDetail.title = title
-                                    }
-                                    if let source = jsonReportDetail.1["source"].string{
-                                        reportDetail.source = source
-                                    }
-                                    if let file = jsonReportDetail.1["file"].string{
-                                        reportDetail.file = file
-                                    }
-                                    repoerDetailList.append(reportDetail)
+                                    reportClass.reportid = repoerDetailList
+                                    reportClassList.append(reportClass)
                                 }
-                                reportClass.reportid = repoerDetailList
-                                reportClassList.append(reportClass)
                             }
                             
                             latestReport.item = reportClassList
@@ -1500,45 +1537,43 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                             latestReport.tittle = title
                         }
                         if let type = jsonLatest.1["type"].string{
-                            latestReport.type = type
+                            if type == "成品"{
+                                latestReport.type = "成品檢驗合格區"
+                            }else if type == "半成品"{
+                                latestReport.type = "半成品檢驗合格區"
+                            }else{
+                                latestReport.type = "原料檢驗合格區"
+                            }
                         }
-                        if jsonLatest.1["item"] != nil{
-                            var reportClassList = [ReportClass]()
-                            for jsonReportClass in jsonLatest.1["item"]{
-                                
-                                var repoerDetailList = [ReportDetail]()
-                                let reportClass = ReportClass()
-                                if let itemid = jsonReportClass.1["itemid"].string{
-                                    reportClass.itemid = itemid
-                                }
-                                for jsonReportDetail in jsonReportClass.1["reportid"]{
-                                    
+                        if jsonLatest.1["list"] != nil{
+                            var repoerDetailList = [ReportDetail]()
+                            if let jsonArray = jsonLatest.1["list"].array{
+                                for jsonReportDetail in jsonArray{
                                     let reportDetail = ReportDetail()
-                                    if let reportdate = jsonReportDetail.1["reportdate"].string{
+                                    if let reportdate = jsonReportDetail["date"].string{
                                         reportDetail.reportdate = reportdate
                                     }
-                                    if let id = jsonReportDetail.1["id"].string{
+                                    if let id = jsonReportDetail["id"].string{
                                         reportDetail.id = id
                                     }
-                                    if let title = jsonReportDetail.1["title"].string{
+                                    if let title = jsonReportDetail["title"].string{
                                         reportDetail.title = title
                                     }
-                                    if let source = jsonReportDetail.1["source"].string{
+                                    if let source = jsonReportDetail["source"].string{
                                         reportDetail.source = source
                                     }
-                                    if let file = jsonReportDetail.1["file"].string{
+                                    if let file = jsonReportDetail["file"].string{
                                         reportDetail.file = file
                                     }
                                     repoerDetailList.append(reportDetail)
                                 }
-                                reportClass.reportid = repoerDetailList
-                                reportClassList.append(reportClass)
+                                latestReport.list = repoerDetailList
+                                
                             }
-                            latestReport.item = reportClassList
+                            reportList.append(latestReport)
                         }
-                        reportList.append(latestReport)
+                        self.product.historyreport = reportList
                     }
-                    self.product.historyreport = reportList
                 }
                 
                 if let id = jsonData["id"].string{
@@ -1549,8 +1584,44 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                     self.product.title = title
                 }
                 
-                if let warn = jsonData["warn"].string{
-                    self.product.warn = warn
+                if let warn = jsonData["warn1"].string{
+                    if self.product.warn == nil{
+                        self.product.warn = warn
+                    }else{
+                        self.product.warn! += warn
+                    }
+                }
+                
+                if let warn = jsonData["warn2"].string{
+                    if self.product.warn == nil{
+                        self.product.warn = warn
+                    }else{
+                        self.product.warn! += warn
+                    }
+                }
+                
+                if let warn = jsonData["warn3"].string{
+                    if self.product.warn == nil{
+                        self.product.warn = warn
+                    }else{
+                        self.product.warn! += warn
+                    }
+                }
+                
+                if let warn = jsonData["warn4"].string{
+                    if self.product.warn == nil{
+                        self.product.warn = warn
+                    }else{
+                        self.product.warn! += warn
+                    }
+                }
+                
+                if let warn = jsonData["warn5"].string{
+                    if self.product.warn == nil{
+                        self.product.warn = warn
+                    }else{
+                        self.product.warn! += warn
+                    }
                 }
                 
                 if let img = jsonData["img"].string{
@@ -1634,20 +1705,22 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                     }
                 }
                 
-                for jsonSlider in jsonData["slider"]{
-                    if let main = jsonSlider.1["main"].string{
-                        if main == "0"{
-                            if self.product.slider == nil{
-                                self.product.slider = [jsonSlider.1["img"].stringValue]
+                if let _ = jsonData["slider"].array{
+                    for jsonSlider in jsonData["slider"]{
+                        if let main = jsonSlider.1["main"].string{
+                            if main == "0"{
+                                if self.product.slider == nil{
+                                    self.product.slider = [jsonSlider.1["img"].stringValue]
+                                }else{
+                                    self.product.slider?.append(jsonSlider.1["img"].stringValue)
+                                }
                             }else{
-                                self.product.slider?.append(jsonSlider.1["img"].stringValue)
-                            }
-                        }else{
-                            if self.product.slider == nil{
-                                self.product.slider = [jsonSlider.1["img"].stringValue]
-                            }else{
-                            
-                                self.product.slider?.insert(jsonSlider.1["img"].stringValue, at: 0)
+                                if self.product.slider == nil{
+                                    self.product.slider = [jsonSlider.1["img"].stringValue]
+                                }else{
+                                    
+                                    self.product.slider?.insert(jsonSlider.1["img"].stringValue, at: 0)
+                                }
                             }
                         }
                     }
@@ -1730,10 +1803,21 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         modifyDateLable.text = "\((yearMonthComponet?[0])!)年\((yearMonthComponet?[1])!)月\((dateComponent?[0])!)日 最後修改時間"
         productSliderCollectionView.reloadData()
         if product.cer != nil{
+            cerView.isHidden = false
+            cerViewHightConstraint.constant = 110
             cerCollectionView.reloadData()
+        }else{
+            cerView.isHidden = true
+            cerViewHightConstraint.constant = 0
         }
         if product.mall != nil{
+            mallView.isHidden = false
+            mallViewHeightConstraint.constant = 110
+            
             buyCollectionView.reloadData()
+        }else{
+            mallView.isHidden = true
+            mallViewHeightConstraint.constant = 0
         }
         if product.latestreport != nil{
             productTableView.reloadData()
@@ -1743,9 +1827,13 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         productIngrediantTableView.reloadData()
         productIngrediantTableView.layoutIfNeeded()
         productIngrediantHeightConstraint.constant = productIngrediantTableView.contentSize.height
+        if productIngrediantHeightConstraint.constant < 10{
+            productIngrediantHeightConstraint.constant = 20
+        }
         self.reportAction(self)
         self.firstSubAction(self)
         self.underLineView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width/2, height: self.underLineView.bounds.height)
+        self.view.layoutIfNeeded()
         stickyViewConstraint.constant = headerTopView.frame.maxY
         navigationBarOriginalOffset = headerTopView.frame.maxY
         loadingView.isHidden = true

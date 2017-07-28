@@ -136,8 +136,18 @@ class HotTopicDetailViewController: UIViewController {
 
 extension HotTopicDetailViewController:UITableViewDelegate, UITableViewDataSource{
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row == 0{
+            return UITableViewAutomaticDimension
+        }else{
+            return self.view.bounds.height / 2
+        }
+    }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.performSegue(withIdentifier: "showDetail", sender: articleList[indexPath.row].id)
+        if indexPath.row != 0{
+            self.performSegue(withIdentifier: "showDetail", sender: articleList[indexPath.row - 1].id)
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -150,6 +160,7 @@ extension HotTopicDetailViewController:UITableViewDelegate, UITableViewDataSourc
             cell.titleLable.text = topTitle
             cell.subTitleLable.text = topSubtitle
             cell.contentLable.text = topDesc
+            cell.selectionStyle = .none
             return cell
         }
         let cell = hotTopicTableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! HotTopicListTableViewCell

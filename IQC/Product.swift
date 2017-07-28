@@ -45,6 +45,7 @@ class Report: NSObject {
     var type:String?
     var reportDetail:ReportDetail?
     var item:[ReportClass]?
+    var list:[ReportDetail]?
     
 }
 

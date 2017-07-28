@@ -553,9 +553,11 @@ extension SafeViewController{
         
         Alamofire.request("https://iqctest.com/api/product/detail/\(product.id!)", headers: headers).responseJSON(completionHandler: {
             response in
+            self.isLoaded = false
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)
+                
                 for jsonData in json["list"]{
                     IsDetailBack.isBackFlag.isDetailBack = true
                     if let _ = jsonData.1["gov"].string{
