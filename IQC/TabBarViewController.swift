@@ -5,7 +5,7 @@
 //  Created by YeouTimothy on 2017/3/2.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
-
+//MARK:Tab 控制
 import UIKit
 
 class TabBarViewController: UITabBarController {
@@ -43,7 +43,7 @@ extension TabBarViewController: UITabBarControllerDelegate{
                 self.present(vc!, animated: false, completion: nil)
             }
             return
-        case "IQC食安誌":
+        case "iQC食安誌":
             if userDefaults.value(forKey: "isFirstJournal") == nil{
                 userDefaults.setValue(true, forKey: "isFirstJournal")
                 let vc = self.storyboard?.instantiateViewController(withIdentifier: "JournalCoach")

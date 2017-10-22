@@ -3,7 +3,7 @@
 "0Mu-0V-HUw.normalTitle" = "送出";
 
 /* Class = "UINavigationItem"; title = "IQC食安誌"; ObjectID = "0gh-3a-6Nz"; */
-"0gh-3a-6Nz.title" = "IQC食安誌";
+"0gh-3a-6Nz.title" = "iQC食安誌";
 
 /* Class = "UILabel"; text = "商品條碼"; ObjectID = "0jv-JY-RRU"; */
 "0jv-JY-RRU.text" = "商品條碼";
@@ -66,7 +66,7 @@
 "8nm-Qr-laM.text" = "雙活菌核桃";
 
 /* Class = "UIViewController"; title = "IQC食安誌"; ObjectID = "8rJ-Kc-sve"; */
-"8rJ-Kc-sve.title" = "IQC食安誌";
+"8rJ-Kc-sve.title" = "iQC食安誌";
 
 /* Class = "UILabel"; text = "版權宣告"; ObjectID = "90j-oZ-k4B"; */
 "90j-oZ-k4B.text" = "版權宣告";
@@ -300,7 +300,7 @@
 "cNE-OB-QZa.normalTitle" = "文章";
 
 /* Class = "UITabBarItem"; title = "IQC食安誌"; ObjectID = "cPa-gy-q4n"; */
-"cPa-gy-q4n.title" = "IQC食安誌";
+"cPa-gy-q4n.title" = "iQC食安誌";
 
 /* Class = "UILabel"; text = "iQC 為您守護健康遠離食安風險"; ObjectID = "cTQ-Mg-dkc"; */
 "cTQ-Mg-dkc.text" = "iQC 為您守護健康遠離食安風險";

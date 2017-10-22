@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import FBSDKCoreKit
-import GodEye
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {

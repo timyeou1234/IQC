@@ -1,25 +1,23 @@
 //
-//  ProductDetailTestTableViewCell.swift
+//  ProductDetailGovTitleTableViewCell.swift
 //  IQC
 //
-//  Created by YeouTimothy on 2017/2/27.
+//  Created by YeouTimothy on 2017/7/31.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
-//MARK:報告格
+//MARK:政府產品報告頁
 
 import UIKit
 import Alamofire
 import SwiftyJSON
 
-class ProductDetailTestTableViewCell: UITableViewCell {
-
+class ProductDetailGovTitleTableViewCell: UITableViewCell {
+    
     var fileUrl = ""
     var fileId = ""
     var productId = ""
     
     @IBOutlet weak var buttonBackView: UIView!
-    @IBOutlet weak var testSource: UILabel!
-    @IBOutlet weak var testUnitLable: UILabel!
     @IBOutlet weak var testDateLable: UILabel!
     
     @IBAction func watchReportAction(_ sender: Any) {
@@ -44,10 +42,10 @@ class ProductDetailTestTableViewCell: UITableViewCell {
         buttonBackView.layer.borderColor = UIColor(colorLiteralRed: 2/255, green: 182/255, blue: 197/255, alpha: 1).cgColor
         buttonBackView.layer.masksToBounds = true
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
     

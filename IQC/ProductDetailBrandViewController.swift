@@ -1,31 +1,30 @@
 //
-//  BrandDetailViewController.swift
+//  ProductDetailBrandViewController.swift
 //  IQC
 //
-//  Created by YeouTimothy on 2017/3/7.
+//  Created by YeouTimothy on 2017/7/28.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
-//MARK:品牌細節
+//MARK:一般商品進入產品一覽品牌細節頁
 
 import UIKit
 import Alamofire
 import SDWebImage
 import SwiftyJSON
 
-class BrandDetailViewController: UIViewController, UIWebViewDelegate {
+class ProductDetailBrandViewController: UIViewController, UIWebViewDelegate {
     
-    var isLoaded = false
     var brandId = ""
     var brandData = Brand()
     var brandOwnedProduct = [Product]()
     var loadingView = LoadingView()
     
     // 6/26Change
-    
-    @IBOutlet weak var detailDesWebView: UIWebView!
-    @IBOutlet weak var detailDesWebviewHeight: NSLayoutConstraint!
     @IBOutlet weak var desWebView: UIWebView!
-    @IBOutlet weak var desWebViewHeight: NSLayoutConstraint!
+    @IBOutlet weak var detailDesWebView: UIWebView!
+    @IBOutlet weak var desWebViewHeightt: NSLayoutConstraint!
+    @IBOutlet weak var detailDesWebviewHeight: NSLayoutConstraint!
+    
     
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var backImageView: UIImageView!
@@ -49,11 +48,26 @@ class BrandDetailViewController: UIViewController, UIWebViewDelegate {
         }
     }
     
+    @IBAction func shareAction(_ sender: Any) {
+        let myWebsite = NSURL(string: "https://iqctest.com/api/brand/detail/\(brandId)")
+        
+        guard let url = myWebsite else {
+            print("nothing found")
+            return
+        }
+        
+        let shareItems:Array = [url]
+        let activityViewController:UIActivityViewController = UIActivityViewController(activityItems: shareItems, applicationActivities: nil)
+        activityViewController.excludedActivityTypes = [UIActivityType.print, UIActivityType.postToWeibo, UIActivityType.copyToPasteboard, UIActivityType.addToReadingList, UIActivityType.postToVimeo]
+        activityViewController.popoverPresentationController?.sourceView = self.view
+        self.present(activityViewController, animated: true, completion: nil)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        detailDesWebView.delegate = self
         desWebView.delegate = self
+        detailDesWebView.delegate = self
         
         productCollectionView.delegate = self
         productCollectionView.dataSource = self
@@ -65,7 +79,7 @@ class BrandDetailViewController: UIViewController, UIWebViewDelegate {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        
+        self.tabBarController?.tabBar.isHidden = true
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -74,11 +88,14 @@ class BrandDetailViewController: UIViewController, UIWebViewDelegate {
         loadingView.startRotate()
         self.view.addSubview(loadingView)
         loadingView.isHidden = true
+        loadingView.isHidden = false
+        getBrand(id: brandId)
         scrollView.contentOffset = CGPoint.zero
         scrollView.scrollsToTop = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        self.tabBarController?.tabBar.isHidden = false
         loadingView.stopRotate()
     }
     
@@ -88,10 +105,7 @@ class BrandDetailViewController: UIViewController, UIWebViewDelegate {
     }
     
     func reload(){
-        scrollView.contentOffset = CGPoint.zero
-        scrollView.scrollsToTop = true
-        loadingView.isHidden = false
-        getBrand(id: brandId)
+        
     }
     
     func getBrand(id:String){
@@ -123,7 +137,6 @@ class BrandDetailViewController: UIViewController, UIWebViewDelegate {
                         self.brandData.id = id
                     }
                     if let product = brand.1["product"].array{
-                        self.brandOwnedProduct = [Product]()
                         for jsonDatas in product{
                             let similarProduct = Product()
                             if let id = jsonDatas["id"].string{
@@ -211,7 +224,6 @@ class BrandDetailViewController: UIViewController, UIWebViewDelegate {
         numberLable.text = brandData.number
         addressLable.text = brandData.supplier
         phoneLable.text = brandData.service
-        
         introLable.text = brandData.intro
         
         //        6/26 Change to web view
@@ -219,6 +231,7 @@ class BrandDetailViewController: UIViewController, UIWebViewDelegate {
         detailDesWebView.loadHTMLString(brandData.content!, baseURL: nil)
         
         loadingView.isHidden = true
+        
         productCollectionViewHeight.constant = productCollectionView.contentSize.height
     }
     
@@ -228,25 +241,40 @@ class BrandDetailViewController: UIViewController, UIWebViewDelegate {
         
         webView.frame.size = webView.sizeThatFits(CGSize.zero)
         
-        if webView == detailDesWebView{
-            detailDesWebviewHeight.constant = webView.frame.height
+        if webView == desWebView{
+            desWebViewHeightt.constant = webView.frame.height
+            webView.bounds = CGRect(x: 0, y: 0, width: webView.frame.width, height: desWebViewHeightt.constant)
         }else{
-            desWebViewHeight.constant = webView.frame.height
+            detailDesWebviewHeight.constant = webView.frame.height
+            webView.bounds = CGRect(x: 0, y: 0, width: webView.frame.width, height: detailDesWebviewHeight.constant)
         }
+        
     }
+    
+    
+    /*
+     // MARK: - Navigation
+     
+     // In a storyboard-based application, you will often want to do a little preparation before navigation
+     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+     // Get the new view controller using segue.destinationViewController.
+     // Pass the selected object to the new view controller.
+     }
+     */
+    
 }
 
-extension BrandDetailViewController:UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
+extension ProductDetailBrandViewController:UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout{
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let id = brandOwnedProduct[indexPath.item].id!
-        IsDetailBack.isBackFlag.isDetailBack = true
         if let _ = brandOwnedProduct[indexPath.item].gov{
             let vc = self.storyboard?.instantiateViewController(withIdentifier: "GovProductDetail") as! GovProductDetailViewController
             vc.productId = id
             let backItem = UIBarButtonItem()
             backItem.title = ""
             self.navigationItem.backBarButtonItem = backItem
+//            self.loadingView.isHidden = true
             self.navigationController?.pushViewController(vc, animated: true)
             
         }else{
@@ -255,6 +283,7 @@ extension BrandDetailViewController:UICollectionViewDelegate, UICollectionViewDa
             backItem.title = ""
             self.navigationItem.backBarButtonItem = backItem
             vc.productId = id
+//            self.loadingView.isHidden = true
             self.navigationController?.pushViewController(vc, animated: true)
         }
         
@@ -285,3 +314,4 @@ extension BrandDetailViewController:UICollectionViewDelegate, UICollectionViewDa
     }
     
 }
+

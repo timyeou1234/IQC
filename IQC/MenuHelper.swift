@@ -24,6 +24,8 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //  SOFTWARE.
 
+//MARK:第三方引入，此類用於側選單Model資料控制
+
 import Foundation
 import UIKit
 

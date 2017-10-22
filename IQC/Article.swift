@@ -5,11 +5,13 @@
 //  Created by YeouTimothy on 2017/2/23.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:文章資料模型
 
 import UIKit
 
 class Article: NSObject {
     
+    var articles:[Article]?
     var modify:String?
     var content:String?
     var img:String?

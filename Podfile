@@ -11,10 +11,6 @@ target 'IQC' do
   pod 'Alamofire'
   pod 'SDWebImage', '~>3.8'
   pod 'DropDown'
-  pod 'FacebookCore'
-  pod 'FacebookLogin'
-  pod 'FacebookShare'
-  pod 'GodEye'
   pod 'TagListView', '~> 1.0'
   
   post_install do |installer|

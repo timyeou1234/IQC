@@ -5,6 +5,7 @@
 //  Created by YeouTimothy on 2017/3/16.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:隱私權政策
 
 import UIKit
 import Alamofire
@@ -52,7 +53,14 @@ class DeclareViewController: UIViewController, UIWebViewDelegate {
         Alamofire.request("https://iqctest.com/api/website/declare", headers: headers).responseJSON(completionHandler: {
             response in
             print(response)
-            
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 for list in json["list"]{

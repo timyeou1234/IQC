@@ -5,6 +5,7 @@
 //  Created by YeouTimothy on 2017/2/28.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:成分格
 
 import UIKit
 
@@ -23,6 +24,7 @@ class IngrediantTableViewCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        //        dashLineBottomView.isHidden = false
         // Initialization code
         
     }
@@ -34,16 +36,26 @@ class IngrediantTableViewCell: UITableViewCell {
     }
     
     func drawDash(){
-        dashLineBottomView.isHidden = false
-        dashLineBottomView.addDashedLine(startPoint: CGPoint(x: 0, y: 0), endPoint: CGPoint(x: dashLineBottomView.frame.width, y: 0))
-        if tittleBackView.bounds.height > 40{
-            cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: tittleBackView.bounds.height - 40)
+        let when = DispatchTime.now() + 1
+        DispatchQueue.main.asyncAfter(deadline: when) {
+            self.contentView.layoutIfNeeded()
+            
+            self.detailContextLable.layoutIfNeeded()
+            self.dashLineBottomView.layoutIfNeeded()
+            
+            self.dashLineBottomView.addDashedLine(startPoint: CGPoint(x: 0, y: 1), endPoint: CGPoint(x: self.contentView.frame.width, y: 1))
+            
+            
+            if self.tittleBackView.bounds.height > 40{
+                self.cellHeightChange?.cellHeightChange(tableView: self.tableView!, whichCell: self.indexPath!, height: self.bounds.height, howMuch: self.tittleBackView.bounds.height - 35)
+            }
         }
+        
+        
         
     }
     
     func endDrawDash(){
-        dashLineBottomView.isHidden = true
         if tittleBackView.bounds.height > 40{
             cellHeightChange?.cellHeightChange(tableView: tableView!, whichCell: indexPath!, height: self.bounds.height, howMuch: tittleBackView.bounds.height - 40)
         }

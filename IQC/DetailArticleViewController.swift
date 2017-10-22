@@ -5,20 +5,21 @@
 //  Created by YeouTimothy on 2017/2/23.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:文章細節頁
 
 import UIKit
 import Alamofire
 import SDWebImage
 import SwiftyJSON
 import Social
-import FacebookShare
-import FBSDKShareKit
 import TagListView
 
 var MyObservationContext = 0
 
 class DetailArticleViewController: UIViewController, UIWebViewDelegate {
     
+    var isKeyboard = false
+    var isLoaded = false
     var observing = false
     var navFrame:CGRect?
     var articleId = ""
@@ -65,6 +66,19 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
     
     @IBOutlet weak var shareButton: UIBarButtonItem!
     @IBAction func shareAction(_ sender: Any) {
+        
+        let headers:HTTPHeaders = ["Content-Type": "application/json" ,"charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
+        
+        let param:Parameters = [ "content":[[ "articleid":articleId
+            ]
+            ]]
+        
+        _ = Alamofire.request(URL(string: "https://iqctest.com/api/data/fbshare")!, method: .post, parameters: param, encoding: JSONEncoding.default, headers: headers).responseString(completionHandler: {
+            response in
+            debugPrint(response)
+            
+        })
+        
         facebookActive = true
         let myWebsite = NSURL(string: "https://iqctest.com/article/\(articleId)")
         
@@ -116,8 +130,39 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
         }else{
             loadingView.isHidden = true
         }
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+        
         NotificationCenter.default.addObserver(self, selector: #selector(playended), name: .UIWindowDidBecomeHidden, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playStarted), name: .UIWindowDidBecomeVisible, object: nil)
+        
+        
+        
+        
+    }
+    
+    @objc func handleSingleTap(recognizer: UITapGestureRecognizer) {
+        if recognizer.view == facebookWebview{
+            isKeyboard = true
+        }else{
+            isKeyboard = false
+        }
+        //Do something here with the gesture
+    }
+    
+    func keyboardWillShow(_ notification: NSNotification){
+        // Do something here
+        UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+        isKeyboard = true
+    }
+    
+    func keyboardWillHide(_ notification: NSNotification){
+        // Do something here
+        AppUtility.lockOrientation(.portrait)
+        UIDevice.current.setValue(UIInterfaceOrientation.portrait.rawValue, forKey: "orientation")
+        isKeyboard = false
+        AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -131,9 +176,8 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
     }
     
     func setupView(){
-        relatedeArticle = [Article]()
-        productList = [Product]()
         self.navigationController?.navigationItem.backBarButtonItem?.title = ""
+        
         if article.video == nil{
             playButton.isHidden = true
             youtubeWebView.isHidden = true
@@ -149,22 +193,9 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
         self.titteLable.text = article.title
         let date = article.modify?.components(separatedBy: "-")
         self.modifyDate.text = "\((date?[0])!)年\((date?[1])!)月\((date?[2].components(separatedBy: " ")[0])!)日"
+        contentWebView.isUserInteractionEnabled = false
         contentWebView.loadHTMLString(article.content!, baseURL: nil)
-        if article.producrt != nil{
-            if article.producrt != ""{
-                loadingView.isHidden = false
-                getProductDetail(productId: article.producrt!)
-            }
-        }
         
-        if article.reading != nil{
-            if article.reading != ""{
-                loadingView.isHidden = false
-                getReading(reading: article.reading!)
-            }
-        }else if article.reading == nil && article.producrt == nil{
-            loadingView.isHidden = true
-        }
         
         if article.tag != nil{
             var tagList = [String]()
@@ -184,6 +215,7 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
         }
         
         navFrame = self.navigationController?.navigationBar.frame
+        self.loadingView.isHidden = true
     }
     
     func webViewDidFinishLoad(_ webView: UIWebView) {
@@ -191,6 +223,7 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
         
         webView.frame.size = webView.sizeThatFits(CGSize.zero)
         if webView == contentWebView{
+            contentWebView.isUserInteractionEnabled = true
             webViewHeightConstant.constant = webView.frame.size.height
         }else if webView == facebookWebview{
             facebookWebviewHeightConstant.constant = webView.scrollView.contentSize.height
@@ -238,20 +271,30 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
         default:
             super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
-
+        
     }
     
     func playStarted(){
-        if !facebookActive && youtubeWebView.isFirstResponder{
+        if scrollContainView.contentOffset.y > 100{
+            
+            return
+        }
+        if !facebookActive && !isKeyboard{
             AppUtility.lockOrientation(.landscape)
         }
     }
     
     func playended(){
+        UIApplication.shared.setStatusBarHidden(false, with: .none)
         scrollContainView.frame.origin.y = (self.navigationController?.navigationBar.frame.maxY)!
         AppUtility.lockOrientation(.portrait, andRotateTo: .portrait)
         facebookActive = false
+        
     }
+    
+    //    override var prefersStatusBarHidden: Bool{
+    //        return false
+    //    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -361,7 +404,7 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
                 self.loadingView.isHidden = true
                 self.navigationController?.pushViewController(vc, animated: true)
             }
-//            getProductDetailGo(id: productList[indexPath.item].id!)
+            //            getProductDetailGo(id: productList[indexPath.item].id!)
         }
         
         
@@ -372,9 +415,6 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
             return productList.count
         }
         if collectionView == readingCollectionView{
-            if relatedeArticle.count == 0{
-                return 3
-            }
             return relatedeArticle.count
         }
         return 0
@@ -386,7 +426,7 @@ extension DetailArticleViewController:UICollectionViewDelegate, UICollectionView
         if collectionView == readingCollectionView{
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Cell", for: indexPath) as! RelatedArticleCollectionViewCell
             
-            if relatedeArticle.count == 0 || relatedeArticle.count - 1 < indexPath.row{
+            if relatedeArticle.count == 0 || relatedeArticle.count - 1 < indexPath.item{
                 return cell
             }
             
@@ -425,6 +465,14 @@ extension DetailArticleViewController{
         
         Alamofire.request("https://iqctest.com/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             print(response)
             
             if let JSONData = response.result.value{
@@ -433,7 +481,7 @@ extension DetailArticleViewController{
                 let articleData = Article()
                 
                 if json["list"].array == nil{
-                    self.loadingView.isHidden = true
+                    
                     return
                 }
                 
@@ -463,11 +511,61 @@ extension DetailArticleViewController{
                     if let tag = article.1["tag"].string{
                         articleData.tag = tag
                     }
-                    if let producrt = article.1["producrt"].string{
-                        articleData.producrt = producrt
+                    
+                    if let producrt = article.1["producrt"].array{
+                        for jsonDatas in producrt{
+                            let similarProduct = Product()
+                            if let id = jsonDatas["id"].string{
+                                similarProduct.id = id
+                            }
+                            
+                            if let title = jsonDatas["title"].string{
+                                similarProduct.title = title
+                            }
+                            
+                            if let img = jsonDatas["img"].string{
+                                similarProduct.img = img
+                            }
+                            
+                            if let gov = jsonDatas["gov"].string{
+                                if gov == "1"{
+                                    similarProduct.gov = gov
+                                }
+                            }
+                            
+                            self.productList.append(similarProduct)
+                        }
+                        self.productCollectionView.reloadData()
                     }
-                    if let reading = article.1["reading"].string{
-                        articleData.reading = reading
+                    
+                    if let reading = article.1["reading"].array{
+                        //                        articleData.reading = reading
+                        for article in reading{
+                            let articleData = Article()
+                            if let id = article["id"].string{
+                                articleData.id = id
+                            }
+                            if let title = article["title"].string{
+                                articleData.title = title
+                            }
+                            if let modify = article["modify"].string{
+                                articleData.modify = modify
+                            }
+                            if let content = article["content"].string{
+                                articleData.content = content
+                            }
+                            if let main_img = article["img"].string{
+                                articleData.main_img = main_img
+                            }
+                            if let type = article["type"].string{
+                                articleData.type = type
+                            }
+                            if let video = article["video"].string{
+                                articleData.video = video
+                            }
+                            self.relatedeArticle.append(articleData)
+                        }
+                        self.readingCollectionView.reloadData()
                     }
                     if let type = article.1["type"].string{
                         articleData.type = type
@@ -494,6 +592,14 @@ extension DetailArticleViewController{
         for id in productId.components(separatedBy: ","){
             Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
                 response in
+                if let _ = response.error{
+                    let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                    let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                    alert.addAction(cancelAction)
+                    
+                    self.present(alert, animated: true, completion: nil)
+                    return
+                }
                 if let JSONData = response.result.value{
                     let json = JSON(JSONData)
                     print(json)
@@ -534,6 +640,14 @@ extension DetailArticleViewController{
             
             Alamofire.request("https://iqctest.com/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
                 response in
+                if let _ = response.error{
+                    let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                    let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                    alert.addAction(cancelAction)
+                    
+                    self.present(alert, animated: true, completion: nil)
+                    return
+                }
                 print(response)
                 
                 if let JSONData = response.result.value{
@@ -568,8 +682,29 @@ extension DetailArticleViewController{
                         if let tag = article.1["tag"].string{
                             articleData.tag = tag
                         }
-                        if let producrt = article.1["producrt"].string{
-                            articleData.producrt = producrt
+                        if let producrt = article.1["producrt"].array{
+                            for jsonDatas in producrt{
+                                let similarProduct = Product()
+                                if let id = jsonDatas["id"].string{
+                                    similarProduct.id = id
+                                }
+                                
+                                if let title = jsonDatas["title"].string{
+                                    similarProduct.title = title
+                                }
+                                
+                                if let img = jsonDatas["img"].string{
+                                    similarProduct.img = img
+                                }
+                                
+                                if let gov = jsonDatas["gov"].string{
+                                    if gov == "1"{
+                                        similarProduct.gov = gov
+                                    }
+                                }
+                                self.productList.append(similarProduct)
+                            }
+                            self.productCollectionView.reloadData()
                         }
                         if let reading = article.1["reading"].string{
                             articleData.reading = reading
@@ -582,10 +717,11 @@ extension DetailArticleViewController{
                         }
                         self.relatedeArticle.append(articleData)
                     }
+                    self.readingCollectionView.reloadData()
                     if reading.components(separatedBy: ",").count == self.relatedeArticle.count{
-                        self.readingCollectionView.reloadData()
-                        self.loadingView.isHidden = true
                     }
+                }else{
+                    
                 }
             })
             
@@ -597,6 +733,14 @@ extension DetailArticleViewController{
         
         Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)

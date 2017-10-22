@@ -5,6 +5,7 @@
 //  Created by YeouTimothy on 2017/3/3.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK: 搜尋頁面
 
 import UIKit
 import SwiftyJSON
@@ -43,14 +44,9 @@ class SearchViewController: UIViewController {
     @IBOutlet weak var buttonView: UIView!
     @IBOutlet weak var searchBarView: UIView!
     @IBOutlet weak var outComeView: UIView!
-    //    @IBOutlet weak var usedCollectionView: UICollectionView!
-    //    @IBOutlet weak var tagCollectionView: UICollectionView!
     @IBOutlet weak var classLable: UILabel!
     @IBOutlet weak var searchTextField: UITextField!
     @IBOutlet weak var classButton: UIButton!
-    
-    //    @IBOutlet weak var tagCollectionViewHeight: NSLayoutConstraint!
-    //    @IBOutlet weak var usedCollectionViewHeight: NSLayoutConstraint!
     
     @IBOutlet weak var articleButton: UIButton!
     @IBOutlet weak var productButton: UIButton!
@@ -365,6 +361,7 @@ extension SearchViewController:UITextFieldDelegate, UITableViewDelegate, UITable
         cell.topicClass.text = article.type
         cell.selectionStyle = .none
         cell.topicBackView.clipBackground(color: UIColor(colorLiteralRed: 0/255, green: 182/255, blue: 196/255, alpha: 1))
+        cell.playButtonImage.isHidden = article.video == nil
         
         return cell
     }
@@ -379,10 +376,20 @@ extension SearchViewController{
         loadingView.isHidden = false
         articleList = [Article]()
         productList = [Product]()
+        articleTableView.reloadData()
+        productCollectionView.reloadData()
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         let keyWoedUTF = keyWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
         Alamofire.request(URL(string: "https://iqctest.com/api/search/product/\(keyWoedUTF!)")!, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)
@@ -429,7 +436,6 @@ extension SearchViewController{
                 }
                 if self.isLoaded[0] && self.isLoaded[1]{
                     if self.articleList.count == 0 && self.productList.count == 0{
-//                        self.performSegue(withIdentifier: "noResult", sender: nil)
                     }
                     var text = ""
                     if self.articleButton.isSelected{
@@ -450,6 +456,14 @@ extension SearchViewController{
         
         Alamofire.request(URL(string: "https://iqctest.com/api/search/article/\(keyWoedUTF!)")!, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)
@@ -484,6 +498,9 @@ extension SearchViewController{
                         if let des = article.1["des"].string{
                             articleData.des = des
                         }
+                        if let video = article.1["video"].string{
+                            articleData.video = video
+                        }
                         self.articleList.append(articleData)
                     }
                     self.articleButton.setTitle("文章(\(self.articleList.count))", for: .normal)
@@ -493,7 +510,6 @@ extension SearchViewController{
                 }
                 if self.isLoaded[0] && self.isLoaded[1]{
                     if self.articleList.count == 0 && self.productList.count == 0{
-//                        self.performSegue(withIdentifier: "noResult", sender: nil)
                     }
                     var text = ""
                     if self.articleButton.isSelected{
@@ -519,6 +535,14 @@ extension SearchViewController{
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         Alamofire.request(URL(string: "https://iqctest.com/api/website/keyword")!, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)
@@ -541,11 +565,8 @@ extension SearchViewController{
                                 width -= (tag.characters.count * 17) + 20
                             }
                         }
-                        //                        self.tagCollectionViewHeight.constant = CGFloat(45 * tagRow)
-                        //                        self.tagCollectionView.reloadData()
                         self.tagView.removeAllTags()
                         self.tagView.addTags(self.tag)
-                        //                        self.tagView.sizeToFit()
                     }
                     
                 }
@@ -559,6 +580,22 @@ extension SearchViewController{
         
         Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)

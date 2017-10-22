@@ -5,6 +5,7 @@
 //  Created by YeouTimothy on 2017/2/22.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:選擇相片頁面
 
 protocol PhotoPassingDelegate {
     func openCamera(selectedIndex:[Int])

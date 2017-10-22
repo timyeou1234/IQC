@@ -5,6 +5,7 @@
 //  Created by YeouTimothy on 2017/2/10.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:無結果
 
 import UIKit
 
@@ -68,6 +69,7 @@ class NoResultViewController: UIViewController {
         // Pass the selected object to the new view controller.
         if let destinationController = segue.destination as? HelpReportViewController{
             if code != ""{
+                
                 destinationController.code = code
             }
         }

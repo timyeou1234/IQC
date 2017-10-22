@@ -5,6 +5,7 @@
 //  Created by YeouTimothy on 2017/2/6.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:掃描頁面
 
 import UIKit
 import AVFoundation
@@ -149,6 +150,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         super.viewDidLoad()
         
         ScanDetailBack.scanDetailBack.isDetailBack = false
+        ScanDetailBack.scanDetailBack.isCamera = false
         //設定按鈕圖示
         cameraButton.setImage(#imageLiteral(resourceName: "icon_cam_01_prs"), for: .selected)
         cameraButton.setImage(#imageLiteral(resourceName: "icon_cam_01_nor"), for: .normal)
@@ -164,33 +166,42 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.navigationBar.isHidden = false
-        if ScanDetailBack.scanDetailBack.isDetailBack!{
-        if codeArray.count != 0{
-            var code = ""
-            for i in codeArray{
-                code += String(i)
-            }
-            inputTextfield.text = code
-            }
-        }else{
-            inputTextfield.text = ""
-            codeArray = [Int]()
-            setupKeyboardView()
-        }
-        ScanDetailBack.scanDetailBack.isDetailBack = false
+        
         //        設定讀取中圖示
         loadingView.frame = self.view.frame
         loadingView.startRotate()
         self.view.addSubview(loadingView)
         
+        
         //        監聽鍵盤事件
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
+        self.view.endEditing(true)
         if captureSession?.isRunning == false{
             captureSession?.startRunning()
         }
         self.tabBarController?.tabBar.isHidden = false
         loadingView.isHidden = true
-        camraAction(self)
+        
+        if ScanDetailBack.scanDetailBack.isDetailBack!{
+            searchButton.layoutIfNeeded()
+            if codeArray.count != 0{
+                var code = ""
+                for i in codeArray{
+                    code += String(i)
+                }
+                inputTextfield.text = code
+            }
+            if !ScanDetailBack.scanDetailBack.isCamera!{
+                endEditAction(self)
+            }
+        }else{
+            inputTextfield.text = ""
+            codeArray = [Int]()
+            setupKeyboardView()
+            self.view.endEditing(true)
+            camraAction(self)
+        }
+        ScanDetailBack.scanDetailBack.isDetailBack = false
         
     }
     
@@ -200,6 +211,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         if appl.isFromMenu != nil{
             return
         }
+        
         setupCameraView()
         codeImage1.frame = codeImage2.frame
         if gradient.frame != self.searchBackgroundView.layer.bounds{
@@ -244,6 +256,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
             if metadataObj.stringValue != nil {
                 loadingView.isHidden = false
                 captureSession?.stopRunning()
+                ScanDetailBack.scanDetailBack.isCamera = true
                 sendRequest(metadataObj.stringValue)
             }
         }
@@ -396,13 +409,24 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
     
     func sendRequest(_ code:String){
         print("detect the code: \(code)")
+        captureSession?.stopRunning()
         self.view.endEditing(true)
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
         Alamofire.request("https://iqctest.com/api/search/barcode/\(code)", headers: headers).responseJSON(completionHandler: {
             response in
             print(response)
-            
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: {
+                    success in
+                    self.captureSession?.startRunning()
+                })
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 var productList = [Product]()
@@ -471,10 +495,11 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         case "showDetail":
             let destinationController = segue.destination as! IQCProductDetailViewController
             destinationController.productId = (sender as! Product).id!
+            ScanDetailBack.scanDetailBack.isDetailBack = true
             captureSession?.stopRunning()
             self.videoPreviewLayer?.removeFromSuperlayer()
             videoPreviewLayer = nil
-            ScanDetailBack.scanDetailBack.isDetailBack = true
+            
         default:
             captureSession?.stopRunning()
             self.videoPreviewLayer?.removeFromSuperlayer()
@@ -483,6 +508,7 @@ class CameraViewController: UIViewController, AVCaptureMetadataOutputObjectsDele
         
         if let destinationController = segue.destination as? NoResultViewController{
             destinationController.code = sender as! String
+            ScanDetailBack.scanDetailBack.isDetailBack = true
         }
     }
 }
@@ -568,6 +594,14 @@ extension CameraViewController:UITextFieldDelegate, UIViewControllerTransitionin
         
         Alamofire.request("https://iqctest.com/api/product/detail/\(product.id!)", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             self.loadingView.isHidden = true
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
@@ -597,6 +631,7 @@ class ScanDetailBack:NSObject{
     static let scanDetailBack = ScanDetailBack()
     
     var isDetailBack:Bool?
+    var isCamera:Bool?
     
 }
 

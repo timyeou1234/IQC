@@ -5,6 +5,7 @@
 //  Created by YeouTimothy on 2017/3/15.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:選單主頁
 
 import UIKit
 
@@ -29,10 +30,14 @@ class MenuViewController: UIViewController, GotoRootDelegate{
     }
     
     @IBAction func declareAction(_ sender: Any) {
+        let appl = UIApplication.shared.delegate as! AppDelegate
+        appl.isFromMenu = true
         menuActionDelegate?.openSegue("Declare", sender: nil)
     }
     
     @IBAction func SubscribeAction(_ sender: Any) {
+        let appl = UIApplication.shared.delegate as! AppDelegate
+        appl.isFromMenu = true
         menuActionDelegate?.openSegue("Subscribe", sender: nil)
     }
 

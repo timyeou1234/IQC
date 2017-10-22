@@ -5,12 +5,12 @@
 //  Created by YeouTimothy on 2017/2/27.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:一般商品細節頁
 
 import UIKit
 import SwiftyJSON
 import Alamofire
 import SDWebImage
-import FBSDKShareKit
 
 protocol CellHeightChangeDelegate {
     func cellHeightChange(tableView:UITableView ,whichCell:IndexPath, height:CGFloat, howMuch: CGFloat)
@@ -18,6 +18,8 @@ protocol CellHeightChangeDelegate {
 
 class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     
+    
+    var currentCount = 0
     var isDraw = false
     var loadingView = LoadingView()
     var observing = false
@@ -38,9 +40,21 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     var halfProductCellHeight = [IndexPath:CGFloat]()
     var ingrediantCellHeight = [IndexPath:CGFloat]()
     
+    var goBrandDetail = false
+    
     @IBOutlet weak var headerTopView: UIView!
     @IBOutlet weak var stickyViewConstraint: NSLayoutConstraint!
     //    For 留在上方的參數
+    
+    
+    //    8/19更改三區檢驗區高度
+    @IBOutlet weak var productHeaderHeightConstant: NSLayoutConstraint!
+    @IBOutlet weak var halfProductHeaderHeightConstant: NSLayoutConstraint!
+    @IBOutlet weak var ingrediantHeaderHeightConstant: NSLayoutConstraint!
+    
+    @IBOutlet weak var productHeaderView: UIView!
+    @IBOutlet weak var halfProductHeaderView: UIView!
+    @IBOutlet weak var ingrediantHeaderView: UIView!
     
     
     //  7/19認證標章購買連接高度
@@ -130,12 +144,13 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     }
     
     @IBAction func productViewAllAction(_ sender: Any) {
-        let vc = self.storyboard?.instantiateViewController(withIdentifier: "SafeViewController") as! SafeViewController
-        let backItem = UIBarButtonItem()
-        backItem.title = ""
-        self.navigationItem.backBarButtonItem = backItem
-        vc.gotoBrandId = brandData.id!
-        self.navigationController?.pushViewController(vc, animated: true)
+        if let _ = brandData.id{
+            goBrandDetail = true
+            self.performSegue(withIdentifier: "showBrand", sender: brandData.id!)
+            let backItem = UIBarButtonItem()
+            backItem.title = ""
+            self.navigationItem.backBarButtonItem = backItem
+        }
     }
     
     //    看產品品牌專區最下方
@@ -283,7 +298,6 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     @IBAction func ingrediantOpenAction(_ sender: Any) {
         if ingrediantTableViewHightConstraint.constant == 0{
             if isLatest{
-                //                ingrediantTableViewHightConstraint.constant = tableViewHeightList[2]
                 ingrediantTableViewHightConstraint.constant = ingrediantTableView.contentSize.height
             }else{
                 ingrediantTableViewHightConstraint.constant = ingrediantTableView.contentSize.height
@@ -376,15 +390,19 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
         loadingView.startRotate()
         self.view.addSubview(loadingView)
         self.tabBarController?.tabBar.isHidden = true
-        getProductDetail()
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillShowForResizing),
-                                               name: Notification.Name.UIKeyboardWillShow,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(keyboardWillHideForResizing),
-                                               name: Notification.Name.UIKeyboardWillHide,
-                                               object: nil)
+        if !goBrandDetail{
+            getProductDetail()
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(keyboardWillShowForResizing),
+                                                   name: Notification.Name.UIKeyboardWillShow,
+                                                   object: nil)
+            NotificationCenter.default.addObserver(self,
+                                                   selector: #selector(keyboardWillHideForResizing),
+                                                   name: Notification.Name.UIKeyboardWillHide,
+                                                   object: nil)
+        }else{
+            goBrandDetail = false
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -484,15 +502,20 @@ class IQCProductDetailViewController: UIViewController, UIWebViewDelegate {
     
     
     
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destinationViewController.
-     // Pass the selected object to the new view controller.
-     }
-     */
+    
+    // MARK: - Navigation
+    
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        if let destination = segue.destination as? ProductDetailBrandViewController{
+            destination.brandId = sender as! String
+            
+        }
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+    }
+    
     
 }
 
@@ -505,7 +528,6 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        //        tittleButtonContentView.frame.origin.y = max(navigationBarOriginalOffset!, scrollView.contentOffset.y)
         if navigationBarOriginalOffset != nil{
             if navigationBarOriginalOffset! < scrollView.contentOffset.y{
                 stickyViewConstraint.constant = scrollView.contentOffset.y
@@ -520,6 +542,9 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         if collectionView == brandOwnedProductCollectionView || collectionView == simularProductCollectionView{
+            if self.brandOwnedProductCollectionView.bounds.width/2 - 10 >= self.brandOwnedProductCollectionView.bounds.height{
+                return CGSize(width: self.brandOwnedProductCollectionView.bounds.height - 50, height: self.brandOwnedProductCollectionView.bounds.height - 10)
+            }
             return CGSize(width: (brandOwnedProductCollectionView.bounds.width/2)-10, height: brandOwnedProductCollectionView.bounds.width/2 + 40)
         }
         if collectionView == productSliderCollectionView{
@@ -694,11 +719,27 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
         }
         if isLatest{
             if product.latestreport == nil{
+                productHeaderHeightConstant.constant = 0
+                halfProductHeaderHeightConstant.constant = 0
+                ingrediantHeaderHeightConstant.constant = 0
+                productHeaderView.isHidden = true
+                halfProductHeaderView.isHidden = true
+                ingrediantHeaderView.isHidden = true
                 return 0
+            }else{
+                
             }
         }else{
             if product.historyreport == nil{
+                productHeaderHeightConstant.constant = 0
+                halfProductHeaderHeightConstant.constant = 0
+                ingrediantHeaderHeightConstant.constant = 0
+                productHeaderView.isHidden = true
+                halfProductHeaderView.isHidden = true
+                ingrediantHeaderView.isHidden = true
                 return 0
+            }else{
+                
             }
         }
         
@@ -715,6 +756,13 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 }
                 if tableViewHeightList[0] == 0{
                     tableViewHeightList[0] = CGFloat(40 * count)
+                }
+                if count == 0{
+                    productHeaderHeightConstant.constant = 0
+                    productHeaderView.isHidden = true
+                }else{
+                    productHeaderHeightConstant.constant = 40
+                    productHeaderView.isHidden = false
                 }
                 return count
             }else{
@@ -733,6 +781,13 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 if tableViewHeightList[0] == 0{
                     tableViewHeightList[0] = CGFloat(132 * count)
                 }
+                if count == 0{
+                    productHeaderHeightConstant.constant = 0
+                    productHeaderView.isHidden = true
+                }else{
+                    productHeaderHeightConstant.constant = 40
+                    productHeaderView.isHidden = false
+                }
                 return count
             }
         }
@@ -750,6 +805,13 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 if tableViewHeightList[1] == 0{
                     tableViewHeightList[1] = CGFloat(40 * count)
                 }
+                if count == 0{
+                    halfProductHeaderHeightConstant.constant = 0
+                    halfProductHeaderView.isHidden = true
+                }else{
+                    halfProductHeaderHeightConstant.constant = 40
+                    halfProductHeaderView.isHidden = false
+                }
                 return count
             }else{
                 if product.historyreport == nil{
@@ -764,6 +826,13 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 }
                 if tableViewHeightList[1] == 0{
                     tableViewHeightList[1] = CGFloat(132 * count)
+                }
+                if count == 0{
+                    halfProductHeaderHeightConstant.constant = 0
+                    halfProductHeaderView.isHidden = true
+                }else{
+                    halfProductHeaderHeightConstant.constant = 40
+                    halfProductHeaderView.isHidden = false
                 }
                 return count
             }
@@ -782,6 +851,13 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 if tableViewHeightList[2] == 0{
                     tableViewHeightList[2] = CGFloat(40 * count)
                 }
+                if count == 0{
+                    ingrediantHeaderView.isHidden = true
+                    ingrediantHeaderHeightConstant.constant = 0
+                }else{
+                    ingrediantHeaderView.isHidden = false
+                    ingrediantHeaderHeightConstant.constant = 40
+                }
                 return count
             }else{
                 if product.historyreport == nil{
@@ -797,6 +873,13 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                 }
                 if tableViewHeightList[2] == 0{
                     tableViewHeightList[2] = CGFloat(132 * count)
+                }
+                if count == 0{
+                    ingrediantHeaderView.isHidden = true
+                    ingrediantHeaderHeightConstant.constant = 0
+                }else{
+                    ingrediantHeaderView.isHidden = false
+                    ingrediantHeaderHeightConstant.constant = 40
                 }
                 return count
             }
@@ -873,6 +956,8 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
         return 40
     }
     
+    
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         //        產品標示
@@ -940,50 +1025,53 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
             default:
                 break
             }
+            if !loadingView.isHidden{
+                var count = 6
+                if product.ingredient == "" || product.ingredient == nil{
+                    count -= 1
+                }
+                if product.origin == "" || product.origin == nil{
+                    count -= 1
+                }
+                if product.capacity == "" || product.capacity == nil{
+                    count -= 1
+                }
+                if product.allergy?.count == 0 || product.allergy == nil{
+                    count -= 1
+                }
+                if product.veg?.count == 0 || product.veg == nil{
+                    count -= 1
+                }
+                if product.number == "" || product.number == nil{
+                    count -= 1
+                }
+                if product.warn == "" || product.warn == nil{
+                    count -= 1
+                }
+                
+                
+                cell.dashLineBottomView.isHidden = false
+                cell.indexPath = indexPath
+                cell.tableView = productIngrediantTableView
+                cell.cellHeightChange = self
+                cell.drawDash()
+                if count == currentCount && cell.detailContextLable.text != "" {
+                    cell.dashLineBottomView.isHidden = true
+                    productIngrediantBottomView.layer.zPosition = 0
+                    cell.endDrawDash()
+                    drawMiddleLine()
+                    currentCount = 0
+                }else if cell.detailContextLable.text != ""{
+                    currentCount += 1
+                }
+            }else{
+                
+            }
+            
             if cell.detailContextLable.text == ""{
                 cell.isHidden = true
             }else{
                 cell.isHidden = false
-            }
-            var count = 6
-            if product.ingredient == ""{
-                count -= 1
-            }
-            if product.origin == ""{
-                count -= 1
-            }
-            if product.capacity == ""{
-                count -= 1
-            }
-            if product.allergy?.count == 0{
-                count -= 1
-            }
-            if product.veg?.count == 0{
-                count -= 1
-            }
-            if product.number == ""{
-                count -= 1
-            }
-            if product.warn == ""{
-                count -= 1
-            }
-            
-            if product.title != nil{
-                cell.indexPath = indexPath
-                cell.tableView = productIngrediantTableView
-                cell.cellHeightChange = self
-                
-                if count == indexPath.row && count != 0{
-                    productIngrediantBottomView.layer.zPosition = 0
-                    cell.endDrawDash()
-                    drawMiddleLine()
-                }else{
-                    if cell.detailContextLable.text != ""{
-                        cell.drawDash()
-                    }else{
-                        cell.isHidden = true
-                    }
-                }
             }
             cell.selectionStyle = .none
             return cell
@@ -1114,12 +1202,13 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     }
                     
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell3", for: indexPath) as! ProductDetailItemTableViewCell
-                    //                    cell.changeButton.isEnabled = true
                     cell.productId = self.productId
                     cell.cellHeightChange = self
                     cell.indexPath = indexPath
                     cell.tableView = tableView
-                    cell.reportDetail = (currentReport[section].item?[(index - 2)].reportid)!
+                    if let report = currentReport[section].item?[(index - 2)].reportid{
+                        cell.reportDetail = report
+                    }
                     cell.tittleLable.text = currentReport[section].item?[(index - 2)].itemid
                     
                     cell.ProductDetailTestTableView.reloadData()
@@ -1263,7 +1352,6 @@ extension IQCProductDetailViewController:UICollectionViewDelegate, UICollectionV
                     }
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell3", for: indexPath) as! ProductDetailItemTableViewCell
                     cell.changeButton.isEnabled = true
-                    //                    cell.content = (currentReport[section].item?[(index - 2)].content)
                     cell.cellHeightChange = self
                     cell.indexPath = indexPath
                     cell.tableView = tableView
@@ -1437,7 +1525,7 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
             halfProductCellHeight[whichCell] = height
         //此為成分標示表格，僅需畫虛線
         case productIngrediantTableView:
-            productIngrediantHeightConstraint.constant += howMuch
+            productIngrediantHeightConstraint.constant = productIngrediantTableView.contentSize.height
             if productIngrediantHeightConstraint.constant < 10{
                 productIngrediantHeightConstraint.constant = 15
             }
@@ -1449,16 +1537,17 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         }
         if tableView != productIngrediantTableView{
             tableView.reloadData()
-            //            tableView.isUserInteractionEnabled = false
-            //            tableView.reloadRows(at: [whichCell], with: .none)
-            //            tableView.isUserInteractionEnabled = true
         }
         
     }
     
     func drawMiddleLine(){
-        forDashLineView.layoutIfNeeded()
-        forDashLineView.addDashedLine(startPoint: CGPoint(x: self.view.bounds.width/2, y: 0), endPoint: CGPoint(x: self.view.bounds.width/2, y: productIngrediantHeightConstraint.constant))
+        let when = DispatchTime.now() + 2
+        DispatchQueue.main.asyncAfter(deadline: when) {
+            self.forDashLineView.layoutIfNeeded()
+            
+            self.forDashLineView.addDashedLine(startPoint: CGPoint(x: self.view.bounds.width/2, y: 0), endPoint: CGPoint(x: self.view.bounds.width/2, y: self.productIngrediantTableView.contentSize.height))
+        }
     }
     
     func getProductDetail(){
@@ -1466,6 +1555,14 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         
         Alamofire.request("https://iqctest.com/api/product/detail/\(productId)", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)
@@ -1640,9 +1737,31 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                     self.product.capacity = capacity
                 }
                 
-                if let similar = jsonData["similar"].string{
-                    self.product.similar = similar
-                    self.getProductList(id: similar, type: "")
+                if let similar = jsonData["similar"].array{
+                    self.simularProduct = [Product]()
+                    for jsonDatas in similar{
+                        let similarProduct = Product()
+                        if let id = jsonDatas["id"].string{
+                            similarProduct.id = id
+                        }
+                        
+                        if let title = jsonDatas["title"].string{
+                            similarProduct.title = title
+                        }
+                        
+                        if let img = jsonDatas["img"].string{
+                            similarProduct.img = img
+                        }
+                        
+                        if let gov = jsonDatas["gov"].string{
+                            if gov == "1"{
+                                similarProduct.gov = gov
+                            }
+                        }
+                        self.simularProduct.append(similarProduct)
+                        
+                    }
+                    self.simularProductCollectionView.reloadData()
                 }
                 
                 if let origin = jsonData["origin"].string{
@@ -1729,6 +1848,7 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                 DispatchQueue.main.async {
                     self.refreshView()
                 }
+                
             }
             
         })
@@ -1740,6 +1860,14 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         
         Alamofire.request("https://iqctest.com/api/brand/detail/\(id)", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)
@@ -1751,8 +1879,32 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                     if let id = brand.1["id"].string{
                         self.brandData.id = id
                     }
-                    if let product = brand.1["product"].string{
-                        self.brandData.product = product
+                    if let product = brand.1["product"].array{
+                        self.brandOwnedProduct = [Product]()
+                        for jsonDatas in product{
+                            let similarProduct = Product()
+                            
+                            if let id = jsonDatas["id"].string{
+                                similarProduct.id = id
+                            }
+                            
+                            if let title = jsonDatas["title"].string{
+                                similarProduct.title = title
+                            }
+                            
+                            if let img = jsonDatas["img"].string{
+                                similarProduct.img = img
+                            }
+                            
+                            if let gov = jsonDatas["gov"].string{
+                                if gov == "1"{
+                                    similarProduct.gov = gov
+                                }
+                            }
+                            self.brandOwnedProduct.append(similarProduct)
+                            
+                        }
+                        self.brandOwnedProductCollectionView.reloadData()
                     }
                     if let intro = brand.1["intro"].string{
                         self.brandData.intro = intro
@@ -1844,9 +1996,6 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         backGroundImageView.sd_setImage(with: URL(string: brandData.img!))
         brandImageView.sd_setImage(with: URL(string: brandData.logo!))
         brandIdLable.text = brandData.name
-        if brandData.product != nil{
-            getProductList(id: brandData.product!, type: "brand")
-        }
         
     }
     
@@ -1856,6 +2005,14 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         for id in (id.components(separatedBy: ",")){
             Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
                 response in
+                if let _ = response.error{
+                    let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                    let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                    alert.addAction(cancelAction)
+                    
+                    self.present(alert, animated: true, completion: nil)
+                    return
+                }
                 if let JSONData = response.result.value{
                     let json = JSON(JSONData)
                     print(json)
@@ -1897,6 +2054,14 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
         
         Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)
@@ -1907,7 +2072,6 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                         let backItem = UIBarButtonItem()
                         backItem.title = ""
                         self.navigationItem.backBarButtonItem = backItem
-                        //                        self.loadingView.isHidden = true
                         self.navigationController?.pushViewController(vc, animated: true)
                     }else{
                         let vc = self.storyboard?.instantiateViewController(withIdentifier: "IQCProductDetail") as! IQCProductDetailViewController
@@ -1915,7 +2079,6 @@ extension IQCProductDetailViewController:CellHeightChangeDelegate{
                         backItem.title = ""
                         self.navigationItem.backBarButtonItem = backItem
                         vc.productId = id
-                        //                        self.loadingView.isHidden = true
                         self.navigationController?.pushViewController(vc, animated: true)
                     }
                 }

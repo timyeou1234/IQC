@@ -5,6 +5,7 @@
 //  Created by YeouTimothy on 2017/3/7.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:食安誌
 
 import UIKit
 import Alamofire
@@ -104,6 +105,7 @@ class SafeJournalViewController: UIViewController {
         loadingView.startRotate()
         self.view.addSubview(loadingView)
         loadingView.isHidden = true
+        articleTableView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -120,17 +122,33 @@ class SafeJournalViewController: UIViewController {
     }
     
     func getArticlList(type:String){
-        loadingView.isHidden = false
-        articleList = [Article]()
+        if !isUpdating{
+            loadingView.isHidden = false
+        }
+        
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
         Alamofire.request("https://iqctest.com/api/blog/list/all", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             print(response)
-            
+            if self.isUpdating{
+                self.loadingView.isHidden = false
+            }
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)
+                self.articleList = [Article]()
+                self.lifeList = [Article]()
+                self.newsList = [Article]()
+                self.ownList = [Article]()
                 if json["list"].array == nil{
                     self.articleTableView.isHidden = true
                     self.loadingView.isHidden = true
@@ -178,7 +196,12 @@ class SafeJournalViewController: UIViewController {
                         }
                     }
                 }
-                self.interViewAction(self)
+                if !self.isUpdating {
+                    self.interViewAction(self)
+                }else{
+                    self.isUpdating = false
+                    self.refreshControl.endRefreshing()
+                }
                 self.articleTableView.isHidden = false
                 self.articleTableView.reloadData()
                 self.loadingView.isHidden = true
@@ -208,7 +231,8 @@ extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource,
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         if refreshControl.isRefreshing {
             if !isUpdating {
-                update(type: currentType)
+                isUpdating = true
+                getArticlList(type: "all")
             }else{
                 refreshControl.endRefreshing()
             }
@@ -295,13 +319,36 @@ extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource,
     }
     
     func update(type:String){
+        var typeUrl = ""
+        switch type{
+        case "食安專訪":
+            typeUrl = "news"
+        case "食安生活":
+            typeUrl = "life"
+        case "食安新知":
+            typeUrl = "interview"
+        case "自己食安自己救":
+            typeUrl = "video"
+        default:
+            break
+        }
         isUpdating = true
+        
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        Alamofire.request("https://iqctest.com/api/blog/list/\(type)", headers: headers).responseJSON(completionHandler: {
+        Alamofire.request("https://iqctest.com/api/blog/list/\(typeUrl)", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             print(response)
-            
+            self.refreshControl.endRefreshing()
+            self.isUpdating = false
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)
@@ -324,6 +371,7 @@ extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource,
                         return
                     }
                 }
+                var articalList = [Article]()
                 for article in json["list"]{
                     let articleData = Article()
                     if let id = article.1["id"].string{
@@ -352,23 +400,23 @@ extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource,
                     }
                     if let type = article.1["type"].string{
                         articleData.type = type
-                        switch type{
-                        case "食安專訪":
-                            self.articleList.append(articleData)
-                        case "食安生活":
-                            self.lifeList.append(articleData)
-                        case "食安新知":
-                            self.newsList.append(articleData)
-                        case "自己食安自己救":
-                            self.ownList.append(articleData)
-                        default:
-                            break
-                        }
                     }
+                    articalList.append(articleData)
                 }
-                self.refreshControl.endRefreshing()
+                switch type{
+                case "食安專訪":
+                    self.articleList = articalList
+                case "食安生活":
+                    self.lifeList = articalList
+                case "食安新知":
+                    self.newsList = articalList
+                case "自己食安自己救":
+                    self.ownList = articalList
+                default:
+                    break
+                }
                 self.articleTableView.reloadData()
-                self.isUpdating = false
+                
             }
         })
         

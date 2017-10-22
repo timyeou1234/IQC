@@ -5,6 +5,7 @@
 //  Created by YeouTimothy on 2017/2/22.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:協助回報頁面
 
 extension UIApplication {
     var statusBarView: UIView? {
@@ -131,6 +132,7 @@ class HelpReportViewController: UIViewController {
     }
     
     @IBAction func cancelAction(_ sender: Any) {
+        ScanDetailBack.scanDetailBack.isDetailBack = false
         _ = self.navigationController?.popToRootViewController(animated: true)
     }
     

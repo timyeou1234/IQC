@@ -5,7 +5,7 @@
 //  Created by YeouTimothy on 2017/2/10.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
-
+//MARK:Loading 圖示
 import UIKit
 
 var isLoadingCircle = true

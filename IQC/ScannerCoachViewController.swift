@@ -5,6 +5,7 @@
 //  Created by YeouTimothy on 2017/3/20.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:掃描教學頁面
 
 import UIKit
 

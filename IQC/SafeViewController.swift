@@ -5,6 +5,7 @@
 //  Created by YeouTimothy on 2017/2/23.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:食在安心
 
 import UIKit
 import Alamofire
@@ -101,11 +102,6 @@ class SafeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        buttonBackView.layer.shadowColor = UIColor.gray.cgColor
-        buttonBackView.layer.shadowOpacity = 0.3
-        buttonBackView.layer.shadowOffset = CGSize(width: 0, height: 4)
-        buttonBackView.layer.shadowRadius = 2
-        
         tittleCollectionView.delegate = self
         tittleCollectionView.dataSource = self
         
@@ -157,6 +153,14 @@ class SafeViewController: UIViewController {
             
             Alamofire.request("https://iqctest.com/api/website/menu", headers: headers).responseJSON(completionHandler: {
                 response in
+                if let _ = response.error{
+                    let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                    let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                    alert.addAction(cancelAction)
+                    
+                    self.present(alert, animated: true, completion: nil)
+                    return
+                }
                 print(response)
                 
                 if let JSONData = response.result.value{
@@ -193,6 +197,8 @@ class SafeViewController: UIViewController {
                                 productData.submenu = subProductList
                                 
                                 self.productTypeList.append(productData)
+                            }else{
+                                
                             }
                         }
                     }
@@ -208,6 +214,14 @@ class SafeViewController: UIViewController {
             
             Alamofire.request("https://iqctest.com/api/brand/list/all", headers: headers).responseJSON(completionHandler: {
                 response in
+                if let _ = response.error{
+                    let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                    let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                    alert.addAction(cancelAction)
+                    
+                    self.present(alert, animated: true, completion: nil)
+                    return
+                }
                 print(response)
                 
                 if let JSONData = response.result.value{
@@ -332,8 +346,10 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        if collectionView == tittleCollectionView || collectionView == subTittleCollectionView{
+        if collectionView == tittleCollectionView {
             return CGSize(width: CGFloat(productTypeList[indexPath.item].title!.characters.count * 16 + 32), height: self.tittleCollectionView.bounds.height)
+        }else if collectionView == subTittleCollectionView{
+            return CGSize(width: CGFloat((productTypeList[selectedTittle].submenu?[indexPath.item].title!.characters.count)! * 16 + 32), height: self.tittleCollectionView.bounds.height)
         }else if collectionView == productCollectionView || collectionView == brandCollectionView{
             return CGSize(width: (productCollectionView.bounds.width/2 - 15), height: productCollectionView.bounds.width/2 + 40)
         }
@@ -382,9 +398,11 @@ extension SafeViewController:UICollectionViewDelegate, UICollectionViewDataSourc
                 filterSubTitle(productList: productDict[productTypeList[selectedTittle]]!, subId: (productTypeList[selectedTittle].submenu?[selectedSubTittel].id!)!, productType: productTypeList[selectedTittle])
             }
         }else if collectionView == productCollectionView{
-            if !isLoaded{
-                isLoaded = true
-                getProductDetail(product: self.productList[indexPath.item])
+            IsDetailBack.isBackFlag.isDetailBack = true
+            if let _ = self.productList[indexPath.item].gov{
+                self.performSegue(withIdentifier: "showGovDetail", sender: productList[indexPath.item])
+            }else{
+                self.performSegue(withIdentifier: "showDetail", sender: productList[indexPath.item])
             }
         }else if collectionView == brandCollectionView{
             (self.childViewControllers[0] as! BrandDetailViewController).brandId = brandList[indexPath.item].id!
@@ -497,6 +515,14 @@ extension SafeViewController{
         
         Alamofire.request("https://iqctest.com/api/safety/list/\(tittleId)/\(subIdString)", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             print(response)
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
@@ -524,6 +550,13 @@ extension SafeViewController{
                     }
                     if let subId = product.1["submenuid"].string{
                         productData.subId = subId
+                    }
+                    if let gov = product.1["gov"].string{
+                        if gov == "1"{
+                            productData.gov = "true"
+                        }else{
+                            
+                        }
                     }
                     productList.append(productData)
                     //                    self.productList.append(productData)
@@ -553,6 +586,14 @@ extension SafeViewController{
         
         Alamofire.request("https://iqctest.com/api/product/detail/\(product.id!)", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             self.isLoaded = false
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)

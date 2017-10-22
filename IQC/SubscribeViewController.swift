@@ -1,3 +1,4 @@
+
 //
 //  SubscribeViewController.swift
 //  IQC
@@ -5,6 +6,7 @@
 //  Created by YeouTimothy on 2017/3/16.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:訂閱
 
 import UIKit
 import Alamofire

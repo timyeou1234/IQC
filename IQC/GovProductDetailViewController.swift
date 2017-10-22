@@ -5,15 +5,16 @@
 //  Created by YeouTimothy on 2017/3/2.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:政府產品
 
 import UIKit
 import SwiftyJSON
 import Alamofire
 import SDWebImage
-import FBSDKShareKit
 
 class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
     
+    var isLoaded = false
     var loadingView = LoadingView()
     var observing = false
     var product = GovProduct()
@@ -108,9 +109,9 @@ class GovProductDetailViewController: UIViewController, UIWebViewDelegate {
         productTableView.rowHeight = UITableViewAutomaticDimension
         productTableView.estimatedRowHeight = 40
         
-        productTableView.register(UINib(nibName: "ProductDetailTestTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell")
+        productTableView.register(UINib(nibName: "ProductDetailGovTitleTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell")
         productTableView.register(UINib(nibName: "ProductTittleTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell1")
-        productTableView.register(UINib(nibName: "ProductDetailTestTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell2")
+        productTableView.register(UINib(nibName: "ProductDetailGovTitleTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell2")
         productTableView.register(UINib(nibName: "IQCProductDetailTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell3")
         productTableView.register(UINib(nibName: "ProductSubjectTableViewCell", bundle: nil), forCellReuseIdentifier: "Cell4")
         
@@ -310,7 +311,8 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
     //    delegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        if collectionView == relateProductCollectionView{
+        if collectionView == relateProductCollectionView && !isLoaded{
+            isLoaded = true
             getProductDetailGo(id: productList[indexPath.item].id!)
         }
         
@@ -501,14 +503,14 @@ extension GovProductDetailViewController:UITableViewDelegate, UITableViewDataSou
                 return cell
             }else if index == 1{
                 if currentReport[section].reportDetail != nil{
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "Cell2", for: indexPath) as! ProductDetailTestTableViewCell
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "Cell2", for: indexPath) as! ProductDetailGovTitleTableViewCell
                     let detail = currentReport[section].reportDetail
                     cell.fileId = (detail?.id)!
                     cell.fileUrl = (detail?.file)!
                     cell.productId = self.productId
-                    cell.testSource.text = detail?.source
+                    
                     cell.testDateLable.text = detail?.reportdate
-                    cell.testUnitLable.text = detail?.title
+                    
                     return cell
                 }else{
                     let cell = tableView.dequeueReusableCell(withIdentifier: "Cell4", for: indexPath) as! ProductSubjectTableViewCell
@@ -638,7 +640,10 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
     }
     
     func drawMiddleLine(){
-        dashLineView.addDashedLine(startPoint: CGPoint(x: self.view.bounds.width/3, y: 0), endPoint: CGPoint(x: self.view.bounds.width/3, y: detailTableView.bounds.height))
+        let when = DispatchTime.now() + 1
+        DispatchQueue.main.asyncAfter(deadline: when) {
+            self.dashLineView.addDashedLine(startPoint: CGPoint(x: self.view.bounds.width/3, y: 0), endPoint: CGPoint(x: self.view.bounds.width/3, y: self.detailTableView.bounds.height))
+        }
     }
     
     func getProductDetail(){
@@ -646,6 +651,14 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
         
         Alamofire.request("https://iqctest.com/api/product/detail/\(productId)", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)
@@ -691,7 +704,6 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                         if let item = jsonLatest.1["item"].array{
                             var reportClassList = [ReportClass]()
                             for jsonReportClass in item{
-                                //let repoerDetailList = [ReportDetail]()
                                 let reportClass = ReportClass()
                                 if let itemid = jsonReportClass["itemid"].string{
                                     reportClass.itemid = itemid
@@ -701,7 +713,6 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                                 if let content = jsonReportClass["content"].string{
                                     reportClass.content = content
                                 }
-                                //reportClass.reportid = repoerDetailList
                                 reportClassList.append(reportClass)
                             }
                             latestReport.item = reportClassList
@@ -742,8 +753,31 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
                     product.factory = ""
                 }
                 
-                if let similar = jsonData["similar"].string{
-                    product.similar = similar
+                if let similar = jsonData["similar"].array{
+                    self.productList = [Product]()
+                    for jsonDatas in similar{
+                        let similarProduct = Product()
+                        if let id = jsonDatas["id"].string{
+                            similarProduct.id = id
+                        }
+                        
+                        if let title = jsonDatas["title"].string{
+                            similarProduct.title = title
+                        }
+                        
+                        if let img = jsonDatas["img"].string{
+                            similarProduct.img = img
+                        }
+                        
+                        if let gov = jsonDatas["gov"].string{
+                            if gov == "1"{
+                                similarProduct.gov = gov
+                            }
+                        }
+                        self.productList.append(similarProduct)
+                        
+                    }
+                    self.relateProductCollectionView.reloadData()
                 }
                 
                 if let modify = jsonData["modify"].string{
@@ -796,6 +830,14 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
         for id in productId.components(separatedBy: ","){
             Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
                 response in
+                if let _ = response.error{
+                    let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                    let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                    alert.addAction(cancelAction)
+                    
+                    self.present(alert, animated: true, completion: nil)
+                    return
+                }
                 if let JSONData = response.result.value{
                     let json = JSON(JSONData)
                     print(json)
@@ -862,6 +904,15 @@ extension GovProductDetailViewController:CellHeightChangeDelegate{
         
         Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
+            self.isLoaded = false
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)

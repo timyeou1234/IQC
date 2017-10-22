@@ -5,6 +5,7 @@
 //  Created by YeouTimothy on 2017/2/23.
 //  Copyright © 2017年 Wework. All rights reserved.
 //
+//MARK:熱門文章第一層
 
 import UIKit
 import Alamofire
@@ -51,6 +52,14 @@ class HotTopicViewController: UIViewController {
             
             Alamofire.request("https://iqctest.com/api/topic/list", headers: headers).responseJSON(completionHandler: {
                 response in
+                if let _ = response.error{
+                    let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                    let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                    alert.addAction(cancelAction)
+                    
+                    self.present(alert, animated: true, completion: nil)
+                    return
+                }
                 print(response)
                 
                 if let JSONData = response.result.value{
@@ -70,8 +79,34 @@ class HotTopicViewController: UIViewController {
                         if let img = article.1["img"].string{
                             articleData.img = img
                         }
-                        if let article = article.1["article"].string{
-                            articleData.article = article
+                        if let articles = article.1["article"].array{
+                            var articleListin = [Article]()
+                            for article in articles{
+                                let articleData = Article()
+                                if let id = article["id"].string{
+                                    articleData.id = id
+                                }
+                                if let title = article["title"].string{
+                                    articleData.title = title
+                                }
+                                if let modify = article["modify"].string{
+                                    articleData.modify = modify
+                                }
+                                if let content = article["content"].string{
+                                    articleData.content = content
+                                }
+                                if let main_img = article["img"].string{
+                                    articleData.main_img = main_img
+                                }
+                                if let type = article["type"].string{
+                                    articleData.type = type
+                                }
+                                if let video = article["video"].string{
+                                    articleData.video = video
+                                }
+                                articleListin.append(articleData)
+                            }
+                            articleData.articles = articleListin
                         }
                         if let title = article.1["title"].string{
                             articleData.title = title
@@ -82,6 +117,7 @@ class HotTopicViewController: UIViewController {
                         if let content = article.1["content"].string{
                             articleData.content = content
                         }
+                        
                         self.articleList.append(articleData)
                     }
                     self.hotTopicTableView.reloadData()
@@ -98,9 +134,9 @@ class HotTopicViewController: UIViewController {
         loadingView.stopRotate()
     }
     
-//    override func viewDidDisappear(_ animated: Bool) {
-//        loadingView.remove()
-//    }
+    //    override func viewDidDisappear(_ animated: Bool) {
+    //        loadingView.remove()
+    //    }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -122,8 +158,10 @@ class HotTopicViewController: UIViewController {
             destinationController.topTitle = article.title
             destinationController.topSubtitle = article.des
             destinationController.topDesc = article.content
-            if article.article != nil{
-                destinationController.articleId = article.article!
+            if article.articles != nil{
+                destinationController.articleList = article.articles!
+            }else{
+                destinationController.articleList = [Article]()
             }
         }else if segue.identifier == "openMenu"{
             let destinationController = segue.destination as! MenuViewController
@@ -195,47 +233,54 @@ extension HotTopicViewController:UITableViewDelegate, UITableViewDataSource, UIV
         
         Alamofire.request("https://iqctest.com/api/topic/list", headers: headers).responseJSON(completionHandler: {
             response in
+            if let _ = response.error{
+                let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "確認", style: .cancel, handler: nil)
+                alert.addAction(cancelAction)
+                
+                self.present(alert, animated: true, completion: nil)
+                return
+            }
             print(response)
             
             if let JSONData = response.result.value{
                 let json = JSON(JSONData)
                 print(json)
-                if let list = json["list"].array{
-                    if list.count == self.articleList.count{
-                        self.isUpdating = false
-                        return
+                if let _ = json["list"].array{
+                    
+                    var articleListUpdate = [Article]()
+                    for article in json["list"]{
+                        let articleData = Article()
+                        if let id = article.1["id"].string{
+                            articleData.id = id
+                        }
+                        if let modify = article.1["modify"].string{
+                            articleData.modify = modify
+                        }
+                        if let content = article.1["content"].string{
+                            articleData.content = content
+                        }
+                        if let img = article.1["img"].string{
+                            articleData.img = img
+                        }
+                        if let article = article.1["article"].string{
+                            articleData.article = article
+                        }
+                        if let title = article.1["title"].string{
+                            articleData.title = title
+                        }
+                        if let des = article.1["des"].string{
+                            articleData.des = des
+                        }
+                        articleListUpdate.append(articleData)
                     }
+                    self.articleList = articleListUpdate
+                    self.hotTopicTableView.reloadData()
+                    self.isUpdating = false
                 }
-                for article in json["list"]{
-                    let articleData = Article()
-                    if let id = article.1["id"].string{
-                        articleData.id = id
-                    }
-                    if let modify = article.1["modify"].string{
-                        articleData.modify = modify
-                    }
-                    if let content = article.1["content"].string{
-                        articleData.content = content
-                    }
-                    if let img = article.1["img"].string{
-                        articleData.img = img
-                    }
-                    if let article = article.1["article"].string{
-                        articleData.article = article
-                    }
-                    if let title = article.1["title"].string{
-                        articleData.title = title
-                    }
-                    if let des = article.1["des"].string{
-                        articleData.des = des
-                    }
-                    self.articleList.append(articleData)
-                }
-                self.hotTopicTableView.reloadData()
-                self.isUpdating = false
             }
         })
-
+        
     }
     
 }
