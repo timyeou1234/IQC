@@ -39,17 +39,11 @@ class ProductDetailItemTableViewCell: UITableViewCell, UITableViewDelegate, UITa
     }
     
     @IBAction func cellChangeHeight(_ sender: Any) {
-//        changeButton.isEnabled = false
         let height = self.ProductDetailTestTableView.contentSize.height
         
-        //            let height = self.tableViewHeight
         if self.bounds.height > 42{
-//            isOpen = false
-//            tittleView.backgroundColor = UIColor.white
             self.cellHeightChange?.cellHeightChange(tableView:self.tableView! ,whichCell: self.indexPath!, height: 40 , howMuch: -height)
         }else{
-//            isOpen = true
-//            tittleView.backgroundColor = UIColor(colorLiteralRed: 238/255, green: 249/255, blue: 251/255, alpha: 1)
             self.cellHeightChange?.cellHeightChange(tableView:self.tableView! ,whichCell: self.indexPath!, height: 40 + height, howMuch: height)
         }
         

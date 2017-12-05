@@ -49,7 +49,7 @@ class ProductDetailBrandViewController: UIViewController, UIWebViewDelegate {
     }
     
     @IBAction func shareAction(_ sender: Any) {
-        let myWebsite = NSURL(string: "https://iqctest.com/api/brand/detail/\(brandId)")
+        let myWebsite = NSURL(string: "https://www.iqc.com.tw/api/brand/detail/\(brandId)")
         
         guard let url = myWebsite else {
             print("nothing found")
@@ -80,15 +80,15 @@ class ProductDetailBrandViewController: UIViewController, UIWebViewDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         self.tabBarController?.tabBar.isHidden = true
+        loadingView.frame = self.view.bounds
+        loadingView.startRotate()
+        self.view.addSubview(loadingView)
+        loadingView.isHidden = false
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
         //        設定讀取中圖示
-        loadingView.frame = self.view.bounds
-        loadingView.startRotate()
-        self.view.addSubview(loadingView)
-        loadingView.isHidden = true
-        loadingView.isHidden = false
         getBrand(id: brandId)
         scrollView.contentOffset = CGPoint.zero
         scrollView.scrollsToTop = true
@@ -115,7 +115,7 @@ class ProductDetailBrandViewController: UIViewController, UIWebViewDelegate {
         
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        Alamofire.request("https://iqctest.com/api/brand/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+        Alamofire.request("https://www.iqc.com.tw/api/brand/detail/\(id)", headers: headers).responseJSON(completionHandler: {
             response in
             if let _ = response.error{
                 let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
@@ -162,15 +162,21 @@ class ProductDetailBrandViewController: UIViewController, UIWebViewDelegate {
                     }
                     if let intro = brand.1["intro"].string{
                         self.brandData.intro = intro
+                    }else{
+                        self.brandData.intro = ""
                     }
                     if let content = brand.1["content"].string{
                         self.brandData.content = content
+                    }else{
+                        self.brandData.content = ""
                     }
                     if let categoryid = brand.1["categoryid"].string{
                         self.brandData.categoryid = categoryid
                     }
                     if let des = brand.1["des"].string{
                         self.brandData.des = des
+                    }else{
+                        self.brandData.des = ""
                     }
                     if let img = brand.1["img"].string{
                         self.brandData.img = img

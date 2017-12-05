@@ -54,7 +54,7 @@ class ProductDetailGovTitleTableViewCell: UITableViewCell {
         let param:Parameters = [ "content":[[ "productid": productid, "reportid": reportId
             ]
             ]]
-        _ = Alamofire.request(URL(string: "https://iqctest.com/api/data/report")!, method: .post, parameters: param, encoding: JSONEncoding.default, headers: headers).responseString(completionHandler: {
+        _ = Alamofire.request(URL(string: "https://www.iqc.com.tw/api/data/report")!, method: .post, parameters: param, encoding: JSONEncoding.default, headers: headers).responseString(completionHandler: {
             response in
             debugPrint(response)
         })

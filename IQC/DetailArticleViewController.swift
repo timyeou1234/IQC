@@ -73,14 +73,14 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
             ]
             ]]
         
-        _ = Alamofire.request(URL(string: "https://iqctest.com/api/data/fbshare")!, method: .post, parameters: param, encoding: JSONEncoding.default, headers: headers).responseString(completionHandler: {
+        _ = Alamofire.request(URL(string: "https://www.iqc.com.tw/api/data/fbshare")!, method: .post, parameters: param, encoding: JSONEncoding.default, headers: headers).responseString(completionHandler: {
             response in
             debugPrint(response)
             
         })
         
         facebookActive = true
-        let myWebsite = NSURL(string: "https://iqctest.com/article/\(articleId)")
+        let myWebsite = NSURL(string: "https://www.iqc.com.tw/article/\(articleId)")
         
         guard let url = myWebsite else {
             print("nothing found")
@@ -167,7 +167,7 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         
-        let facebookUrl = "<!DOCTYPE html><html> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> </head><body> <div id=\"fb-root\"></div><script>(function(d, s, id){var js, fjs=d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js=d.createElement(s); js.id=id; js.src=\"//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8&appId=700015816832989\"; fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script> <div class=\"fb-comments\" data-href=\"https://iqctest.com/article/\(articleId)\" data-numposts=\"5\"></div></body></html>"
+        let facebookUrl = "<!DOCTYPE html><html> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> </head><body> <div id=\"fb-root\"></div><script>(function(d, s, id){var js, fjs=d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js=d.createElement(s); js.id=id; js.src=\"//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8&appId=700015816832989\"; fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script> <div class=\"fb-comments\" data-href=\"https://www.iqc.com.tw/article/\(articleId)\" data-numposts=\"5\"></div></body></html>"
         if isFirstLoad{
             facebookWebview.loadHTMLString(facebookUrl, baseURL: URL(string: "https://www.facebook.com/iqc.com.tw"))
             facebookWebview.reload()
@@ -229,7 +229,7 @@ class DetailArticleViewController: UIViewController, UIWebViewDelegate {
             facebookWebviewHeightConstant.constant = webView.scrollView.contentSize.height
             let currentURL : String = (webView.request?.url?.absoluteString)!
             if currentURL.contains("/close_popup"){
-                let facebookUrl = "<!DOCTYPE html><html> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> </head><body> <div id=\"fb-root\"></div><script>(function(d, s, id){var js, fjs=d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js=d.createElement(s); js.id=id; js.src=\"//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8&appId=700015816832989\"; fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script> <div class=\"fb-comments\" data-href=\"https://iqctest.com/article/\(articleId)\" data-numposts=\"5\"></div></body></html>"
+                let facebookUrl = "<!DOCTYPE html><html> <head> <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> </head><body> <div id=\"fb-root\"></div><script>(function(d, s, id){var js, fjs=d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js=d.createElement(s); js.id=id; js.src=\"//connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.8&appId=700015816832989\"; fjs.parentNode.insertBefore(js, fjs);}(document, 'script', 'facebook-jssdk'));</script> <div class=\"fb-comments\" data-href=\"https://www.iqc.com.tw/article/\(articleId)\" data-numposts=\"5\"></div></body></html>"
                 facebookWebview.loadHTMLString(facebookUrl, baseURL: URL(string: "https://www.facebook.com/iqc.com.tw"))
             }
             if (!observing) {
@@ -463,7 +463,7 @@ extension DetailArticleViewController{
     func getArticleDetail(id:String){
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        Alamofire.request("https://iqctest.com/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+        Alamofire.request("https://www.iqc.com.tw/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
             response in
             if let _ = response.error{
                 let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
@@ -590,7 +590,7 @@ extension DetailArticleViewController{
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
         for id in productId.components(separatedBy: ","){
-            Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+            Alamofire.request("https://www.iqc.com.tw/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
                 response in
                 if let _ = response.error{
                     let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
@@ -638,7 +638,7 @@ extension DetailArticleViewController{
         
         for id in reading.components(separatedBy: ","){
             
-            Alamofire.request("https://iqctest.com/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+            Alamofire.request("https://www.iqc.com.tw/api/article/detail/\(id)", headers: headers).responseJSON(completionHandler: {
                 response in
                 if let _ = response.error{
                     let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
@@ -731,7 +731,7 @@ extension DetailArticleViewController{
     func getProductDetailGo(id:String){
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+        Alamofire.request("https://www.iqc.com.tw/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
             response in
             if let _ = response.error{
                 let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)

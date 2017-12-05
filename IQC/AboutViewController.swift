@@ -47,7 +47,7 @@ class AboutViewController: UIViewController, UIWebViewDelegate {
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
         
-        Alamofire.request("https://iqctest.com/api/website/intro", headers: headers).responseJSON(completionHandler: {
+        Alamofire.request("https://www.iqc.com.tw/api/website/intro", headers: headers).responseJSON(completionHandler: {
             response in
             print(response)
             if let _ = response.error{

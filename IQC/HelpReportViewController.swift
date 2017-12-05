@@ -207,7 +207,10 @@ class HelpReportViewController: UIViewController {
     }
     
     func keyboardWillShow(notification:NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+//            if keyboardSize.height == 0{
+//                let keyboardSize = (notification.userInfo![UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue.size
+//            }
             self.keyboardHeight = keyboardSize.height
         }
         DispatchQueue.main.async {
@@ -513,7 +516,7 @@ extension HelpReportViewController: PhotoPassingDelegate, YNActionSheetDelegate{
         }
         let headers:HTTPHeaders = ["Content-Type": "application/json" ,"charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        let url = try! URLRequest(url: URL(string: "https://iqctest.com/api/data/payback")!, method: .post, headers: headers)
+        let url = try! URLRequest(url: URL(string: "https://www.iqc.com.tw/api/data/payback")!, method: .post, headers: headers)
         
         var code = ""
         for codeDigit in codeArray{

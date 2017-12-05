@@ -20,6 +20,7 @@ class PhotoLibraryViewController: UIViewController {
     var imageArray = [UIImage]()
     var selectedImageIndex = [Int]()
     var photoDelegate:PhotoPassingDelegate?
+    var photoArray = [PHAsset]()
     
     @IBAction func cancelAction(_ sender: Any) {
         _ = self.navigationController?.popViewController(animated: true)
@@ -54,6 +55,41 @@ class PhotoLibraryViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        photoArray = [PHAsset]()
+        
+        let assets = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: nil)
+        assets.enumerateObjects({ (object, count, stop) in
+            // self.cameraAssets.add(object)
+            self.photoArray.append(object)
+        })
+        
+        self.photoArray.reverse()
+        self.photoCollectionView.reloadData()
+//        let imgManager = PHImageManager.default()
+//        
+//        let requestOptions = PHImageRequestOptions()
+//        requestOptions.isSynchronous = true
+//        
+//        let fetchOptions = PHFetchOptions()
+//        fetchOptions.sortDescriptors = [NSSortDescriptor(key:"creationDate", ascending: true)]
+//        let fetchResult: PHFetchResult = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: fetchOptions)
+//        
+//        // If the fetch result isn't empty,
+//        // proceed with the image request
+//        for i in 0...fetchResult.count - 1{
+//            
+//            // Perform the image request
+//            
+//            imgManager.requestImage(for: fetchResult.object(at: i) as PHAsset, targetSize: self.view.frame.size, contentMode: PHImageContentMode.aspectFill, options: requestOptions, resultHandler: {
+//                (image, _) in
+//                
+//                // Add the returned image to your array
+//                
+//                self.photoArray.append(image!)
+//                let index = IndexPath(item: i, section: 0)
+//                self.photoCollectionView.reloadItems(at: [index])
+//            })
+//        }
         
         if selectedImageIndex.count > 0{
             doneButton.isEnabled = true
@@ -138,7 +174,7 @@ extension PhotoLibraryViewController:UICollectionViewDelegate, UICollectionViewD
             photoCount = fetchResult.count
         }
         
-        return photoCount + 1
+        return photoArray.count + 1
     }
     
     //    datasource
@@ -157,33 +193,23 @@ extension PhotoLibraryViewController:UICollectionViewDelegate, UICollectionViewD
         let cell =
             photoCollectionView.dequeueReusableCell(
                 withReuseIdentifier: "Cell", for: indexPath) as! PhotoLibraryPhotoCollectionViewCell
-        
-        
-        let imgManager = PHImageManager.default()
-        
         let requestOptions = PHImageRequestOptions()
         requestOptions.isSynchronous = true
-        
-        let fetchOptions = PHFetchOptions()
-        fetchOptions.sortDescriptors = [NSSortDescriptor(key:"creationDate", ascending: true)]
-        let fetchResult: PHFetchResult = PHAsset.fetchAssets(with: PHAssetMediaType.image, options: fetchOptions)
-        
-        // If the fetch result isn't empty,
-        // proceed with the image request
-        if fetchResult.count - indexPath.item > 0 {
-            
-            // Perform the image request
-            
-            imgManager.requestImage(for: fetchResult.object(at: fetchResult.count - indexPath.item) as PHAsset, targetSize: self.view.frame.size, contentMode: PHImageContentMode.aspectFill, options: requestOptions, resultHandler: {
-                (image, _) in
-                
-                // Add the returned image to your array
-               
-                cell.photoImageView.image = image
-                
+        if photoArray.count > indexPath.item{
+            let asset = photoArray[indexPath.item]
+            let manager = PHImageManager.default()
+            if cell.tag != 0 {
+                manager.cancelImageRequest(PHImageRequestID(cell.tag))
+            }
+            cell.tag = Int(manager.requestImage(for: asset,
+                                                targetSize: CGSize(width: 120.0, height: 120.0),
+                                                contentMode: .aspectFill,
+                                                options: nil) { (result, _) in
+                                                    cell.photoImageView.image = result
             })
+        }else{
+            cell.photoImageView.image = nil
         }
-        
         cell.selectedView.isHidden = true
         cell.selectMark.isHidden = true
         

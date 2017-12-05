@@ -151,7 +151,7 @@ class SafeViewController: UIViewController {
             self.brandList = [Brand]()
             let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
             
-            Alamofire.request("https://iqctest.com/api/website/menu", headers: headers).responseJSON(completionHandler: {
+            Alamofire.request("https://www.iqc.com.tw/api/website/menu", headers: headers).responseJSON(completionHandler: {
                 response in
                 if let _ = response.error{
                     let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
@@ -212,7 +212,7 @@ class SafeViewController: UIViewController {
                 
             })
             
-            Alamofire.request("https://iqctest.com/api/brand/list/all", headers: headers).responseJSON(completionHandler: {
+            Alamofire.request("https://www.iqc.com.tw/api/brand/list/all", headers: headers).responseJSON(completionHandler: {
                 response in
                 if let _ = response.error{
                     let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
@@ -513,7 +513,7 @@ extension SafeViewController{
             subIdString = String(subId)
         }
         
-        Alamofire.request("https://iqctest.com/api/safety/list/\(tittleId)/\(subIdString)", headers: headers).responseJSON(completionHandler: {
+        Alamofire.request("https://www.iqc.com.tw/api/safety/list/\(tittleId)/\(subIdString)", headers: headers).responseJSON(completionHandler: {
             response in
             if let _ = response.error{
                 let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
@@ -584,7 +584,7 @@ extension SafeViewController{
     func getProductDetail(product:Product){
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        Alamofire.request("https://iqctest.com/api/product/detail/\(product.id!)", headers: headers).responseJSON(completionHandler: {
+        Alamofire.request("https://www.iqc.com.tw/api/product/detail/\(product.id!)", headers: headers).responseJSON(completionHandler: {
             response in
             if let _ = response.error{
                 let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)

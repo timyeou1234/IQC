@@ -128,7 +128,7 @@ class SafeJournalViewController: UIViewController {
         
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        Alamofire.request("https://iqctest.com/api/blog/list/all", headers: headers).responseJSON(completionHandler: {
+        Alamofire.request("https://www.iqc.com.tw/api/blog/list/all", headers: headers).responseJSON(completionHandler: {
             response in
             if let _ = response.error{
                 let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
@@ -336,7 +336,7 @@ extension SafeJournalViewController: UITableViewDelegate, UITableViewDataSource,
         
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        Alamofire.request("https://iqctest.com/api/blog/list/\(typeUrl)", headers: headers).responseJSON(completionHandler: {
+        Alamofire.request("https://www.iqc.com.tw/api/blog/list/\(typeUrl)", headers: headers).responseJSON(completionHandler: {
             response in
             if let _ = response.error{
                 let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)

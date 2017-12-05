@@ -380,7 +380,7 @@ extension SearchViewController{
         productCollectionView.reloadData()
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         let keyWoedUTF = keyWord.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-        Alamofire.request(URL(string: "https://iqctest.com/api/search/product/\(keyWoedUTF!)")!, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: headers).responseJSON(completionHandler: {
+        Alamofire.request(URL(string: "https://www.iqc.com.tw/api/search/product/\(keyWoedUTF!)")!, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: headers).responseJSON(completionHandler: {
             response in
             if let _ = response.error{
                 let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
@@ -454,7 +454,7 @@ extension SearchViewController{
             }
         })
         
-        Alamofire.request(URL(string: "https://iqctest.com/api/search/article/\(keyWoedUTF!)")!, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: headers).responseJSON(completionHandler: {
+        Alamofire.request(URL(string: "https://www.iqc.com.tw/api/search/article/\(keyWoedUTF!)")!, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: headers).responseJSON(completionHandler: {
             response in
             if let _ = response.error{
                 let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
@@ -533,7 +533,7 @@ extension SearchViewController{
     func getKeyword(){
         
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
-        Alamofire.request(URL(string: "https://iqctest.com/api/website/keyword")!, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: headers).responseJSON(completionHandler: {
+        Alamofire.request(URL(string: "https://www.iqc.com.tw/api/website/keyword")!, method: .get, parameters: nil, encoding: URLEncoding.httpBody, headers: headers).responseJSON(completionHandler: {
             response in
             if let _ = response.error{
                 let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)
@@ -578,7 +578,7 @@ extension SearchViewController{
     func getProductDetail(id:String){
         let headers:HTTPHeaders = ["Content-Type": "application/json","charset": "utf-8", "X-API-KEY": "1Em7jr4bEaIk92tv7bw5udeniSSqY69L", "authorization": "Basic MzE1RUQ0RjJFQTc2QTEyN0Q5Mzg1QzE0NDZCMTI6c0BqfiRWMTM4VDljMHhnMz1EJXNRMjJJfHEzMXcq"]
         
-        Alamofire.request("https://iqctest.com/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
+        Alamofire.request("https://www.iqc.com.tw/api/product/detail/\(id)", headers: headers).responseJSON(completionHandler: {
             response in
             if let _ = response.error{
                 let alert = UIAlertController(title: "網路異常", message: nil, preferredStyle: .alert)

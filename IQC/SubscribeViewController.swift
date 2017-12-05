@@ -139,7 +139,7 @@ class SubscribeViewController: UIViewController {
     }
     
     func keyboardWillShow(notification:NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+        if let keyboardSize = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             self.keyboardHeight = keyboardSize.height
         }
         if companyTextField.isEditing || titleTextField.isEditing {
@@ -192,7 +192,7 @@ class SubscribeViewController: UIViewController {
             ]
             ]]
         
-        _ = Alamofire.request(URL(string: "https://iqctest.com/api/data/subscribe")!, method: .post, parameters: param, encoding: JSONEncoding.default, headers: headers).responseString(completionHandler: {
+        _ = Alamofire.request(URL(string: "https://www.iqc.com.tw/api/data/subscribe")!, method: .post, parameters: param, encoding: JSONEncoding.default, headers: headers).responseString(completionHandler: {
             response in
             debugPrint(response)
             let alert = UIAlertController(title: "感謝您的訂閱", message: nil, preferredStyle: .alert)
